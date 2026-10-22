@@ -2,6 +2,7 @@ package com.liskovsoft.smartyoutubetv2.tv.mobile.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,8 @@ import com.liskovsoft.smartyoutubetv2.common.utils.ClickbaitRemover;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 import com.liskovsoft.smartyoutubetv2.tv.adapter.VideoGroupObjectAdapter;
 
+import java.util.regex.Pattern;
+
 /**
  * Touch cards for a stream of videos.<br/>
  * The data side is the upstream {@link VideoGroupObjectAdapter}, so paging, removals, sync of the watched state
@@ -42,6 +45,7 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final int TYPE_CHANNEL_CHIP = 4;
 
     private static final int SCROLL_END_THRESHOLD = 6;
+    private static final Pattern HD_THUMB_PATTERN = Pattern.compile("/(hqdefault|mqdefault|sddefault)\\.");
 
     public interface Listener {
         void onVideoClicked(Video video);
@@ -65,6 +69,12 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private int mScrollEndRequestedSize = -1;
     private int mSelectedIndex = -1;
     private int mThumbQuality = -1;
+    private boolean mEdgeToEdge;
+
+    // Avatar discs: muted tones that read well under white letters, day and night
+    private static final int[] AVATAR_COLORS = {
+            0xFFE0533D, 0xFFD9822B, 0xFF3F8F6B, 0xFF2F7FA8, 0xFF5B63C9, 0xFF9A4FB3, 0xFFC2477A, 0xFF6F7680
+    };
 
     private final ObjectAdapter.DataObserver mObserver = new ObjectAdapter.DataObserver() {
         @Override
@@ -137,6 +147,31 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (mCardWidthPx != widthPx) {
             mCardWidthPx = widthPx;
             notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Single column on a folded phone: thumbnails go from one edge of the screen to the other.
+     */
+    public void setEdgeToEdge(boolean edgeToEdge) {
+        if (mEdgeToEdge != edgeToEdge) {
+            mEdgeToEdge = edgeToEdge;
+            notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Side padding of a list of cards: none when the cards are edge to edge.
+     */
+    public static void applyListPadding(RecyclerView list, boolean edgeToEdge) {
+        if (list == null) {
+            return;
+        }
+
+        int side = edgeToEdge ? 0 : Math.round(8 * list.getResources().getDisplayMetrics().density);
+
+        if (list.getPaddingStart() != side || list.getPaddingEnd() != side) {
+            list.setPaddingRelative(side, list.getPaddingTop(), side, list.getPaddingBottom());
         }
     }
 
@@ -252,7 +287,7 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         // Holders may come from a pool shared between rows: always pass this adapter's own params
-        ((CardHolder) holder).bind(video, index == mSelectedIndex, mStyle, mCardWidthPx, mListener, getThumbQuality(holder.itemView.getContext()));
+        ((CardHolder) holder).bind(video, index == mSelectedIndex, mStyle, mCardWidthPx, mEdgeToEdge, mListener, getThumbQuality(holder.itemView.getContext()));
 
         checkScrollEnd(index);
     }
@@ -301,6 +336,9 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private final TextView mBadge;
         private final ProgressBar mProgress;
         private final View mMore;
+        private final TextView mAvatar;
+        private final View mThumbFrame;
+        private final View mInfo;
         private Video mVideo;
         private Listener mListener;
         private int mThumbQuality;
@@ -313,6 +351,9 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             mBadge = itemView.findViewById(R.id.kami_badge);
             mProgress = itemView.findViewById(R.id.kami_progress);
             mMore = itemView.findViewById(R.id.kami_more);
+            mAvatar = itemView.findViewById(R.id.kami_avatar);
+            mThumbFrame = itemView.findViewById(R.id.kami_thumb_frame);
+            mInfo = itemView.findViewById(R.id.kami_info);
 
             itemView.setOnClickListener(v -> {
                 if (mVideo != null && mListener != null) {
@@ -333,7 +374,7 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         }
 
-        void bind(Video video, boolean selected, int style, int cardWidthPx, Listener listener, int thumbQuality) {
+        void bind(Video video, boolean selected, int style, int cardWidthPx, boolean edgeToEdge, Listener listener, int thumbQuality) {
             mVideo = video;
             mListener = listener;
             mThumbQuality = thumbQuality;
@@ -349,6 +390,11 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
 
             itemView.setActivated(selected);
+
+            if (getItemViewType() == TYPE_VIDEO) {
+                applyVideoLayout(context, style, edgeToEdge && style == STYLE_GRID);
+                bindAvatar(video, style);
+            }
 
             setText(mTitle, video.getTitle());
             setText(mSubtitle, video.getSecondTitle());
@@ -367,6 +413,47 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
 
             loadImage(context, video);
+        }
+
+        private void applyVideoLayout(Context context, int style, boolean edgeToEdge) {
+            float density = context.getResources().getDisplayMetrics().density;
+            int card = Math.round(6 * density);
+            int gap = Math.round(14 * density);
+
+            if (edgeToEdge) {
+                itemView.setPadding(0, 0, 0, gap);
+                mInfo.setPaddingRelative(Math.round(12 * density), mInfo.getPaddingTop(), Math.round(4 * density), 0);
+                mThumbFrame.setBackgroundResource(R.drawable.kami_thumb_frame_flat);
+            } else {
+                itemView.setPadding(card, card, card, card);
+                mInfo.setPaddingRelative(Math.round(4 * density), mInfo.getPaddingTop(), 0, 0);
+                mThumbFrame.setBackgroundResource(R.drawable.kami_thumb_frame);
+            }
+
+            // Corners follow the frame background
+            mThumbFrame.invalidateOutline();
+        }
+
+        private void bindAvatar(Video video, int style) {
+            if (mAvatar == null) {
+                return;
+            }
+
+            String author = video.getAuthor();
+
+            if (style == STYLE_ROW || TextUtils.isEmpty(author) || TextUtils.isEmpty(author.trim())) {
+                mAvatar.setVisibility(View.GONE);
+                return;
+            }
+
+            String name = author.trim();
+            mAvatar.setVisibility(View.VISIBLE);
+            mAvatar.setText(name.substring(0, name.offsetByCodePoints(0, 1)).toUpperCase());
+
+            GradientDrawable disc = new GradientDrawable();
+            disc.setShape(GradientDrawable.OVAL);
+            disc.setColor(AVATAR_COLORS[(name.hashCode() & 0x7FFFFFFF) % AVATAR_COLORS.length]);
+            mAvatar.setBackground(disc);
         }
 
         void unbind() {
@@ -400,6 +487,12 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
 
             String url = round ? video.cardImageUrl : ClickbaitRemover.updateThumbnail(video, mThumbQuality);
+
+            if (!round && getItemViewType() == TYPE_VIDEO && mThumbQuality == ClickbaitRemover.THUMB_QUALITY_DEFAULT && url != null) {
+                // Phone cards are wide and dense: the TV size (480x360, letterboxed) looks blurry, ask for the 1280x720 one.
+                // Old videos without it fall back to the card url below.
+                url = HD_THUMB_PATTERN.matcher(url).replaceFirst("/hq720.");
+            }
 
             Glide.with(context)
                     .load(url)

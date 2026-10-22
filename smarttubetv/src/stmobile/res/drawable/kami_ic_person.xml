@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kamishibai "You" tab: a head and shoulders drawn as two strokes -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M12,4.5a3.75,3.75 0,1 0,0 7.5a3.75,3.75 0,1 0,0 -7.5z"
+        android:strokeWidth="1.8"
+        android:strokeColor="#FFFFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M4.5,20c0.8,-3.6 3.8,-5.6 7.5,-5.6s6.7,2 7.5,5.6"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.8"
+        android:strokeColor="#FFFFFFFF" />
+</vector>

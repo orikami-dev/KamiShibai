@@ -22,7 +22,8 @@ import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
  * a strip of channel avatars on top (group position 0) and the uploads of the picked channel below (group position 1).
  */
 public class GridSection implements MobileSection {
-    private static final float MIN_VIDEO_CARD_DP = 300;
+    private static final float MIN_VIDEO_CARD_DP = 280;
+    private static final float EDGE_TO_EDGE_MAX_DP = 600;
     private static final float MIN_SHORTS_CARD_DP = 160;
     private static final int MAX_COLUMNS = 6;
 
@@ -84,6 +85,11 @@ public class GridSection implements MobileSection {
         if (mLayoutManager.getSpanCount() != columns) {
             mLayoutManager.setSpanCount(columns);
         }
+
+        // Folded phone: one big card per line, from edge to edge
+        boolean edgeToEdge = !mIsShorts && columns == 1 && widthDp < EDGE_TO_EDGE_MAX_DP;
+        mAdapter.setEdgeToEdge(edgeToEdge);
+        VideoCardAdapter.applyListPadding(mRecyclerView, edgeToEdge);
     }
 
     @Override

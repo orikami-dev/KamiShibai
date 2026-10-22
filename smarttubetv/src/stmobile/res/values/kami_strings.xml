@@ -13,4 +13,6 @@
     <string name="kami_search_filters">Search filters</string>
     <string name="kami_fill_suggestion">Edit this suggestion</string>
     <string name="kami_search_channel">Search in this channel</string>
+    <string name="kami_you">You</string>
+    <string name="kami_all">All</string>
 </resources>

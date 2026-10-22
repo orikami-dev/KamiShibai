@@ -4,7 +4,7 @@
     style="@style/Kamishibai.RowTitle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="10dp"
+    android:paddingStart="14dp"
     android:paddingTop="16dp"
-    android:paddingEnd="10dp"
+    android:paddingEnd="14dp"
     android:paddingBottom="6dp" />

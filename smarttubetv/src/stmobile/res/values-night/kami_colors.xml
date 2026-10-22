@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- night: sumi ink and lantern light -->
-    <color name="kami_ink">#FF0F0F13</color>
-    <color name="kami_surface">#FF18181E</color>
-    <color name="kami_surface_high">#FF24242C</color>
-    <color name="kami_outline">#FF34343E</color>
-    <color name="kami_accent">#FFFF5A40</color>
-    <color name="kami_accent_soft">#33FF5A40</color>
-    <color name="kami_text">#FFF4F1EA</color>
-    <color name="kami_text_secondary">#FFA9A6A0</color>
+    <!-- ORIKAMI family neutrals (shared with Ongaku), night: true black for OLED -->
+    <color name="kami_ink">#FF000000</color>
+    <color name="kami_surface">#FF1C1C1E</color>
+    <color name="kami_surface_high">#FF2C2C2E</color>
+    <color name="kami_fill">#FF3A3A3C</color>
+    <color name="kami_bar">#FF1C1C1E</color>
+    <color name="kami_highlight">#24FFFFFF</color>
+    <color name="kami_outline">#FF38383A</color>
+    <color name="kami_accent">#FFFF6A3D</color>
+    <color name="kami_accent_end">#FFFFB340</color>
+    <color name="kami_accent_soft">#38FF6A3D</color>
+    <color name="kami_text">#FFFFFFFF</color>
+    <color name="kami_text_secondary">#FF98989F</color>
     <color name="kami_scrim">#99000000</color>
-    <color name="kami_shimmer_a">#FF24242C</color>
-    <color name="kami_shimmer_b">#FF2E2E38</color>
+    <color name="kami_shimmer_a">#FF2C2C2E</color>
+    <color name="kami_shimmer_b">#FF1C1C1E</color>
 </resources>

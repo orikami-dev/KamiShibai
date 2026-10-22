@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Kamishibai: a little paper theater (butai) under a torii beam, with a play sign on the sheet -->
+<!-- Kamishibai: two story cards of a paper theater. The front one has an origami fold
+     in its corner (the ORIKAMI mark) and a play sign; the next card peeks behind it. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Top beam -->
-    <path android:fillColor="#101014" android:pathData="M30,35h48v5h-48z" />
-    <path android:fillColor="#101014" android:pathData="M27,31h54l-2,4h-50z" />
-    <!-- Stage frame -->
-    <path android:fillColor="#101014" android:pathData="M33,40h42v34h-42z" />
-    <!-- Paper sheet -->
-    <path android:fillColor="#F4F1EA" android:pathData="M37,44h34v26h-34z" />
+    <!-- Next card -->
+    <path android:fillColor="#73FFFFFF" android:pathData="M38,33h38a2,2 0,0 1,2 2v30a2,2 0,0 1,-2 2h-38a2,2 0,0 1,-2 -2v-30a2,2 0,0 1,2 -2z" />
+    <!-- Soft shadow of the front card -->
+    <path android:fillColor="#26000000" android:pathData="M30,42h32l10,10v22a2,2 0,0 1,-2 2h-40a2,2 0,0 1,-2 -2v-30a2,2 0,0 1,2 -2z" />
+    <!-- Front card with its corner folded -->
+    <path android:fillColor="#FFFFFFFF" android:pathData="M30,40h32l10,10v22a2,2 0,0 1,-2 2h-40a2,2 0,0 1,-2 -2v-30a2,2 0,0 1,2 -2z" />
+    <!-- The fold -->
+    <path android:fillColor="#FFFFD3BD" android:pathData="M62,40v8a2,2 0,0 0,2 2h8z" />
     <!-- Play -->
-    <path android:fillColor="#E8452C" android:pathData="M50,50l11,7l-11,7z" />
-    <!-- Legs -->
-    <path android:fillColor="#101014" android:pathData="M36,74h4v6h-4zM68,74h4v6h-4z" />
+    <path android:fillColor="#FFFF4F1F" android:pathData="M45.5,49.2v15.6a1.2,1.2 0,0 0,1.8 1l12.4,-7.8a1.2,1.2 0,0 0,0 -2l-12.4,-7.8a1.2,1.2 0,0 0,-1.8 1z" />
 </vector>

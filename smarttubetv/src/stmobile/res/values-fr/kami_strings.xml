@@ -12,4 +12,6 @@
     <string name="kami_search_filters">Filtres de recherche</string>
     <string name="kami_fill_suggestion">Modifier cette suggestion</string>
     <string name="kami_search_channel">Rechercher dans la chaîne</string>
+    <string name="kami_you">Vous</string>
+    <string name="kami_all">Tout</string>
 </resources>

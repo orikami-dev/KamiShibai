@@ -10,7 +10,7 @@
         <item name="android:colorPrimary">@color/kami_surface</item>
         <item name="android:colorPrimaryDark">@color/kami_ink</item>
         <item name="android:colorControlActivated">@color/kami_accent</item>
-        <item name="android:colorControlHighlight">#33FFFFFF</item>
+        <item name="android:colorControlHighlight">@color/kami_highlight</item>
         <item name="android:statusBarColor">@color/kami_ink</item>
         <item name="android:navigationBarColor">@color/kami_ink</item>
         <item name="android:textColorPrimary">@color/kami_text</item>
@@ -49,17 +49,24 @@
 
     <style name="Kamishibai.Title" parent="">
         <item name="android:textColor">@color/kami_text</item>
-        <item name="android:textSize">22sp</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.02</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
     </style>
 
+    <!-- Pages with a back arrow: channel names can be long -->
+    <style name="Kamishibai.Title.Page">
+        <item name="android:textSize">24sp</item>
+    </style>
+
     <style name="Kamishibai.RowTitle" parent="">
         <item name="android:textColor">@color/kami_text</item>
-        <item name="android:textSize">17sp</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
     </style>

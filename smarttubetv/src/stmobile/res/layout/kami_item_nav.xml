@@ -1,38 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Bar and rail entry: the selection pill wraps both the icon and the label -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/kami_ripple_round"
-    android:gravity="center_horizontal"
-    android:minHeight="68dp"
-    android:orientation="vertical"
-    android:paddingTop="8dp"
-    android:paddingBottom="6dp">
+    android:padding="4dp">
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/kami_nav_indicator"
-        android:layout_width="60dp"
-        android:layout_height="34dp"
-        android:background="@drawable/kami_nav_indicator">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/kami_nav_indicator"
+        android:foreground="@drawable/kami_ripple_round"
+        android:gravity="center"
+        android:minHeight="56dp"
+        android:orientation="vertical"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
 
         <ImageView
             android:id="@+id/kami_nav_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_gravity="center"
             android:importantForAccessibility="no" />
-    </FrameLayout>
 
-    <TextView
-        android:id="@+id/kami_nav_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:maxLines="1"
-        android:paddingStart="2dp"
-        android:paddingEnd="2dp"
-        android:textColor="@color/kami_nav_content"
-        android:textSize="12sp" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/kami_nav_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:textColor="@color/kami_nav_content"
+            android:textSize="11sp"
+            android:fontFamily="sans-serif-medium" />
+    </LinearLayout>
+</FrameLayout>

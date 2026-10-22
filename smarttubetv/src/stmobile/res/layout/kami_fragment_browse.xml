@@ -5,27 +5,20 @@
     android:background="@color/kami_ink"
     android:orientation="vertical">
 
-    <!-- Top bar -->
+    <!-- Top bar: big bold title, like every ORIKAMI app -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="64dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="16dp"
         android:paddingEnd="4dp">
-
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@mipmap/app_icon"
-            android:importantForAccessibility="no" />
 
         <TextView
             android:id="@+id/kami_title"
             style="@style/Kamishibai.Title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:layout_weight="1"
             android:text="@string/app_name" />
 
@@ -48,7 +41,7 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <!-- Rail (foldables, landscape) or drawer (tablets) -->
+        <!-- Rail (unfolded foldable, landscape) or drawer (tablets) -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/kami_nav_rail"
             android:layout_width="88dp"
@@ -60,54 +53,100 @@
             android:scrollbars="none"
             android:visibility="gone" />
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/kami_refresh"
+            <!-- Home topic filters -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/kami_chips"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/kami_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="16dp"
-                    android:layoutAnimation="@anim/kami_fall_down"
-                    android:scrollbarStyle="outsideOverlay"
-                    android:scrollbars="vertical" />
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-            <include layout="@layout/kami_view_error" />
-
-            <ProgressBar
-                android:id="@+id/kami_progress"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_gravity="top"
-                android:indeterminate="true"
-                android:indeterminateTint="@color/kami_accent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:paddingStart="12dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="8dp"
+                android:scrollbars="none"
                 android:visibility="gone" />
-        </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                    android:id="@+id/kami_refresh"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/kami_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingBottom="16dp"
+                        android:layoutAnimation="@anim/kami_fall_down"
+                        android:scrollbarStyle="outsideOverlay"
+                        android:scrollbars="vertical" />
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+                <include layout="@layout/kami_view_error" />
+
+                <ProgressBar
+                    android:id="@+id/kami_progress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:layout_gravity="top"
+                    android:indeterminate="true"
+                    android:indeterminateTint="@color/kami_accent"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
     </LinearLayout>
 
-    <!-- Bottom bar (phones) -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/kami_nav_bar"
+    <!-- Bottom bar (folded phone): floating pill with the 4 tabs, round search button beside it -->
+    <LinearLayout
+        android:id="@+id/kami_bottom"
         android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/kami_nav_bar_bg"
-        android:elevation="6dp"
-        android:overScrollMode="never"
-        android:visibility="gone" />
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="10dp"
+        android:visibility="gone">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/kami_nav_bar"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_weight="1"
+            android:background="@drawable/kami_nav_bar_bg"
+            android:elevation="4dp"
+            android:overScrollMode="never"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp" />
+
+        <ImageButton
+            android:id="@+id/kami_bar_search"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/kami_nav_bar_bg"
+            android:contentDescription="@string/kami_search"
+            android:elevation="4dp"
+            android:foreground="@drawable/kami_ripple_round"
+            android:padding="20dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/kami_ic_search"
+            android:tint="@color/kami_text" />
+    </LinearLayout>
 </LinearLayout>

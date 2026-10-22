@@ -30,7 +30,8 @@ public class FeedSection implements MobileSection {
     public static final int MODE_ROWS = 0;
     public static final int MODE_BLOCKS = 1;
 
-    private static final float MIN_VIDEO_CARD_DP = 300;
+    private static final float MIN_VIDEO_CARD_DP = 280;
+    private static final float EDGE_TO_EDGE_MAX_DP = 600;
     private static final float MIN_SHORTS_CARD_DP = 160;
     private static final float ROW_CARD_DP = 280;
     private static final float ROW_SHORTS_CARD_DP = 150;
@@ -55,6 +56,7 @@ public class FeedSection implements MobileSection {
     private int mRowCardWidthPx;
     private int mRowShortsWidthPx;
     private int mPendingPosition = -1;
+    private boolean mEdgeToEdge;
     // Flattened positions for MODE_BLOCKS: block index and item index (-1 = title)
     private final List<int[]> mCells = new ArrayList<>();
 
@@ -144,6 +146,19 @@ public class FeedSection implements MobileSection {
             }
         }
 
+        // Folded phone: one big card per line, from edge to edge
+        boolean edgeToEdge = mMode == MODE_BLOCKS && columns == 1 && widthDp < EDGE_TO_EDGE_MAX_DP;
+
+        if (edgeToEdge != mEdgeToEdge) {
+            mEdgeToEdge = edgeToEdge;
+            for (Block block : mBlocks) {
+                block.adapter.setEdgeToEdge(edgeToEdge);
+            }
+            changed = true;
+        }
+
+        VideoCardAdapter.applyListPadding(mRecyclerView, edgeToEdge);
+
         if (changed) {
             mAdapter.notifyDataSetChanged();
         }
@@ -202,6 +217,7 @@ public class FeedSection implements MobileSection {
         Block block = new Block(group.getId(), group.getTitle(), adapter, group.isShorts());
         listener.mBlock = block;
         adapter.setCardWidth(block.isShorts ? mRowShortsWidthPx : mRowCardWidthPx);
+        adapter.setEdgeToEdge(mEdgeToEdge);
         return block;
     }
 

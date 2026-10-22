@@ -19,40 +19,28 @@ import com.liskovsoft.smartyoutubetv2.tv.R;
 import java.util.List;
 
 /**
- * Sections navigation, drawn as a bottom bar (phones), a rail (foldables, landscape) or a wide drawer (tablets).
+ * Sections navigation, drawn as a bottom bar (folded phone), a rail (unfolded foldable, landscape)
+ * or a wide drawer (tablets, and the list of the "You" page).
  */
 public class NavAdapter extends RecyclerView.Adapter<NavAdapter.Holder> {
     public static final int LAYOUT_BAR = 0;
     public static final int LAYOUT_RAIL = 1;
     public static final int LAYOUT_DRAWER = 2;
 
-    /**
-     * Pseudo section that opens the full list (bottom bar only).
-     */
-    public static final int ID_MORE = Integer.MIN_VALUE;
-
     public interface Listener {
         void onSectionClicked(BrowseSection section);
         void onSectionLongClicked(BrowseSection section);
-        void onMoreClicked();
     }
 
-    private final List<BrowseSection> mAllSections;
+    private final List<BrowseSection> mSections;
     private final Listener mListener;
     private final int mLayout;
-    private final int mMaxItems;
-    private final BrowseSection mMore;
-    private int mSelectedId = -1;
+    private int mSelectedId = Integer.MAX_VALUE;
 
-    /**
-     * @param maxItems items shown before the "More" entry, or 0 to show all of them
-     */
-    public NavAdapter(Context context, List<BrowseSection> sections, int layout, int maxItems, Listener listener) {
-        mAllSections = sections;
+    public NavAdapter(List<BrowseSection> sections, int layout, Listener listener) {
+        mSections = sections;
         mLayout = layout;
-        mMaxItems = maxItems;
         mListener = listener;
-        mMore = new BrowseSection(ID_MORE, context.getString(R.string.kami_more), BrowseSection.TYPE_GRID, R.drawable.kami_ic_more_horiz);
     }
 
     public void setSelectedId(int sectionId) {
@@ -60,35 +48,9 @@ public class NavAdapter extends RecyclerView.Adapter<NavAdapter.Holder> {
         notifyDataSetChanged();
     }
 
-    private boolean hasMore() {
-        return mMaxItems > 0 && mAllSections.size() > mMaxItems;
-    }
-
-    private int visibleCount() {
-        return hasMore() ? mMaxItems - 1 : mAllSections.size();
-    }
-
-    private BrowseSection getItem(int position) {
-        return position < visibleCount() ? mAllSections.get(position) : mMore;
-    }
-
-    private boolean isSelectedInsideMore() {
-        if (!hasMore()) {
-            return false;
-        }
-
-        for (int i = visibleCount(); i < mAllSections.size(); i++) {
-            if (mAllSections.get(i).getId() == mSelectedId) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     @Override
     public int getItemCount() {
-        return visibleCount() + (hasMore() ? 1 : 0);
+        return mSections.size();
     }
 
     @NonNull
@@ -100,25 +62,17 @@ public class NavAdapter extends RecyclerView.Adapter<NavAdapter.Holder> {
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
-        BrowseSection section = getItem(position);
-        boolean selected = section == mMore ? isSelectedInsideMore() : section.getId() == mSelectedId;
+        BrowseSection section = mSections.get(position);
+        boolean selected = section.getId() == mSelectedId;
 
         holder.label.setText(section.getTitle());
         holder.itemView.setSelected(selected);
         holder.indicator.setSelected(selected);
         bindIcon(holder.icon, section);
 
-        holder.itemView.setOnClickListener(v -> {
-            if (section == mMore) {
-                mListener.onMoreClicked();
-            } else {
-                mListener.onSectionClicked(section);
-            }
-        });
+        holder.itemView.setOnClickListener(v -> mListener.onSectionClicked(section));
         holder.itemView.setOnLongClickListener(v -> {
-            if (section != mMore) {
-                mListener.onSectionLongClicked(section);
-            }
+            mListener.onSectionLongClicked(section);
             return true;
         });
     }
