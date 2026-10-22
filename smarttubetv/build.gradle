@@ -255,3 +255,6 @@ dependencies {
 
     implementation 'androidx.work:work-runtime:' + workVersion
 }
+
+// Kamishibai: phone/tablet/foldable UI, kept out of the upstream build script to ease upstream merges
+apply from: 'kamishibai.gradle'

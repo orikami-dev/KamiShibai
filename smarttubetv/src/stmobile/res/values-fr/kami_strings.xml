@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="kami_more">Plus</string>
+    <string name="kami_all_sections">Toutes les rubriques</string>
+    <string name="kami_search">Rechercher</string>
+    <string name="kami_search_hint">Rechercher sur YouTube</string>
+    <string name="kami_settings">Réglages</string>
+    <string name="kami_more_actions">Plus d\'actions</string>
+    <string name="kami_back">Retour</string>
+    <string name="kami_clear">Effacer</string>
+    <string name="kami_voice_search">Recherche vocale</string>
+    <string name="kami_search_filters">Filtres de recherche</string>
+    <string name="kami_fill_suggestion">Modifier cette suggestion</string>
+    <string name="kami_search_channel">Rechercher dans la chaîne</string>
+</resources>

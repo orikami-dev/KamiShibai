@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.liskovsoft.smartyoutubetv2.tv">
+
+    <!-- Kamishibai runs on phones, tablets and foldables, not only on TV boxes -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false"
+        tools:node="replace" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false"
+        tools:node="replace" />
+
+    <application
+        android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.KamishibaiApplication"
+        android:label="@string/app_name"
+        android:resizeableActivity="true"
+        tools:replace="android:name,android:label">
+
+        <!-- Every screen follows fold/unfold, rotation and window resize without being recreated -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.browse.MobileBrowseActivity"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="unspecified" />
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.search.MobileSearchActivity"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:windowSoftInputMode="adjustResize|stateVisible"
+            android:screenOrientation="unspecified" />
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.channel.MobileChannelActivity"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:screenOrientation="unspecified" />
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.channeluploads.MobileChannelUploadsActivity"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:screenOrientation="unspecified" />
+    </application>
+</manifest>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/kami_ink"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <ImageButton
+            android:id="@+id/kami_back"
+            style="@style/Kamishibai.IconButton"
+            android:contentDescription="@string/kami_back"
+            android:src="@drawable/kami_ic_back" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@drawable/kami_field"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="16dp">
+
+            <EditText
+                android:id="@+id/kami_search_field"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="@string/kami_search_hint"
+                android:imeOptions="actionSearch|flagNoExtractUi"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textColor="@color/kami_text"
+                android:textColorHint="@color/kami_text_secondary"
+                android:textCursorDrawable="@null"
+                android:textSize="16sp" />
+
+            <ImageButton
+                android:id="@+id/kami_search_clear"
+                style="@style/Kamishibai.IconButton"
+                android:contentDescription="@string/kami_clear"
+                android:src="@drawable/kami_ic_close"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/kami_search_voice"
+            style="@style/Kamishibai.IconButton"
+            android:contentDescription="@string/kami_voice_search"
+            android:src="@drawable/kami_ic_mic" />
+
+        <ImageButton
+            android:id="@+id/kami_search_filters"
+            style="@style/Kamishibai.IconButton"
+            android:contentDescription="@string/kami_search_filters"
+            android:src="@drawable/kami_ic_tune" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/kami_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="16dp"
+            android:scrollbars="vertical" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/kami_suggestions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/kami_ink"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/kami_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_gravity="top"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/kami_accent"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>

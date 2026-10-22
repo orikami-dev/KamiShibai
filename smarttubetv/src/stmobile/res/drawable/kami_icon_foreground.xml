@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kamishibai: a little paper theater (butai) under a torii beam, with a play sign on the sheet -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Top beam -->
+    <path android:fillColor="#101014" android:pathData="M30,35h48v5h-48z" />
+    <path android:fillColor="#101014" android:pathData="M27,31h54l-2,4h-50z" />
+    <!-- Stage frame -->
+    <path android:fillColor="#101014" android:pathData="M33,40h42v34h-42z" />
+    <!-- Paper sheet -->
+    <path android:fillColor="#F4F1EA" android:pathData="M37,44h34v26h-34z" />
+    <!-- Play -->
+    <path android:fillColor="#E8452C" android:pathData="M50,50l11,7l-11,7z" />
+    <!-- Legs -->
+    <path android:fillColor="#101014" android:pathData="M36,74h4v6h-4zM68,74h4v6h-4z" />
+</vector>

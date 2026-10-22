@@ -258,7 +258,18 @@ public class MotherActivity extends FragmentActivity {
     }
 
     private void initDpi() {
+        if (!isTvDensityEnabled()) {
+            return;
+        }
+
         getResources().getDisplayMetrics().setTo(getDisplayMetrics(this));
+    }
+
+    /**
+     * TV UI is scaled as if the screen were 1920px wide. Touch UIs (phones, foldables) keep the real system density.
+     */
+    protected boolean isTvDensityEnabled() {
+        return true;
     }
 
     private DisplayMetrics getDisplayMetrics(Context context) {
