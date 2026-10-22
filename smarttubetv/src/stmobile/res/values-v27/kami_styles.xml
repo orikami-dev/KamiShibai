@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Kamishibai.Theme" parent="Kamishibai.Theme.Base">
+        <item name="android:windowLightStatusBar">@bool/kami_light_bars</item>
+        <item name="android:windowLightNavigationBar">@bool/kami_light_bars</item>
+    </style>
+</resources>

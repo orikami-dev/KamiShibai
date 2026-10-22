@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:background="@drawable/kami_ripple_card"
     android:orientation="vertical"
-    android:padding="6dp">
+    android:padding="6dp"
+    android:stateListAnimator="@animator/kami_press">
 
     <com.liskovsoft.smartyoutubetv2.tv.mobile.widget.AspectFrameLayout
         android:layout_width="match_parent"
@@ -80,7 +81,7 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:textColor="@color/kami_text_secondary"
-                android:textSize="13sp" />
+                android:textSize="12.5sp" />
         </LinearLayout>
 
         <ImageButton

@@ -4,15 +4,15 @@
     android:layout_height="wrap_content"
     android:background="@drawable/kami_ripple_round"
     android:gravity="center_horizontal"
-    android:minHeight="72dp"
+    android:minHeight="68dp"
     android:orientation="vertical"
-    android:paddingTop="10dp"
-    android:paddingBottom="8dp">
+    android:paddingTop="8dp"
+    android:paddingBottom="6dp">
 
     <FrameLayout
         android:id="@+id/kami_nav_indicator"
-        android:layout_width="56dp"
-        android:layout_height="32dp"
+        android:layout_width="60dp"
+        android:layout_height="34dp"
         android:background="@drawable/kami_nav_indicator">
 
         <ImageView

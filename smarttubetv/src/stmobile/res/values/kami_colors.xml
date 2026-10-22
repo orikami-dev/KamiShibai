@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Kamishibai palette: sumi ink, washi paper, torii vermilion -->
-    <color name="kami_ink">#FF101014</color>
-    <color name="kami_surface">#FF18181E</color>
-    <color name="kami_surface_high">#FF26262E</color>
-    <color name="kami_outline">#FF34343E</color>
-    <color name="kami_accent">#FFE8452C</color>
-    <color name="kami_accent_soft">#33E8452C</color>
-    <color name="kami_text">#FFF4F1EA</color>
-    <color name="kami_text_secondary">#FFA9A6A0</color>
-    <color name="kami_scrim">#99000000</color>
+    <!-- Kamishibai palette, day: washi paper and sumi ink, torii vermilion accent -->
+    <color name="kami_ink">#FFFAF7F2</color>
+    <color name="kami_surface">#FFFFFFFF</color>
+    <color name="kami_surface_high">#FFEFEAE2</color>
+    <color name="kami_outline">#FFDDD6CB</color>
+    <color name="kami_accent">#FFE23B22</color>
+    <color name="kami_accent_soft">#1FE23B22</color>
+    <color name="kami_text">#FF1B1A19</color>
+    <color name="kami_text_secondary">#FF6E6A64</color>
+    <color name="kami_scrim">#66000000</color>
     <color name="kami_badge">#CC000000</color>
     <color name="kami_live">#FFD32F2F</color>
+    <color name="kami_shimmer_a">#FFEFEAE2</color>
+    <color name="kami_shimmer_b">#FFF7F3EC</color>
 </resources>

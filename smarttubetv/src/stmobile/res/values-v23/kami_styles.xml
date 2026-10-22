@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark status bar icons on the light (day) theme -->
+    <style name="Kamishibai.Theme" parent="Kamishibai.Theme.Base">
+        <item name="android:windowLightStatusBar">@bool/kami_light_bars</item>
+    </style>
+</resources>

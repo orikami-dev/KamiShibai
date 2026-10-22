@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- night: sumi ink and lantern light -->
+    <color name="kami_ink">#FF0F0F13</color>
+    <color name="kami_surface">#FF18181E</color>
+    <color name="kami_surface_high">#FF24242C</color>
+    <color name="kami_outline">#FF34343E</color>
+    <color name="kami_accent">#FFFF5A40</color>
+    <color name="kami_accent_soft">#33FF5A40</color>
+    <color name="kami_text">#FFF4F1EA</color>
+    <color name="kami_text_secondary">#FFA9A6A0</color>
+    <color name="kami_scrim">#99000000</color>
+    <color name="kami_shimmer_a">#FF24242C</color>
+    <color name="kami_shimmer_b">#FF2E2E38</color>
+</resources>

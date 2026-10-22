@@ -5,7 +5,8 @@
     android:background="@drawable/kami_ripple_card"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="12dp"
+    android:stateListAnimator="@animator/kami_press">
 
     <ImageView
         android:id="@+id/kami_thumb"

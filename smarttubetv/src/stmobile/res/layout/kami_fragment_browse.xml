@@ -15,8 +15,8 @@
         android:paddingEnd="4dp">
 
         <ImageView
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:src="@mipmap/app_icon"
             android:importantForAccessibility="no" />
 
@@ -54,7 +54,8 @@
             android:layout_width="88dp"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingTop="4dp"
+            android:background="@drawable/kami_nav_rail_bg"
+            android:paddingTop="12dp"
             android:paddingBottom="16dp"
             android:scrollbars="none"
             android:visibility="gone" />
@@ -77,6 +78,7 @@
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
                     android:paddingBottom="16dp"
+                    android:layoutAnimation="@anim/kami_fall_down"
                     android:scrollbarStyle="outsideOverlay"
                     android:scrollbars="vertical" />
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -99,8 +101,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/kami_nav_bar"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:background="@color/kami_surface"
+        android:layout_height="68dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/kami_nav_bar_bg"
+        android:elevation="6dp"
         android:overScrollMode="never"
         android:visibility="gone" />
 </LinearLayout>
