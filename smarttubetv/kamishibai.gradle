@@ -19,7 +19,7 @@ android {
         }
 
         variant.outputs.all { output ->
-            def arch = output.getFilter(com.android.build.OutputFile.ABI) ?: "universal"
+            def arch = output.getFilter("ABI") ?: "universal"
             output.outputFileName = new File(sprintf("Kamishibai_%s_%s.apk", [variant.versionName, arch]))
         }
     }

@@ -33,12 +33,12 @@
         <item name="android:textColorPrimary">@color/kami_text</item>
     </style>
 
-    <style name="Kamishibai.SheetAnimation">
+    <style name="Kamishibai.SheetAnimation" parent="">
         <item name="android:windowEnterAnimation">@anim/kami_sheet_in</item>
         <item name="android:windowExitAnimation">@anim/kami_sheet_out</item>
     </style>
 
-    <style name="Kamishibai.IconButton">
+    <style name="Kamishibai.IconButton" parent="">
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:padding">12dp</item>
@@ -47,7 +47,7 @@
         <item name="android:tint">@color/kami_text</item>
     </style>
 
-    <style name="Kamishibai.Title">
+    <style name="Kamishibai.Title" parent="">
         <item name="android:textColor">@color/kami_text</item>
         <item name="android:textSize">22sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
@@ -56,7 +56,7 @@
         <item name="android:ellipsize">end</item>
     </style>
 
-    <style name="Kamishibai.RowTitle">
+    <style name="Kamishibai.RowTitle" parent="">
         <item name="android:textColor">@color/kami_text</item>
         <item name="android:textSize">17sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
