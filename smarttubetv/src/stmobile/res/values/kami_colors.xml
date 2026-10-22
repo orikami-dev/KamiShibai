@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- ORIKAMI family neutrals (shared with Ongaku), day. Kamishibai accent: shu vermilion, gradient to lantern amber -->
+    <!-- Day: ORIKAMI neutrals (shared with Ongaku). Accent: Origami's Torii vermilion, a shade deeper to read on white -->
     <color name="kami_ink">#FFFFFFFF</color>
     <color name="kami_surface">#FFFFFFFF</color>
     <color name="kami_surface_high">#FFF2F2F7</color>
@@ -8,9 +8,9 @@
     <color name="kami_bar">#FFF2F2F7</color>
     <color name="kami_highlight">#14000000</color>
     <color name="kami_outline">#FFC6C6C8</color>
-    <color name="kami_accent">#FFFF4F1F</color>
-    <color name="kami_accent_end">#FFFF9F0A</color>
-    <color name="kami_accent_soft">#1FFF4F1F</color>
+    <color name="kami_accent">#FFE8453A</color>
+    <color name="kami_accent_end">#FFE0A800</color>
+    <color name="kami_accent_soft">#1FE8453A</color>
     <color name="kami_text">#FF000000</color>
     <color name="kami_text_secondary">#FF6C6C70</color>
     <color name="kami_scrim">#66000000</color>

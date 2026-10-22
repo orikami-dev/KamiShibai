@@ -16,6 +16,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.interfaces.VideoGroupPresenter;
 import com.liskovsoft.smartyoutubetv2.tv.R;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.common.Fonts;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
 
 import java.util.ArrayList;
@@ -417,6 +418,7 @@ public class FeedSection implements MobileSection {
 
             if (viewType == TYPE_ROW) {
                 RowHolder holder = new RowHolder(inflater.inflate(R.layout.kami_item_row, parent, false));
+                Fonts.applyWide(holder.title);
                 LinearLayoutManager lm = new LinearLayoutManager(parent.getContext(), LinearLayoutManager.HORIZONTAL, false);
                 lm.setInitialPrefetchItemCount(4);
                 holder.list.setLayoutManager(lm);
@@ -425,7 +427,9 @@ public class FeedSection implements MobileSection {
             }
 
             if (viewType == TYPE_TITLE) {
-                return new SimpleHolder(inflater.inflate(R.layout.kami_item_block_title, parent, false));
+                View title = inflater.inflate(R.layout.kami_item_block_title, parent, false);
+                Fonts.applyWide((TextView) title);
+                return new SimpleHolder(title);
             }
 
             // Any block adapter can create the card, they share the layouts

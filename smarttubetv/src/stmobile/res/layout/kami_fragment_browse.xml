@@ -5,22 +5,41 @@
     android:background="@color/kami_ink"
     android:orientation="vertical">
 
-    <!-- Top bar: big bold title, like every ORIKAMI app -->
+    <!-- Top bar: the logo and the name in capitals, like Origami -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="68dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="16dp"
+        android:paddingStart="14dp"
         android:paddingEnd="4dp">
 
-        <TextView
-            android:id="@+id/kami_title"
-            style="@style/Kamishibai.Title"
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/kami_logo" />
+
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:layout_weight="1"
-            android:text="@string/app_name" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/kami_brand"
+                style="@style/Kamishibai.Brand"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/kami_brand" />
+
+            <TextView
+                android:id="@+id/kami_title"
+                style="@style/Kamishibai.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/kami_action_search"

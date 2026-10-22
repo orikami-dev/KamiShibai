@@ -37,6 +37,7 @@ public abstract class TopBarFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRoot = inflater.inflate(R.layout.kami_fragment_page, container, false);
         mTitle = mRoot.findViewById(R.id.kami_title);
+        Fonts.applyWide(mTitle);
         mProgress = mRoot.findViewById(R.id.kami_progress);
         mList = mRoot.findViewById(R.id.kami_list);
 

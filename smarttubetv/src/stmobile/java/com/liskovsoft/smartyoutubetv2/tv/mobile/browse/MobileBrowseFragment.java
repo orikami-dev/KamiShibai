@@ -34,6 +34,7 @@ import com.liskovsoft.smartyoutubetv2.tv.mobile.adapter.GridSection;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.adapter.MobileSection;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.adapter.SettingsSection;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.adapter.VideoCardAdapter;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.common.Fonts;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
 
 import java.util.ArrayList;
@@ -114,6 +115,8 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         mRoot = inflater.inflate(R.layout.kami_fragment_browse, container, false);
 
         mTitle = mRoot.findViewById(R.id.kami_title);
+        Fonts.applyDisplay(mRoot.findViewById(R.id.kami_brand));
+        Fonts.applyWide(mTitle);
         mSettingsButton = mRoot.findViewById(R.id.kami_action_settings);
         mNavRail = mRoot.findViewById(R.id.kami_nav_rail);
         mNavBar = mRoot.findViewById(R.id.kami_nav_bar);
@@ -476,7 +479,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
         mIsYouShowing = true;
         mHandler.removeCallbacks(mSectionFocused);
-        mTitle.setText(R.string.kami_you);
+        setCaption(getString(R.string.kami_you));
         showContent();
         ensureContent(TYPE_YOU);
         mList.scrollToPosition(0);
@@ -651,8 +654,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
         mSelectedSectionId = section.getId();
         mIsYouShowing = false;
-        // Home and its filters keep the app name, like the other ORIKAMI apps
-        mTitle.setText(section.getId() == MediaGroup.TYPE_HOME || isTopic(section) ? getString(R.string.app_name) : section.getTitle());
+        setCaption(section.getTitle());
         notifyNavigationChanged();
         showContent();
 
@@ -666,6 +668,13 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         // Wait till the current action finished. Upstream does the same after the fragment switch.
         mHandler.removeCallbacks(mSectionFocused);
         mHandler.post(mSectionFocused);
+    }
+
+    /**
+     * Small wide label under the app name, like Origami's mode line.
+     */
+    private void setCaption(CharSequence text) {
+        mTitle.setText(text != null ? "\u25E2 " + text : null);
     }
 
     private final Runnable mSectionFocused = () -> {

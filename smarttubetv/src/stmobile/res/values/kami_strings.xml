@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string translatable="false" name="app_name">Kamishibai</string>
+    <string translatable="false" name="kami_brand">KAMISHIBAI</string>
     <string name="kami_more">More</string>
     <string name="kami_all_sections">All sections</string>
     <string name="kami_search">Search</string>
