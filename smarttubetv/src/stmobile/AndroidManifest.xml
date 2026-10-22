@@ -49,5 +49,16 @@
             android:resizeableActivity="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
             android:screenOrientation="unspecified" />
+
+        <!-- Watch page: same flags as the upstream player (PIP, lock screen), plus fold/unfold without restart -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.watch.MobilePlaybackActivity"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:supportsPictureInPicture="true"
+            android:showWhenLocked="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:screenOrientation="unspecified"
+            android:theme="@style/App.Theme.Leanback.Player" />
     </application>
 </manifest>

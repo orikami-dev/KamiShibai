@@ -13,7 +13,7 @@ facets = [
 def vector(scale_group=True, shadow=True):
     out = ['<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">']
     if scale_group:
-        out.append('    <group android:pivotX="62" android:pivotY="54" android:scaleX="0.7" android:scaleY="0.7" android:translateX="-6">')
+        out.append('    <group android:pivotX="62" android:pivotY="54" android:scaleX="0.56" android:scaleY="0.56" android:translateX="-5">')
     ind = "        " if scale_group else "    "
     if shadow:
         out.append(ind + '<group android:translateX="1.8" android:translateY="3.2">')
@@ -30,7 +30,7 @@ def svg(bg=True, size=256, scale=True):
     g = []
     if bg:
         g.append('<rect width="108" height="108" rx="24" fill="#120C0D"/>')
-    t = 'transform="translate(62 54) scale(0.7) translate(-62 -54) translate(-9.1 0)"' if scale else ''
+    t = 'transform="translate(62 54) scale(0.56) translate(-62 -54) translate(-8.9 0)"' if scale else ''
     g.append(f'<g {t}><g transform="translate(1.8 3.2)">' + "".join(f'<path d="{d}" fill="#000" fill-opacity=".22" stroke="#000" stroke-opacity=".22" stroke-width="1.4" stroke-linejoin="round"/>' for _, d in facets) + '</g>')
     g.append("".join(f'<path d="{d}" fill="{c}" stroke="{STROKE[c]}" stroke-width="1.4" stroke-linejoin="round"/>' for c, d in facets) + '</g>')
     return f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 108 108">' + "".join(g) + '</svg>'

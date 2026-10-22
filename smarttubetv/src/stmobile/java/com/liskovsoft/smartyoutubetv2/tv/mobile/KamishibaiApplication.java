@@ -1,6 +1,7 @@
 package com.liskovsoft.smartyoutubetv2.tv.mobile;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 
 import com.liskovsoft.smartyoutubetv2.common.app.views.AddDeviceView;
 import com.liskovsoft.smartyoutubetv2.common.app.views.AppDialogView;
@@ -12,10 +13,12 @@ import com.liskovsoft.smartyoutubetv2.common.app.views.SearchView;
 import com.liskovsoft.smartyoutubetv2.common.app.views.SignInView;
 import com.liskovsoft.smartyoutubetv2.common.app.views.ViewManager;
 import com.liskovsoft.smartyoutubetv2.common.app.views.WebBrowserView;
+import com.liskovsoft.smartyoutubetv2.common.prefs.GeneralData;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.browse.MobileBrowseActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.channel.MobileChannelActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.channeluploads.MobileChannelUploadsActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.search.MobileSearchActivity;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.watch.MobilePlaybackActivity;
 import com.liskovsoft.smartyoutubetv2.tv.ui.main.MainApplication;
 
 /**
@@ -24,11 +27,31 @@ import com.liskovsoft.smartyoutubetv2.tv.ui.main.MainApplication;
  * Only the views that are painful to use with a finger are swapped for touch-first ones.
  */
 public class KamishibaiApplication extends MainApplication {
+    private static final String PREFS = "kamishibai";
+    private static final String KEY_DEFAULTS_VERSION = "defaults_version";
+    private static final int DEFAULTS_VERSION = 1;
+
     @Override
     public void onCreate() {
         super.onCreate();
 
+        applyPhoneDefaults();
         setupMobileViews();
+    }
+
+    /**
+     * Upstream defaults suit a TV. On a phone the status and navigation bars stay visible:
+     * only the player goes fullscreen, on demand. Applied once, the user can still change it in the settings.
+     */
+    private void applyPhoneDefaults() {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+
+        if (prefs.getInt(KEY_DEFAULTS_VERSION, 0) >= DEFAULTS_VERSION) {
+            return;
+        }
+
+        GeneralData.instance(this).setFullscreenModeEnabled(false);
+        prefs.edit().putInt(KEY_DEFAULTS_VERSION, DEFAULTS_VERSION).apply();
     }
 
     private void setupMobileViews() {
@@ -40,9 +63,9 @@ public class KamishibaiApplication extends MainApplication {
         viewManager.register(SearchView.class, MobileSearchActivity.class, root);
         viewManager.register(ChannelView.class, MobileChannelActivity.class, root);
         viewManager.register(ChannelUploadsView.class, MobileChannelUploadsActivity.class, root);
+        viewManager.register(PlaybackView.class, MobilePlaybackActivity.class, root);
 
         // Untouched upstream screens. Only their parent changes.
-        reparent(viewManager, PlaybackView.class, root);
         reparent(viewManager, AppDialogView.class, root);
         reparent(viewManager, SignInView.class, root);
         reparent(viewManager, AddDeviceView.class, root);

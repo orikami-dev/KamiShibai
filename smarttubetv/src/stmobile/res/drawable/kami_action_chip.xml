@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Action chips under the video (share, save...) -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="@color/kami_highlight">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/kami_surface_high" />
+            <corners android:radius="18dp" />
+        </shape>
+    </item>
+</ripple>

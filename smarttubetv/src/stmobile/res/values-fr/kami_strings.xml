@@ -17,4 +17,28 @@
     <string name="kami_explore">Explorer</string>
     <string name="kami_queue">File d\'attente</string>
     <string name="kami_notifications">Notifications</string>
+    <string name="kami_minimize">Réduire</string>
+    <string name="kami_subtitles">Sous-titres</string>
+    <string name="kami_quality">Qualité</string>
+    <string name="kami_previous">Précédente</string>
+    <string name="kami_next">Suivante</string>
+    <string name="kami_play_pause">Lecture ou pause</string>
+    <string name="kami_like">J\'aime</string>
+    <string name="kami_dislike">Je n\'aime pas</string>
+    <string name="kami_comments">Commentaires</string>
+    <string name="kami_save">Enregistrer</string>
+    <string name="kami_share">Partager</string>
+    <string name="kami_more_videos">Plus de vidéos</string>
+    <string name="kami_fullscreen">Plein écran</string>
+    <string name="kami_subscribe">S\'abonner</string>
+    <string name="kami_subscribed">Abonné</string>
+    <string name="kami_close">Fermer</string>
+    <string name="kami_comments_disabled">Les commentaires sont désactivés</string>
+    <string name="kami_comments_live">Le chat en direct s\'affiche sur la vidéo</string>
+    <string name="kami_no_comments">Aucun commentaire pour l\'instant</string>
+    <string name="kami_replies" formatted="true">%1$s réponses</string>
+    <string name="kami_reply_one">1 réponse</string>
+    <string name="kami_replies_title">Réponses</string>
+    <string name="kami_show_more">…plus</string>
+    <string name="kami_comments_open">Appuie pour ouvrir</string>
 </resources>

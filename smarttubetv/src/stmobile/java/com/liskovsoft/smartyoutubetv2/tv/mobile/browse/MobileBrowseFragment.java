@@ -320,7 +320,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         }
 
         for (BrowseSection section : mSections) {
-            if (mTabs.contains(section) || section.getId() == MediaGroup.TYPE_PLAYBACK_QUEUE) {
+            if (mTabs.contains(section)) {
                 continue;
             }
 
@@ -398,7 +398,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
             return mSelectedSectionId;
         }
 
-        return mSelectedSectionId == MediaGroup.TYPE_PLAYBACK_QUEUE ? -1 : ID_YOU;
+        return ID_YOU;
     }
 
     private void notifyNavigationChanged() {
@@ -453,10 +453,6 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         int selectedId = getSelectedTabId();
 
         for (int i = 0; i < mTabs.size(); i++) {
-            if (i == Math.min(2, mTabs.size() - 1)) {
-                mNavBar.addView(createCenterButton(inflater));
-            }
-
             BrowseSection tab = mTabs.get(i);
             View item = inflater.inflate(R.layout.kami_item_tab, mNavBar, false);
             ImageView icon = item.findViewById(R.id.kami_nav_icon);
@@ -495,25 +491,6 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
             default:
                 return 0;
         }
-    }
-
-    /**
-     * Round button in the middle of the bar: the playback queue (or "Explore" when the queue is off).
-     */
-    private View createCenterButton(LayoutInflater inflater) {
-        View center = inflater.inflate(R.layout.kami_item_tab_center, mNavBar, false);
-        boolean hasQueue = findSection(MediaGroup.TYPE_PLAYBACK_QUEUE) != null;
-        ImageView icon = center.findViewById(R.id.kami_nav_icon);
-        icon.setImageResource(hasQueue ? R.drawable.kami_ic_queue : R.drawable.kami_ic_explore);
-        icon.setContentDescription(getString(hasQueue ? R.string.kami_queue : R.string.kami_explore));
-        icon.setOnClickListener(v -> {
-            if (findSection(MediaGroup.TYPE_PLAYBACK_QUEUE) != null) {
-                openSection(MediaGroup.TYPE_PLAYBACK_QUEUE);
-            } else {
-                showHub(ID_EXPLORE);
-            }
-        });
-        return center;
     }
 
     private void updateContentWidth() {

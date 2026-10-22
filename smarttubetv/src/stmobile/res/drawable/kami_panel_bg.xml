@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Comments panel: below the video in portrait, on the side in landscape -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/kami_surface" />
+    <corners android:topLeftRadius="16dp" android:topRightRadius="16dp" />
+</shape>

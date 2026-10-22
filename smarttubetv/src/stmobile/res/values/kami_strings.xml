@@ -19,4 +19,28 @@
     <string name="kami_explore">Explore</string>
     <string name="kami_queue">Queue</string>
     <string name="kami_notifications">Notifications</string>
+    <string name="kami_minimize">Minimize</string>
+    <string name="kami_subtitles">Subtitles</string>
+    <string name="kami_quality">Quality</string>
+    <string name="kami_previous">Previous</string>
+    <string name="kami_next">Next</string>
+    <string name="kami_play_pause">Play or pause</string>
+    <string name="kami_like">Like</string>
+    <string name="kami_dislike">Dislike</string>
+    <string name="kami_comments">Comments</string>
+    <string name="kami_save">Save</string>
+    <string name="kami_share">Share</string>
+    <string name="kami_more_videos">More videos</string>
+    <string name="kami_fullscreen">Fullscreen</string>
+    <string name="kami_subscribe">Subscribe</string>
+    <string name="kami_subscribed">Subscribed</string>
+    <string name="kami_close">Close</string>
+    <string name="kami_comments_disabled">Comments are turned off</string>
+    <string name="kami_comments_live">Live chat is shown on the video</string>
+    <string name="kami_no_comments">No comments yet</string>
+    <string name="kami_replies" formatted="true">%1$s replies</string>
+    <string name="kami_reply_one">1 reply</string>
+    <string name="kami_replies_title">Replies</string>
+    <string name="kami_show_more">…more</string>
+    <string name="kami_comments_open">Tap to open</string>
 </resources>

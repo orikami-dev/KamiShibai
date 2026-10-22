@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kamishibai watch page. Replaces the upstream fullscreen player layout.
+     Sizes and placement of the player, infos, suggestions and comments are set by MobilePlaybackActivity
+     for each screen: stacked (portrait), side by side (wide landscape) or fullscreen. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/kami_watch_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/kami_ink">
+
+    <LinearLayout
+        android:id="@+id/kami_watch_split"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/kami_watch_main"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/kami_player_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/black">
+
+                <fragment
+                    android:id="@+id/playback_controls_fragment"
+                    android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.watch.MobilePlaybackFragment"
+                    android:tag="@string/playback_tag"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <include layout="@layout/kami_player_overlay" />
+
+                <include layout="@layout/kami_shorts_overlay" />
+            </FrameLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/kami_watch_list"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:paddingBottom="16dp"
+                android:scrollbars="vertical" />
+        </LinearLayout>
+
+        <!-- Suggestions column, only on wide landscape screens -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/kami_watch_side"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="6dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="16dp"
+            android:scrollbars="vertical"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <include layout="@layout/kami_comments_panel" />
+</FrameLayout>
