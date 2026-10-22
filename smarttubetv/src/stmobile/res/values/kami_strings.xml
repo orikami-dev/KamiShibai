@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string translatable="false" name="app_name">Kamishibai</string>
-    <string translatable="false" name="kami_brand">KAMISHIBAI</string>
+    <string translatable="false" name="kami_brand">KamiShibai</string>
     <string name="kami_more">More</string>
     <string name="kami_all_sections">All sections</string>
     <string name="kami_search">Search</string>
@@ -16,4 +16,7 @@
     <string name="kami_search_channel">Search in this channel</string>
     <string name="kami_you">You</string>
     <string name="kami_all">All</string>
+    <string name="kami_explore">Explore</string>
+    <string name="kami_queue">Queue</string>
+    <string name="kami_notifications">Notifications</string>
 </resources>

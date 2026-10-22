@@ -9,50 +9,34 @@ import androidx.core.content.res.ResourcesCompat;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 
 /**
- * ORIKAMI fonts, the same as Origami (SIL OFL, see kamishibai/licenses):
- * Black Ops One for the name of the app, Michroma for the small wide labels.
+ * Font of the name of the app in the top bar: Oswald Medium (SIL OFL, see kamishibai/licenses),
+ * a free condensed sans. The rest of the app keeps the system font.
  */
 public final class Fonts {
-    private static Typeface sDisplay;
-    private static Typeface sWide;
+    private static Typeface sBrand;
 
     private Fonts() {
     }
 
-    public static Typeface display(Context context) {
-        if (sDisplay == null) {
-            sDisplay = load(context, R.font.kami_display, Typeface.DEFAULT_BOLD);
+    public static Typeface brand(Context context) {
+        if (sBrand == null) {
+            try {
+                sBrand = ResourcesCompat.getFont(context.getApplicationContext(), R.font.kami_brand);
+            } catch (RuntimeException e) {
+                // Font missing or unreadable
+            }
+
+            if (sBrand == null) {
+                sBrand = Typeface.create("sans-serif-condensed", Typeface.BOLD);
+            }
         }
 
-        return sDisplay;
+        return sBrand;
     }
 
-    public static Typeface wide(Context context) {
-        if (sWide == null) {
-            sWide = load(context, R.font.kami_wide, Typeface.DEFAULT);
-        }
-
-        return sWide;
-    }
-
-    public static void applyDisplay(TextView view) {
+    public static void applyBrand(TextView view) {
         if (view != null) {
-            view.setTypeface(display(view.getContext()));
-        }
-    }
-
-    public static void applyWide(TextView view) {
-        if (view != null) {
-            view.setTypeface(wide(view.getContext()));
-        }
-    }
-
-    private static Typeface load(Context context, int fontId, Typeface fallback) {
-        try {
-            Typeface font = ResourcesCompat.getFont(context.getApplicationContext(), fontId);
-            return font != null ? font : fallback;
-        } catch (RuntimeException e) {
-            return fallback;
+            view.setTypeface(brand(view.getContext()));
         }
     }
 }

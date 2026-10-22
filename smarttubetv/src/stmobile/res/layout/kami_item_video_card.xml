@@ -61,13 +61,13 @@
         <!-- Channel initial on a tinted disc (the feeds don't carry channel pictures) -->
         <TextView
             android:id="@+id/kami_avatar"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginEnd="12dp"
             android:gravity="center"
             android:importantForAccessibility="no"
             android:textColor="@android:color/white"
-            android:textSize="15sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:visibility="gone" />
 
@@ -84,7 +84,7 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:textColor="@color/kami_text"
-                android:textSize="15.5sp"
+                android:textSize="16sp"
                 android:fontFamily="sans-serif-medium"
                 android:lineSpacingExtra="1dp" />
 
@@ -96,7 +96,7 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:textColor="@color/kami_text_secondary"
-                android:textSize="12.5sp" />
+                android:textSize="13.5sp" />
         </LinearLayout>
 
         <ImageButton
@@ -108,7 +108,7 @@
             android:contentDescription="@string/kami_more_actions"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/kami_ic_more_vert"
+            android:src="@drawable/kami_ic_more_horiz"
             android:tint="@color/kami_text_secondary" />
     </LinearLayout>
 </LinearLayout>

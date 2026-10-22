@@ -3,17 +3,20 @@ package com.liskovsoft.smartyoutubetv2.tv.mobile.browse;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -42,23 +45,28 @@ import java.util.List;
 
 /**
  * Touch version of the upstream BrowseFragment: same {@link BrowseView} contract, same {@link BrowsePresenter}.<br/>
- * Four main tabs (Home, Shorts, Subscriptions, You): in a bottom bar when the phone is folded,
- * in a rail when it's unfolded or in landscape. Tablets get a drawer with every section.<br/>
- * Topic feeds (Music, Gaming, News, Live...) are filters on top of Home, the rest lives in the "You" page.
- * The layout follows every size change live.
+ * Same layout on the cover screen and the inner screen, portrait or landscape:
+ * the name of the app on top with the notifications and search buttons, topic filters under it on Home,
+ * and a bottom bar with Home, Shorts, the queue button in the middle, Subscriptions and You.<br/>
+ * One column of edge to edge cards on the narrow cover screen, a grid elsewhere.
+ * Only real tablets get a drawer with every section. The layout follows every size change live.
  */
 public class MobileBrowseFragment extends Fragment implements BrowseView {
     /**
-     * Pseudo section of the "You" page.
+     * Pseudo sections: the "You" page and the "Explore" page (compass at the start of the filters).
      */
     private static final int ID_YOU = Integer.MIN_VALUE;
+    private static final int ID_EXPLORE = Integer.MIN_VALUE + 1;
     private static final int TYPE_YOU = Integer.MIN_VALUE;
-    private static final float DRAWER_MIN_DP = 1000;
+    private static final int TYPE_EXPLORE = Integer.MIN_VALUE + 1;
+    private static final float DRAWER_MIN_DP = 1200;
+    private static final float BAR_MAX_DP = 720;
 
     private final List<BrowseSection> mSections = new ArrayList<>();
     // Derived from mSections each time it changes
     private final List<BrowseSection> mTabs = new ArrayList<>();
     private final List<BrowseSection> mChips = new ArrayList<>();
+    private final List<BrowseSection> mExploreSections = new ArrayList<>();
     private final List<BrowseSection> mYouSections = new ArrayList<>();
     private BrowseSection mYouTab;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -67,12 +75,12 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     private boolean mIsFragmentCreated;
 
     private View mRoot;
-    private TextView mTitle;
+    private TextView mPageTitle;
+    private View mNotificationsButton;
     private View mSettingsButton;
-    private RecyclerView mNavRail;
-    private RecyclerView mNavBar;
+    private RecyclerView mDrawer;
+    private LinearLayout mNavBar;
     private View mBottom;
-    private View mSearchButton;
     private RecyclerView mChipsView;
     private FilterChipsAdapter mChipsAdapter;
     private SwipeRefreshLayout mRefresh;
@@ -82,9 +90,9 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     private Button mErrorAction;
     private ProgressBar mProgress;
 
-    private NavAdapter mRailAdapter;
-    private NavAdapter mBarAdapter;
-    private int mNavLayout = -1;
+    private NavAdapter mDrawerAdapter;
+    private boolean mIsDrawer;
+    private boolean mIsNavReady;
     private WindowSize mWindowSize;
 
     private MobileSection mContent;
@@ -93,7 +101,8 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     private int mPendingItemIndex = -1;
     private Video mPendingItem;
     private boolean mIsProgressShowing;
-    private boolean mIsYouShowing;
+    // ID_YOU or ID_EXPLORE while one of those pages is shown, 0 otherwise
+    private int mHubId;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -114,14 +123,13 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRoot = inflater.inflate(R.layout.kami_fragment_browse, container, false);
 
-        mTitle = mRoot.findViewById(R.id.kami_title);
-        Fonts.applyDisplay(mRoot.findViewById(R.id.kami_brand));
-        Fonts.applyWide(mTitle);
+        Fonts.applyBrand(mRoot.findViewById(R.id.kami_brand));
+        mPageTitle = mRoot.findViewById(R.id.kami_page_title);
+        mNotificationsButton = mRoot.findViewById(R.id.kami_action_notifications);
         mSettingsButton = mRoot.findViewById(R.id.kami_action_settings);
-        mNavRail = mRoot.findViewById(R.id.kami_nav_rail);
+        mDrawer = mRoot.findViewById(R.id.kami_nav_rail);
         mNavBar = mRoot.findViewById(R.id.kami_nav_bar);
         mBottom = mRoot.findViewById(R.id.kami_bottom);
-        mSearchButton = mRoot.findViewById(R.id.kami_action_search);
         mChipsView = mRoot.findViewById(R.id.kami_chips);
         mRefresh = mRoot.findViewById(R.id.kami_refresh);
         mList = mRoot.findViewById(R.id.kami_list);
@@ -130,12 +138,13 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         mErrorAction = mRoot.findViewById(R.id.kami_error_action);
         mProgress = mRoot.findViewById(R.id.kami_progress);
 
-        mSearchButton.setOnClickListener(v -> SearchPresenter.instance(getContext()).startSearch(null));
-        mRoot.findViewById(R.id.kami_bar_search).setOnClickListener(v -> SearchPresenter.instance(getContext()).startSearch(null));
+        mRoot.findViewById(R.id.kami_action_search).setOnClickListener(v -> SearchPresenter.instance(getContext()).startSearch(null));
+        mNotificationsButton.setOnClickListener(v -> openSection(MediaGroup.TYPE_NOTIFICATIONS));
         mSettingsButton.setOnClickListener(v -> openSettingsSection());
+        mRoot.findViewById(R.id.kami_brand_group).setOnClickListener(v -> openSection(MediaGroup.TYPE_HOME));
 
         mYouTab = new BrowseSection(ID_YOU, getString(R.string.kami_you), BrowseSection.TYPE_GRID, R.drawable.kami_ic_person);
-        mChipsAdapter = new FilterChipsAdapter(mChips, mNavListener);
+        mChipsAdapter = new FilterChipsAdapter(mChips, mNavListener, v -> showHub(ID_EXPLORE));
         mChipsView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         mChipsView.setAdapter(mChipsAdapter);
 
@@ -235,21 +244,20 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
         mWindowSize = size;
 
-        int navLayout;
+        // Cover screen and inner screen, portrait or landscape: the bottom bar. Real tablets: a drawer.
+        boolean isDrawer = size.widthDp >= DRAWER_MIN_DP && !size.isShort();
 
-        if (size.isCompact() && !size.isShort()) {
-            navLayout = NavAdapter.LAYOUT_BAR;
-        } else if (size.widthDp >= DRAWER_MIN_DP && !size.isShort()) {
-            // Real tablets only: an unfolded Fold stays on the rail with the four tabs, even in landscape
-            navLayout = NavAdapter.LAYOUT_DRAWER;
-        } else {
-            navLayout = NavAdapter.LAYOUT_RAIL;
-        }
-
-        if (navLayout != mNavLayout) {
-            mNavLayout = navLayout;
+        if (isDrawer != mIsDrawer || !mIsNavReady) {
+            mIsDrawer = isDrawer;
+            mIsNavReady = true;
             setupNavigation();
         }
+
+        // On a wide screen the bar keeps phone proportions, centered
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mNavBar.getLayoutParams();
+        lp.width = size.widthDp > BAR_MAX_DP + 40 ? WindowSize.dpToPx(getContext(), BAR_MAX_DP) : ViewGroup.LayoutParams.MATCH_PARENT;
+        lp.gravity = Gravity.CENTER_HORIZONTAL;
+        mNavBar.setLayoutParams(lp);
 
         updateContentWidth();
     }
@@ -262,51 +270,35 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
         @Override
         public void onSectionLongClicked(BrowseSection section) {
-            if (section.getId() != ID_YOU) {
+            if (section.getId() != ID_YOU && section.getId() != ID_EXPLORE) {
                 mBrowsePresenter.onSectionLongPressed(section.getId());
             }
         }
     };
 
     private void setupNavigation() {
-        boolean isBar = mNavLayout == NavAdapter.LAYOUT_BAR;
-        boolean isDrawer = mNavLayout == NavAdapter.LAYOUT_DRAWER;
+        mBottom.setVisibility(mIsDrawer ? View.GONE : View.VISIBLE);
+        mDrawer.setVisibility(mIsDrawer ? View.VISIBLE : View.GONE);
 
-        mBottom.setVisibility(isBar ? View.VISIBLE : View.GONE);
-        mNavRail.setVisibility(isBar ? View.GONE : View.VISIBLE);
-
-        if (isBar) {
-            mBarAdapter = new NavAdapter(mTabs, NavAdapter.LAYOUT_BAR, mNavListener);
-            mNavBar.setLayoutManager(new GridLayoutManager(getContext(), Math.max(1, mTabs.size())));
-            mNavBar.setAdapter(mBarAdapter);
-            mRailAdapter = null;
-            mNavRail.setAdapter(null);
+        if (mIsDrawer) {
+            mDrawerAdapter = new NavAdapter(mSections, NavAdapter.LAYOUT_DRAWER, mNavListener);
+            mDrawer.setLayoutManager(new LinearLayoutManager(getContext()));
+            mDrawer.setAdapter(mDrawerAdapter);
         } else {
-            ViewGroup.LayoutParams lp = mNavRail.getLayoutParams();
-            lp.width = WindowSize.dpToPx(getContext(), isDrawer ? 240 : 88);
-            mNavRail.setLayoutParams(lp);
-            // Tablets have room for every section, the rail keeps the four tabs
-            mRailAdapter = new NavAdapter(isDrawer ? mSections : mTabs, mNavLayout, mNavListener);
-            mNavRail.setLayoutManager(new LinearLayoutManager(getContext()));
-            mNavRail.setAdapter(mRailAdapter);
-            mBarAdapter = null;
-            mNavBar.setAdapter(null);
-        }
-
-        if (mIsYouShowing && isDrawer) {
-            // Nothing left to show in the "You" page
-            selectSection(Math.max(0, indexOfSection(MediaGroup.TYPE_HOME)), true);
+            mDrawerAdapter = null;
+            mDrawer.setAdapter(null);
         }
 
         notifyNavigationChanged();
     }
 
     /**
-     * Splits the upstream sections into main tabs, Home filters and "You" entries.
+     * Splits the upstream sections into tabs, Home filters, "Explore" and "You" entries.
      */
     private void rebuildGroups() {
         mTabs.clear();
         mChips.clear();
+        mExploreSections.clear();
         mYouSections.clear();
 
         BrowseSection home = findSection(MediaGroup.TYPE_HOME);
@@ -328,13 +320,14 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         }
 
         for (BrowseSection section : mSections) {
-            if (mTabs.contains(section)) {
+            if (mTabs.contains(section) || section.getId() == MediaGroup.TYPE_PLAYBACK_QUEUE) {
                 continue;
             }
 
             if (isTopic(section)) {
                 mChips.add(section);
-            } else {
+                mExploreSections.add(section);
+            } else if (section.getId() != MediaGroup.TYPE_NOTIFICATIONS || findSection(MediaGroup.TYPE_NOTIFICATIONS) == null) {
                 mYouSections.add(section);
             }
         }
@@ -389,45 +382,138 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         return false;
     }
 
+    /**
+     * Which tab lights up: Home for its filters and "Explore", "You" for anything else that isn't a tab.
+     */
+    private int getSelectedTabId() {
+        if (mHubId == ID_EXPLORE || isChip(mSelectedSectionId)) {
+            return MediaGroup.TYPE_HOME;
+        }
+
+        if (mHubId == ID_YOU) {
+            return ID_YOU;
+        }
+
+        if (isTab(mSelectedSectionId)) {
+            return mSelectedSectionId;
+        }
+
+        return mSelectedSectionId == MediaGroup.TYPE_PLAYBACK_QUEUE ? -1 : ID_YOU;
+    }
+
     private void notifyNavigationChanged() {
         rebuildGroups();
 
-        boolean isBar = mNavLayout == NavAdapter.LAYOUT_BAR;
-        boolean isDrawer = mNavLayout == NavAdapter.LAYOUT_DRAWER;
-
-        // Which tab lights up: a Home filter keeps Home on, anything else that isn't a tab is in "You"
-        int tabId;
-
-        if (mIsYouShowing) {
-            tabId = ID_YOU;
-        } else if (isChip(mSelectedSectionId)) {
-            tabId = MediaGroup.TYPE_HOME;
-        } else if (isTab(mSelectedSectionId)) {
-            tabId = mSelectedSectionId;
-        } else {
-            tabId = ID_YOU;
+        if (mRoot == null) {
+            return;
         }
 
-        if (mBarAdapter != null) {
-            ((GridLayoutManager) mNavBar.getLayoutManager()).setSpanCount(Math.max(1, mTabs.size()));
-            mBarAdapter.setSelectedId(tabId);
+        if (!mIsDrawer) {
+            rebuildBar();
         }
 
-        if (mRailAdapter != null) {
-            mRailAdapter.setSelectedId(isDrawer ? mSelectedSectionId : tabId);
+        if (mDrawerAdapter != null) {
+            mDrawerAdapter.notifyDataSetChanged();
+            mDrawerAdapter.setSelectedId(mSelectedSectionId);
         }
 
-        boolean showChips = !isDrawer && !mIsYouShowing && !mChips.isEmpty() && isChip(mSelectedSectionId);
+        boolean showChips = !mIsDrawer && mHubId == 0 && !mChips.isEmpty() && isChip(mSelectedSectionId);
         mChipsView.setVisibility(showChips ? View.VISIBLE : View.GONE);
         mChipsAdapter.setSelectedId(mSelectedSectionId);
 
-        // Search lives next to the bar when folded, settings live in the "You" page
-        mSearchButton.setVisibility(isBar ? View.GONE : View.VISIBLE);
-        mSettingsButton.setVisibility(isDrawer && findSettingsSection() != null ? View.VISIBLE : View.GONE);
+        // Pages that aren't Home or one of its filters get their name on top
+        CharSequence pageTitle = null;
+
+        if (mHubId == ID_YOU) {
+            pageTitle = getString(R.string.kami_you);
+        } else if (mHubId == ID_EXPLORE) {
+            pageTitle = getString(R.string.kami_explore);
+        } else if (!showChips) {
+            BrowseSection section = findSection(mSelectedSectionId);
+            pageTitle = section != null ? section.getTitle() : null;
+        }
+
+        mPageTitle.setText(pageTitle);
+        mPageTitle.setVisibility(pageTitle != null && pageTitle.length() > 0 ? View.VISIBLE : View.GONE);
+
+        mNotificationsButton.setVisibility(findSection(MediaGroup.TYPE_NOTIFICATIONS) != null ? View.VISIBLE : View.GONE);
+        mSettingsButton.setVisibility(mIsDrawer && findSettingsSection() != null ? View.VISIBLE : View.GONE);
 
         if (mContent instanceof YouSection) {
             ((YouSection) mContent).notifyChanged();
         }
+    }
+
+    /**
+     * Home, Shorts, [queue], Subscriptions, You.
+     */
+    private void rebuildBar() {
+        mNavBar.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(mNavBar.getContext());
+        int selectedId = getSelectedTabId();
+
+        for (int i = 0; i < mTabs.size(); i++) {
+            if (i == Math.min(2, mTabs.size() - 1)) {
+                mNavBar.addView(createCenterButton(inflater));
+            }
+
+            BrowseSection tab = mTabs.get(i);
+            View item = inflater.inflate(R.layout.kami_item_tab, mNavBar, false);
+            ImageView icon = item.findViewById(R.id.kami_nav_icon);
+            TextView label = item.findViewById(R.id.kami_nav_label);
+            label.setText(tab.getTitle());
+            int ownIcon = getTabIcon(tab.getId());
+
+            if (ownIcon != 0) {
+                icon.setImageResource(ownIcon);
+            } else {
+                NavAdapter.bindIcon(icon, tab);
+            }
+            item.setSelected(tab.getId() == selectedId);
+            icon.setSelected(tab.getId() == selectedId);
+            label.setSelected(tab.getId() == selectedId);
+            item.setOnClickListener(v -> onNavSectionClicked(tab));
+            item.setOnLongClickListener(v -> {
+                mNavListener.onSectionLongClicked(tab);
+                return true;
+            });
+            mNavBar.addView(item);
+        }
+    }
+
+    private static int getTabIcon(int sectionId) {
+        switch (sectionId) {
+            case MediaGroup.TYPE_HOME:
+                return R.drawable.kami_ic_home;
+            case MediaGroup.TYPE_SHORTS:
+                return R.drawable.kami_ic_shorts;
+            case MediaGroup.TYPE_SUBSCRIPTIONS:
+            case MediaGroup.TYPE_CHANNEL_UPLOADS:
+                return R.drawable.kami_ic_subscriptions;
+            case ID_YOU:
+                return R.drawable.kami_ic_person;
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * Round button in the middle of the bar: the playback queue (or "Explore" when the queue is off).
+     */
+    private View createCenterButton(LayoutInflater inflater) {
+        View center = inflater.inflate(R.layout.kami_item_tab_center, mNavBar, false);
+        boolean hasQueue = findSection(MediaGroup.TYPE_PLAYBACK_QUEUE) != null;
+        ImageView icon = center.findViewById(R.id.kami_nav_icon);
+        icon.setImageResource(hasQueue ? R.drawable.kami_ic_queue : R.drawable.kami_ic_explore);
+        icon.setContentDescription(getString(hasQueue ? R.string.kami_queue : R.string.kami_explore));
+        icon.setOnClickListener(v -> {
+            if (findSection(MediaGroup.TYPE_PLAYBACK_QUEUE) != null) {
+                openSection(MediaGroup.TYPE_PLAYBACK_QUEUE);
+            } else {
+                showHub(ID_EXPLORE);
+            }
+        });
+        return center;
     }
 
     private void updateContentWidth() {
@@ -435,15 +521,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
             return;
         }
 
-        float navDp = 0;
-
-        if (mNavLayout == NavAdapter.LAYOUT_RAIL) {
-            navDp = 88;
-        } else if (mNavLayout == NavAdapter.LAYOUT_DRAWER) {
-            navDp = 240;
-        }
-
-        mContent.onWidthChanged(mWindowSize.widthDp - navDp);
+        mContent.onWidthChanged(mWindowSize.widthDp - (mIsDrawer ? 240 : 0));
     }
 
     // endregion
@@ -452,13 +530,13 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
     private void onNavSectionClicked(BrowseSection section) {
         if (section.getId() == ID_YOU) {
-            showYouPage();
+            showHub(ID_YOU);
             return;
         }
 
         int index = indexOfSection(section.getId());
 
-        if (section.getId() == mSelectedSectionId && !mIsYouShowing) {
+        if (section.getId() == mSelectedSectionId && mHubId == 0) {
             // Second tap: back to the top, like every phone app
             if (mList.computeVerticalScrollOffset() > 0) {
                 mList.smoothScrollToPosition(0);
@@ -471,17 +549,27 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         selectSection(index, true);
     }
 
-    private void showYouPage() {
-        if (mIsYouShowing) {
+    private void openSection(int sectionId) {
+        int index = indexOfSection(sectionId);
+
+        if (index != -1) {
+            onNavSectionClicked(mSections.get(index));
+        }
+    }
+
+    /**
+     * "You" or "Explore": lists of sections, not presenter pages.
+     */
+    private void showHub(int hubId) {
+        if (mHubId == hubId) {
             mList.smoothScrollToPosition(0);
             return;
         }
 
-        mIsYouShowing = true;
+        mHubId = hubId;
         mHandler.removeCallbacks(mSectionFocused);
-        setCaption(getString(R.string.kami_you));
         showContent();
-        ensureContent(TYPE_YOU);
+        ensureContent(hubId == ID_YOU ? TYPE_YOU : TYPE_EXPLORE);
         mList.scrollToPosition(0);
         notifyNavigationChanged();
     }
@@ -535,6 +623,9 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         switch (type) {
             case TYPE_YOU:
                 mContent = new YouSection(getContext(), mYouSections, mNavListener);
+                break;
+            case TYPE_EXPLORE:
+                mContent = new YouSection(getContext(), mExploreSections, mNavListener);
                 break;
             case BrowseSection.TYPE_ROW:
                 // One vertical feed of big cards, instead of the TV rows you swipe sideways
@@ -653,8 +744,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         BrowseSection section = mSections.get(Math.min(index, mSections.size() - 1));
 
         mSelectedSectionId = section.getId();
-        mIsYouShowing = false;
-        setCaption(section.getTitle());
+        mHubId = 0;
         notifyNavigationChanged();
         showContent();
 
@@ -670,13 +760,6 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         mHandler.post(mSectionFocused);
     }
 
-    /**
-     * Small wide label under the app name, like Origami's mode line.
-     */
-    private void setCaption(CharSequence text) {
-        mTitle.setText(text != null ? "\u25E2 " + text : null);
-    }
-
     private final Runnable mSectionFocused = () -> {
         if (mSelectedSectionId != -1) {
             mBrowsePresenter.onSectionFocused(mSelectedSectionId);
@@ -685,7 +768,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
     @Override
     public void updateSection(VideoGroup group) {
-        if (group == null || mIsYouShowing) {
+        if (group == null || mHubId != 0) {
             return;
         }
 
@@ -696,7 +779,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
     @Override
     public void updateSection(SettingsGroup group) {
-        if (group == null || mIsYouShowing) {
+        if (group == null || mHubId != 0) {
             return;
         }
 
@@ -710,7 +793,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
     @Override
     public void clearSection(BrowseSection section) {
-        if (mContent != null && !mIsYouShowing) {
+        if (mContent != null && mHubId == 0) {
             mContent.clear();
         }
     }
@@ -739,7 +822,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
     @Override
     public void showError(ErrorFragmentData data) {
-        if (data == null || mErrorPanel == null || mIsYouShowing) {
+        if (data == null || mErrorPanel == null || mHubId != 0) {
             return;
         }
 
@@ -782,7 +865,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
     @Override
     public void updateBadge() {
-        // The top bar shows the section title instead of the TV badge
+        // The page title replaces the TV badge
     }
 
     // endregion

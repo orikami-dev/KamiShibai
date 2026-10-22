@@ -14,4 +14,7 @@
     <string name="kami_search_channel">Rechercher dans la chaîne</string>
     <string name="kami_you">Vous</string>
     <string name="kami_all">Tout</string>
+    <string name="kami_explore">Explorer</string>
+    <string name="kami_queue">File d\'attente</string>
+    <string name="kami_notifications">Notifications</string>
 </resources>

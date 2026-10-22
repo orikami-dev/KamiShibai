@@ -22,10 +22,11 @@ import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
  * a strip of channel avatars on top (group position 0) and the uploads of the picked channel below (group position 1).
  */
 public class GridSection implements MobileSection {
-    private static final float MIN_VIDEO_CARD_DP = 280;
+    private static final float MIN_VIDEO_CARD_DP = 360;
     private static final float EDGE_TO_EDGE_MAX_DP = 600;
     private static final float MIN_SHORTS_CARD_DP = 160;
     private static final int MAX_COLUMNS = 6;
+    private static final int MAX_VIDEO_COLUMNS = 3;
 
     private final Context mContext;
     private final VideoGroupPresenter mPresenter;
@@ -80,7 +81,7 @@ public class GridSection implements MobileSection {
 
     @Override
     public void onWidthChanged(float widthDp) {
-        int columns = WindowSize.columns(widthDp, mIsShorts ? MIN_SHORTS_CARD_DP : MIN_VIDEO_CARD_DP, MAX_COLUMNS);
+        int columns = mIsShorts ? WindowSize.columns(widthDp, MIN_SHORTS_CARD_DP, MAX_COLUMNS) : WindowSize.columns(widthDp, MIN_VIDEO_CARD_DP, MAX_VIDEO_COLUMNS);
 
         if (mLayoutManager.getSpanCount() != columns) {
             mLayoutManager.setSpanCount(columns);

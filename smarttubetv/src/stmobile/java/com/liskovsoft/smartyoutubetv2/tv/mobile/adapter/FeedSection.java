@@ -16,7 +16,6 @@ import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.interfaces.VideoGroupPresenter;
 import com.liskovsoft.smartyoutubetv2.tv.R;
-import com.liskovsoft.smartyoutubetv2.tv.mobile.common.Fonts;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
 
 import java.util.ArrayList;
@@ -25,18 +24,19 @@ import java.util.List;
 /**
  * Several groups of videos on one vertical page.<br/>
  * {@link #MODE_ROWS}: each group is a titled horizontal row that you swipe (Home, Music, a channel page...).<br/>
- * {@link #MODE_BLOCKS}: each group is a titled block of the grid (search results), so the main list scrolls vertically.
+ * {@link #MODE_BLOCKS}: each group is a titled block of the grid (Home, search results), so the main list scrolls vertically;
+ * Shorts groups stay a shelf that you swipe sideways.
  */
 public class FeedSection implements MobileSection {
     public static final int MODE_ROWS = 0;
     public static final int MODE_BLOCKS = 1;
 
-    private static final float MIN_VIDEO_CARD_DP = 280;
+    private static final float MIN_VIDEO_CARD_DP = 360;
     private static final float EDGE_TO_EDGE_MAX_DP = 600;
     private static final float MIN_SHORTS_CARD_DP = 160;
     private static final float ROW_CARD_DP = 280;
-    private static final float ROW_SHORTS_CARD_DP = 150;
-    private static final int MAX_COLUMNS = 6;
+    private static final float ROW_SHORTS_CARD_DP = 168;
+    private static final int MAX_COLUMNS = 3;
 
     private static final int TYPE_ROW = 0;
     private static final int TYPE_TITLE = 1;
@@ -58,7 +58,7 @@ public class FeedSection implements MobileSection {
     private int mRowShortsWidthPx;
     private int mPendingPosition = -1;
     private boolean mEdgeToEdge;
-    // Flattened positions for MODE_BLOCKS: block index and item index (-1 = title)
+    // Flattened positions for MODE_BLOCKS: block index and item index (-1 = title, -2 = Shorts shelf)
     private final List<int[]> mCells = new ArrayList<>();
 
     private static final class Block {
@@ -214,7 +214,8 @@ public class FeedSection implements MobileSection {
 
     private Block createBlock(VideoGroup group) {
         BlockListener listener = new BlockListener();
-        VideoCardAdapter adapter = new VideoCardAdapter(group, mMode == MODE_ROWS ? VideoCardAdapter.STYLE_ROW : VideoCardAdapter.STYLE_GRID, listener);
+        boolean isRow = mMode == MODE_ROWS || group.isShorts();
+        VideoCardAdapter adapter = new VideoCardAdapter(group, isRow ? VideoCardAdapter.STYLE_ROW : VideoCardAdapter.STYLE_GRID, listener);
         Block block = new Block(group.getId(), group.getTitle(), adapter, group.isShorts());
         listener.mBlock = block;
         adapter.setCardWidth(block.isShorts ? mRowShortsWidthPx : mRowCardWidthPx);
@@ -299,6 +300,10 @@ public class FeedSection implements MobileSection {
                 if (size == 0) {
                     continue;
                 }
+                if (block.isShorts && !singleBlock) {
+                    mCells.add(new int[] {i, -2});
+                    continue;
+                }
                 if (!singleBlock && !TextUtils.isEmpty(block.title)) {
                     mCells.add(new int[] {i, -1});
                 }
@@ -324,7 +329,7 @@ public class FeedSection implements MobileSection {
 
         int[] cell = mCells.get(position - headerCount());
 
-        if (cell[1] == -1) {
+        if (cell[1] < 0) {
             return span;
         }
 
@@ -352,7 +357,7 @@ public class FeedSection implements MobileSection {
 
         @Override
         public void onScrollEnd(Video lastVideo) {
-            if (mMode == MODE_ROWS || isLastBlock()) {
+            if (mMode == MODE_ROWS || mBlock.isShorts || isLastBlock()) {
                 super.onScrollEnd(lastVideo);
             }
         }
@@ -396,6 +401,11 @@ public class FeedSection implements MobileSection {
             }
 
             int[] cell = mCells.get(position - headerCount());
+
+            if (cell[1] == -2) {
+                return TYPE_ROW;
+            }
+
             return cell[1] == -1 ? TYPE_TITLE : TYPE_CARD + cardType(cell);
         }
 
@@ -418,7 +428,6 @@ public class FeedSection implements MobileSection {
 
             if (viewType == TYPE_ROW) {
                 RowHolder holder = new RowHolder(inflater.inflate(R.layout.kami_item_row, parent, false));
-                Fonts.applyWide(holder.title);
                 LinearLayoutManager lm = new LinearLayoutManager(parent.getContext(), LinearLayoutManager.HORIZONTAL, false);
                 lm.setInitialPrefetchItemCount(4);
                 holder.list.setLayoutManager(lm);
@@ -427,9 +436,7 @@ public class FeedSection implements MobileSection {
             }
 
             if (viewType == TYPE_TITLE) {
-                View title = inflater.inflate(R.layout.kami_item_block_title, parent, false);
-                Fonts.applyWide((TextView) title);
-                return new SimpleHolder(title);
+                return new SimpleHolder(inflater.inflate(R.layout.kami_item_block_title, parent, false));
             }
 
             // Any block adapter can create the card, they share the layouts
@@ -439,7 +446,7 @@ public class FeedSection implements MobileSection {
 
         private VideoCardAdapter findAdapterForType(int cardType) {
             for (int[] cell : mCells) {
-                if (cell[1] != -1 && cardType(cell) - 10 == cardType) {
+                if (cell[1] >= 0 && cardType(cell) - 10 == cardType) {
                     return mBlocks.get(cell[0]).adapter;
                 }
             }
@@ -455,10 +462,12 @@ public class FeedSection implements MobileSection {
             }
 
             if (holder instanceof RowHolder) {
-                Block block = mBlocks.get(position - headerCount());
+                Block block = mMode == MODE_ROWS ? mBlocks.get(position - headerCount()) : mBlocks.get(mCells.get(position - headerCount())[0]);
                 RowHolder row = (RowHolder) holder;
                 row.title.setText(block.title);
                 row.title.setVisibility(TextUtils.isEmpty(block.title) ? View.GONE : View.VISIBLE);
+                // Shelf of Shorts: its icon before the title
+                row.title.setCompoundDrawablesRelativeWithIntrinsicBounds(block.isShorts ? R.drawable.kami_ic_shorts_accent : 0, 0, 0, 0);
                 if (row.list.getAdapter() != block.adapter) {
                     row.list.swapAdapter(block.adapter, false);
                 }
