@@ -60,6 +60,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     private static final int TYPE_EXPLORE = Integer.MIN_VALUE + 1;
     private static final float DRAWER_MIN_DP = 1200;
     private static final float BAR_MAX_DP = 720;
+    private static final long REFRESH_TIMEOUT_MS = 8_000;
 
     private final List<BrowseSection> mSections = new ArrayList<>();
     // Derived from mSections each time it changes
@@ -145,7 +146,9 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         mRefresh.setColorSchemeResources(R.color.kami_accent);
         mRefresh.setProgressBackgroundColorSchemeResource(R.color.kami_surface_high);
         mRefresh.setOnRefreshListener(() -> {
-            mRefresh.setRefreshing(false);
+            // The spinner stays while the page reloads, see showProgressBar. Safety stop if nothing comes back.
+            mHandler.removeCallbacks(mStopRefreshing);
+            mHandler.postDelayed(mStopRefreshing, REFRESH_TIMEOUT_MS);
             mBrowsePresenter.refresh(false);
         });
 
@@ -359,13 +362,17 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     }
 
     private boolean isChip(int sectionId) {
-        for (BrowseSection chip : mChips) {
-            if (chip.getId() == sectionId) {
-                return true;
+        return indexOfChip(sectionId) != -1;
+    }
+
+    private int indexOfChip(int sectionId) {
+        for (int i = 0; i < mChips.size(); i++) {
+            if (mChips.get(i).getId() == sectionId) {
+                return i;
             }
         }
 
-        return false;
+        return -1;
     }
 
     private boolean isTab(int sectionId) {
@@ -410,6 +417,15 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         mChipsView.setVisibility(showChips ? View.VISIBLE : View.GONE);
         mChipsAdapter.setSelectedId(mSelectedSectionId);
 
+        if (showChips) {
+            // The picked filter may be off screen (e.g. restored at start, or picked from "Explore")
+            int chipIndex = indexOfChip(mSelectedSectionId);
+
+            if (chipIndex != -1) {
+                mChipsView.post(() -> mChipsView.smoothScrollToPosition(chipIndex + 1)); // +1: the "Explore" button
+            }
+        }
+
         // Pages that aren't Home or one of its filters get their name on top
         CharSequence pageTitle = null;
 
@@ -451,9 +467,8 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
             } else {
                 NavAdapter.bindIcon(icon, tab);
             }
-            item.setSelected(tab.getId() == selectedId);
-            icon.setSelected(tab.getId() == selectedId);
-            label.setSelected(tab.getId() == selectedId);
+            item.setSelected(tab.getId() == selectedId); // reaches the icon, its pill and the label
+            item.setContentDescription(tab.getTitle());
             item.setOnClickListener(v -> onNavSectionClicked(tab));
             item.setOnLongClickListener(v -> {
                 mNavListener.onSectionLongClicked(tab);
@@ -505,6 +520,25 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         }
 
         selectSection(index, true);
+    }
+
+    /**
+     * Back key. Any page that isn't Home (a tab, a filter, "Explore", a library section) goes back to Home first.
+     * Returns false on Home: the activity then applies the upstream exit rule (double back).
+     */
+    public boolean goBack() {
+        BrowseSection home = findSection(MediaGroup.TYPE_HOME);
+
+        if (home == null || mSections.isEmpty()) {
+            return false;
+        }
+
+        if (mHubId == 0 && mSelectedSectionId == home.getId()) {
+            return false;
+        }
+
+        selectSection(indexOfSection(home.getId()), true);
+        return true;
     }
 
     private void openSection(int sectionId) {
@@ -707,6 +741,12 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         mHandler.post(mSectionFocused);
     }
 
+    private final Runnable mStopRefreshing = () -> {
+        if (mRefresh != null) {
+            mRefresh.setRefreshing(false);
+        }
+    };
+
     private final Runnable mSectionFocused = () -> {
         if (mSelectedSectionId != -1) {
             mBrowsePresenter.onSectionFocused(mSelectedSectionId);
@@ -790,7 +830,13 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         // Essential. Need to run on the main thread.
         mHandler.post(() -> {
             if (mProgress != null) {
-                mProgress.setVisibility(mIsProgressShowing ? View.VISIBLE : View.GONE);
+                // The pull to refresh spinner is the progress indicator while it's shown
+                mProgress.setVisibility(mIsProgressShowing && !(mRefresh != null && mRefresh.isRefreshing()) ? View.VISIBLE : View.GONE);
+            }
+
+            if (!mIsProgressShowing && mRefresh != null && mRefresh.isRefreshing()) {
+                mHandler.removeCallbacks(mStopRefreshing);
+                mRefresh.setRefreshing(false);
             }
         });
     }

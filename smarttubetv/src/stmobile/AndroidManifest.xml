@@ -14,6 +14,10 @@
         tools:node="replace" />
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- Downloads land in Movies/Kamishibai and Music/Kamishibai: before Android 10 that needs the storage permission -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
 
     <!-- Sign in: find the browser app, so the activation page doesn't open in the YouTube app -->
     <queries>

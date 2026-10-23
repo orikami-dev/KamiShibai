@@ -38,7 +38,10 @@ public final class DownloadAction {
             return;
         }
 
-        requestNotificationPermission(context);
+        if (!ensurePermissions(context)) {
+            return; // asked, the user taps Download again once granted
+        }
+
         int quality = Downloads.getQuality(context);
 
         if (quality != Downloads.ASK) {
@@ -119,10 +122,26 @@ public final class DownloadAction {
         }
     }
 
-    private static void requestNotificationPermission(Context context) {
-        if (Build.VERSION.SDK_INT >= 33 && context instanceof Activity
+    /**
+     * Android 13+: permission to show the progress notification (the download works without it).
+     * Android 6 to 9: permission to write in the Movies and Music folders (the download fails without it).
+     */
+    private static boolean ensurePermissions(Context context) {
+        if (!(context instanceof Activity)) {
+            return true;
+        }
+
+        if (Build.VERSION.SDK_INT >= 33
                 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 0);
         }
+
+        if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 28
+                && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+            return false;
+        }
+
+        return true;
     }
 }

@@ -223,6 +223,19 @@ public class MobileSearchFragment extends Fragment implements SearchView {
         }
     }
 
+    /**
+     * Back key while the suggestions cover the results: show the results again. False when there's nothing to close.
+     */
+    public boolean goBack() {
+        if (mSuggestions != null && mSuggestions.getVisibility() == View.VISIBLE && mResults != null && !mResults.isEmpty()) {
+            hideKeyboard();
+            showSuggestions(false);
+            return true;
+        }
+
+        return false;
+    }
+
     // region Search logic
 
     private void submit(String query) {

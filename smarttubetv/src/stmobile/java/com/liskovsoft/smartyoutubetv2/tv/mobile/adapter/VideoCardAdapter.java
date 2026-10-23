@@ -256,17 +256,19 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
+        // The card remembers its own kind: inside a feed page (FeedSection) the RecyclerView gives the holder
+        // a shifted view type, so RecyclerView.ViewHolder#getItemViewType() can't be used to tell the kinds apart.
         switch (viewType) {
             case TYPE_HEADER:
                 return new HeaderHolder(mHeader.onCreateView(parent));
             case TYPE_CHANNEL_CHIP:
-                return new CardHolder(inflater.inflate(R.layout.kami_item_channel_chip, parent, false));
+                return new CardHolder(inflater.inflate(R.layout.kami_item_channel_chip, parent, false), viewType);
             case TYPE_CHANNEL:
-                return new CardHolder(inflater.inflate(R.layout.kami_item_channel_card, parent, false));
+                return new CardHolder(inflater.inflate(R.layout.kami_item_channel_card, parent, false), viewType);
             case TYPE_SHORTS:
-                return new CardHolder(inflater.inflate(R.layout.kami_item_shorts_card, parent, false));
+                return new CardHolder(inflater.inflate(R.layout.kami_item_shorts_card, parent, false), viewType);
             default:
-                return new CardHolder(inflater.inflate(R.layout.kami_item_video_card, parent, false));
+                return new CardHolder(inflater.inflate(R.layout.kami_item_video_card, parent, false), TYPE_VIDEO);
         }
     }
 
@@ -339,12 +341,14 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private final TextView mAvatar;
         private final View mThumbFrame;
         private final View mInfo;
+        private final int mType;
         private Video mVideo;
         private Listener mListener;
         private int mThumbQuality;
 
-        CardHolder(View itemView) {
+        CardHolder(View itemView, int type) {
             super(itemView);
+            mType = type;
             mThumb = itemView.findViewById(R.id.kami_thumb);
             mTitle = itemView.findViewById(R.id.kami_title);
             mSubtitle = itemView.findViewById(R.id.kami_subtitle);
@@ -391,7 +395,7 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             itemView.setActivated(selected);
 
-            if (getItemViewType() == TYPE_VIDEO) {
+            if (mType == TYPE_VIDEO) {
                 applyVideoLayout(context, style, edgeToEdge && style == STYLE_GRID);
                 bindAvatar(video, style);
             }
@@ -476,7 +480,7 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return;
             }
 
-            boolean round = getItemViewType() == TYPE_CHANNEL || getItemViewType() == TYPE_CHANNEL_CHIP;
+            boolean round = mType == TYPE_CHANNEL || mType == TYPE_CHANNEL_CHIP;
             RequestOptions options = new RequestOptions()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .placeholder(R.drawable.kami_thumb_placeholder)
@@ -488,7 +492,7 @@ public class VideoCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             String url = round ? video.cardImageUrl : ClickbaitRemover.updateThumbnail(video, mThumbQuality);
 
-            if (!round && getItemViewType() == TYPE_VIDEO && mThumbQuality == ClickbaitRemover.THUMB_QUALITY_DEFAULT && url != null) {
+            if (!round && mType == TYPE_VIDEO && mThumbQuality == ClickbaitRemover.THUMB_QUALITY_DEFAULT && url != null) {
                 // Phone cards are wide and dense: the TV size (480x360, letterboxed) looks blurry, ask for the 1280x720 one.
                 // Old videos without it fall back to the card url below.
                 url = HD_THUMB_PATTERN.matcher(url).replaceFirst("/hq720.");

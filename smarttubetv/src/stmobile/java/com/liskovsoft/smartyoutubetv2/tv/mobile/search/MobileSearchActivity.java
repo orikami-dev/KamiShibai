@@ -15,6 +15,16 @@ public class MobileSearchActivity extends MobileActivity {
         mFragment = (MobileSearchFragment) getSupportFragmentManager().findFragmentById(R.id.kami_search_fragment);
     }
 
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onBackPressed() {
+        if (mFragment != null && mFragment.goBack()) {
+            return;
+        }
+
+        super.onBackPressed();
+    }
+
     @Override
     public void finishReally() {
         super.finishReally();

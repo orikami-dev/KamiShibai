@@ -115,6 +115,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
     private boolean mSeeking;
     private boolean mPlayerGesture;
     private boolean mDescriptionExpanded;
+    private Boolean mShownPlaying; // state drawn by the play button, null before the first update
     private WindowSize mWindowSize;
 
     private final Runnable mProgressUpdater = new Runnable() {
@@ -213,6 +214,12 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
 
         if (mUserFullscreen) {
             setUserFullscreen(false);
+            return;
+        }
+
+        if (mMode == MODE_FULLSCREEN && isShortLandscape() && !isInPipMode()) {
+            // Fullscreen because the folded phone is turned: back leaves fullscreen, it doesn't leave the video
+            leaveFullscreen();
             return;
         }
 
@@ -777,8 +784,13 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         mShortsLine.setProgress(progress);
 
         boolean playing = mPlayer.getPlayWhenReady();
-        mPlay.setImageResource(playing ? R.drawable.kami_ic_pause : R.drawable.kami_ic_play);
-        mShortsPaused.setVisibility(playing ? View.GONE : View.VISIBLE);
+
+        if (mShownPlaying == null || mShownPlaying != playing) {
+            // Twice a second is often: only touch the drawables when the state really changed
+            mShownPlaying = playing;
+            mPlay.setImageResource(playing ? R.drawable.kami_ic_pause : R.drawable.kami_ic_play);
+            mShortsPaused.setVisibility(playing ? View.GONE : View.VISIBLE);
+        }
 
         String chapter = findChapter(position);
         mChapter.setVisibility(chapter != null ? View.VISIBLE : View.GONE);
