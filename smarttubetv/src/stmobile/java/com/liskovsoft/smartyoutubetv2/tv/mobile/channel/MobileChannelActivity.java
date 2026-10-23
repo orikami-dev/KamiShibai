@@ -12,12 +12,15 @@ public class MobileChannelActivity extends MobileActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.kami_activity_channel);
+        // A channel slides in over the screen that opened it
+        overridePendingTransition(R.anim.kami_slide_in_right, R.anim.kami_stay);
         mFragment = (MobileChannelFragment) getSupportFragmentManager().findFragmentById(R.id.kami_channel_fragment);
     }
 
     @Override
     public void finishReally() {
         super.finishReally();
+        overridePendingTransition(R.anim.kami_stay, R.anim.kami_slide_out_right);
 
         if (mFragment != null) {
             mFragment.onFinish();

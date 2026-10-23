@@ -30,6 +30,9 @@
     <style name="Kamishibai.Bars" parent="">
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
+        <!-- The upstream theme pads the window under the bars, which leaves the window background (black) visible there.
+             Our screens draw under the bars and pad themselves, see MobileScreen.edgeToEdge -->
+        <item name="android:fitsSystemWindows">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>

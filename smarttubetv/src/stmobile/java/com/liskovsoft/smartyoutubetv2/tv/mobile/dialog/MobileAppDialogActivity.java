@@ -6,6 +6,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -27,7 +28,9 @@ import com.liskovsoft.smartyoutubetv2.common.app.views.PlaybackView;
 import com.liskovsoft.smartyoutubetv2.common.app.views.ViewManager;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileActivity;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileScreen;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.watch.MobilePlaybackActivity;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.PlaybackActivity;
 
 import java.util.ArrayList;
@@ -123,6 +126,8 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
         if (!isSheet) {
             // The window is see-through for the sheet: a page paints its own background, under the system bars too
             getWindow().setBackgroundDrawableResource(R.color.kami_ink);
+            MobileScreen.edgeToEdge(this, true);
+            overridePendingTransition(R.anim.kami_fade_in, R.anim.kami_stay);
         }
 
         mRoot = findViewById(R.id.kami_dialog_root);
@@ -141,6 +146,20 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
                 }
             });
             findViewById(R.id.kami_dialog_close).setOnClickListener(v -> finish());
+
+            // The scrim covers the bars, the sheet stays above the navigation bar and the keyboard
+            MobileScreen.padForBars(mRoot, true);
+
+            if (MobilePlaybackActivity.isVideoOnlyShown()) {
+                // Over the fullscreen video the bars stay away, as in the player below
+                MobileScreen.hideSystemBars(this);
+            }
+
+            // Rises from the bottom while the scrim fades in
+            mRoot.setAlpha(0f);
+            mRoot.animate().alpha(1f).setDuration(160).start();
+            mSheet.setTranslationY(WindowSize.dpToPx(this, 48));
+            mSheet.animate().translationY(0).setDuration(220).setInterpolator(new DecelerateInterpolator()).start();
         }
 
         mRoot.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> applySize(r - l, b - t));
@@ -199,11 +218,22 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
 
     @Override
     public void finish() {
-        if (mPresenter != null && mPresenter.getView() == this && !isFinishing()) {
+        // Closing is asked twice when a value is picked: by the option (presenter.closeDialog) and by the list going
+        // back. finishReally pops the screen stack each time, which also popped the player: Home came back instead.
+        if (isFinishing()) {
+            return;
+        }
+
+        if (mPresenter != null && mPresenter.getView() == this) {
             mPresenter.onFinish();
         }
 
         finishReally();
+    }
+
+    @Override
+    protected boolean paintsBehindBars() {
+        return false; // see-through window, the sheet pads its own root and the page paints the content frame
     }
 
     @SuppressWarnings("deprecation")
@@ -315,6 +345,10 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
 
     @Override
     public void goBack() {
+        if (isFinishing()) {
+            return;
+        }
+
         if (canGoBack()) {
             mStack.remove(mStack.size() - 1);
             bind();

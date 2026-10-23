@@ -45,10 +45,20 @@ import java.util.List;
 
 /**
  * Touch search: a real text field with the phone keyboard, live suggestions, voice input,
- * and results as a vertical feed. Same {@link SearchView} contract and {@link SearchPresenter} as upstream.
+ * and results as a vertical feed. Same {@link SearchView} contract and {@link SearchPresenter} as upstream.<br/>
+ * Lives in two places: on its own page (a search asked from the player or a channel) and inside Home,
+ * where the field opens in the top bar and the results replace the feed. In that case the host gives the bar
+ * with {@link #setBar} before adding the fragment, and implements {@link Host} to be told when the search closes.
  */
 public class MobileSearchFragment extends Fragment implements SearchView {
     private static final int VOICE_REQUEST_CODE = 0x5EA;
+
+    /**
+     * The screen that shows the search inside itself.
+     */
+    public interface Host {
+        void onSearchClosed();
+    }
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final List<Tag> mTags = new ArrayList<>();
@@ -62,6 +72,9 @@ public class MobileSearchFragment extends Fragment implements SearchView {
     private boolean mIgnoreTextChange;
 
     private View mRoot;
+    // Field and buttons given by the host (search inside Home), null on the standalone page
+    private View mBar;
+    private boolean mEmbedded;
     private EditText mField;
     private View mClear;
     private RecyclerView mSuggestions;
@@ -89,15 +102,23 @@ public class MobileSearchFragment extends Fragment implements SearchView {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRoot = inflater.inflate(R.layout.kami_fragment_search, container, false);
 
-        mField = mRoot.findViewById(R.id.kami_search_field);
-        mClear = mRoot.findViewById(R.id.kami_search_clear);
+        mEmbedded = mBar != null;
+        View bar = mEmbedded ? mBar : mRoot.findViewById(R.id.kami_search_bar);
+
+        if (mEmbedded) {
+            // The host shows its own copy of the bar, in its top bar
+            mRoot.findViewById(R.id.kami_search_bar).setVisibility(View.GONE);
+        }
+
+        mField = bar.findViewById(R.id.kami_search_field);
+        mClear = bar.findViewById(R.id.kami_search_clear);
         mSuggestions = mRoot.findViewById(R.id.kami_suggestions);
         mList = mRoot.findViewById(R.id.kami_list);
         mProgress = mRoot.findViewById(R.id.kami_progress);
 
-        mRoot.findViewById(R.id.kami_back).setOnClickListener(v -> finishReally());
-        mRoot.findViewById(R.id.kami_search_voice).setOnClickListener(v -> startVoiceRecognition());
-        mRoot.findViewById(R.id.kami_search_filters).setOnClickListener(v -> mSearchPresenter.onSearchSettingsClicked());
+        bar.findViewById(R.id.kami_back).setOnClickListener(v -> finishReally());
+        bar.findViewById(R.id.kami_search_voice).setOnClickListener(v -> startVoiceRecognition());
+        bar.findViewById(R.id.kami_search_filters).setOnClickListener(v -> mSearchPresenter.onSearchSettingsClicked());
         mClear.setOnClickListener(v -> {
             mField.setText(null);
             showKeyboard();
@@ -166,8 +187,10 @@ public class MobileSearchFragment extends Fragment implements SearchView {
 
         mSearchPresenter.onViewInitialized();
 
-        // Restore state after crash
-        mCrashRestorer.restorePlayback();
+        // Restore state after crash (inside Home, the Home fragment does it)
+        if (!mEmbedded) {
+            mCrashRestorer.restorePlayback();
+        }
     }
 
     @Override
@@ -175,18 +198,43 @@ public class MobileSearchFragment extends Fragment implements SearchView {
         super.onSaveInstanceState(outState);
 
         // Called when the activity is paused
-        mCrashRestorer.persistVideo(outState, mSearchPresenter.getCurrentVideo());
+        if (!mEmbedded) {
+            mCrashRestorer.persistVideo(outState, mSearchPresenter.getCurrentVideo());
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
+        // Back from the player: this search is the one on screen again
+        mSearchPresenter.setView(this);
+
         if (!mIsFragmentCreated) {
             mSearchPresenter.onViewResumed();
         }
 
         mIsFragmentCreated = false;
+    }
+
+    /**
+     * Search inside another screen: the field and its buttons are the host's, the results come here.
+     * To call before the fragment is added.
+     */
+    public void setBar(View bar) {
+        mBar = bar;
+    }
+
+    public void hideKeyboard() {
+        if (mField == null) {
+            return;
+        }
+
+        InputMethodManager imm = (InputMethodManager) mField.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(mField.getWindowToken(), 0);
+        }
+        mField.clearFocus();
     }
 
     @Override
@@ -288,14 +336,6 @@ public class MobileSearchFragment extends Fragment implements SearchView {
         if (imm != null) {
             mField.post(() -> imm.showSoftInput(mField, InputMethodManager.SHOW_IMPLICIT));
         }
-    }
-
-    private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) mField.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(mField.getWindowToken(), 0);
-        }
-        mField.clearFocus();
     }
 
     // endregion
@@ -405,6 +445,18 @@ public class MobileSearchFragment extends Fragment implements SearchView {
 
     @Override
     public void finishReally() {
+        if (mEmbedded) {
+            // Closing the search shows the feed again, the screen stays
+            hideKeyboard();
+            Fragment parent = getParentFragment();
+
+            if (parent instanceof Host) {
+                ((Host) parent).onSearchClosed();
+            }
+
+            return;
+        }
+
         LeanbackActivity activity = (LeanbackActivity) getActivity();
 
         if (activity != null) {

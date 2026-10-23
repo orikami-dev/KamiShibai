@@ -26,7 +26,16 @@ public abstract class MobileActivity extends LeanbackActivity {
         super.onCreate(savedInstanceState);
         MobileScreen.applyBarsTheme(this);
         MobileScreen.applySystemBars(this);
+        MobileScreen.edgeToEdge(this, paintsBehindBars());
         overridePendingTransition(0, 0);
+    }
+
+    /**
+     * True when the screen fills the window with the app background, bars included.
+     * A see-through window (menu sheet) answers false and pads its own root.
+     */
+    protected boolean paintsBehindBars() {
+        return true;
     }
 
     @Override

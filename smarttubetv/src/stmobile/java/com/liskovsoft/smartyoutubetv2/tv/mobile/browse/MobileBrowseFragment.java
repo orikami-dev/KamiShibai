@@ -6,6 +6,8 @@ import android.os.Looper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -28,7 +30,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
 import com.liskovsoft.smartyoutubetv2.common.app.models.errors.ErrorFragmentData;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.BrowsePresenter;
-import com.liskovsoft.smartyoutubetv2.common.app.presenters.SearchPresenter;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.search.MobileSearchFragment;
 import com.liskovsoft.smartyoutubetv2.common.app.views.BrowseView;
 import com.liskovsoft.smartyoutubetv2.common.misc.CrashRestorer;
 import com.liskovsoft.smartyoutubetv2.tv.R;
@@ -52,7 +54,7 @@ import java.util.List;
  * One column of edge to edge cards on the narrow cover screen, a grid elsewhere.
  * Only real tablets get a drawer with every section. The layout follows every size change live.
  */
-public class MobileBrowseFragment extends Fragment implements BrowseView {
+public class MobileBrowseFragment extends Fragment implements BrowseView, MobileSearchFragment.Host {
     /**
      * Pseudo section: the "Explore" page (compass at the start of the filters).
      */
@@ -74,6 +76,11 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     private boolean mIsFragmentCreated;
 
     private View mRoot;
+    // Search inside Home: the field takes the top bar, the results take the content
+    private View mTopBar;
+    private View mSearchBar;
+    private View mSearchHost;
+    private MobileSearchFragment mSearch;
     private TextView mPageTitle;
     private View mNotificationsButton;
     private RecyclerView mDrawer;
@@ -135,7 +142,10 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         mErrorAction = mRoot.findViewById(R.id.kami_error_action);
         mProgress = mRoot.findViewById(R.id.kami_progress);
 
-        mRoot.findViewById(R.id.kami_action_search).setOnClickListener(v -> SearchPresenter.instance(getContext()).startSearch(null));
+        mTopBar = mRoot.findViewById(R.id.kami_top_bar);
+        mSearchBar = mRoot.findViewById(R.id.kami_search_bar);
+        mSearchHost = mRoot.findViewById(R.id.kami_search_host);
+        mRoot.findViewById(R.id.kami_action_search).setOnClickListener(v -> openSearch());
         mNotificationsButton.setOnClickListener(v -> openSection(MediaGroup.TYPE_NOTIFICATIONS));
         mRoot.findViewById(R.id.kami_brand_group).setOnClickListener(v -> openSection(MediaGroup.TYPE_HOME));
 
@@ -210,6 +220,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     @Override
     public void onDestroyView() {
         mHandler.removeCallbacksAndMessages(null);
+        mSearch = null; // goes away with this view
 
         if (mContent != null) {
             mContent.detach();
@@ -507,6 +518,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     // region Navigation
 
     private void onNavSectionClicked(BrowseSection section) {
+        closeSearch();
         int index = indexOfSection(section.getId());
 
         if (section.getId() == mSelectedSectionId && mHubId == 0) {
@@ -527,6 +539,15 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
      * Returns false on Home: the activity then applies the upstream exit rule (double back).
      */
     public boolean goBack() {
+        if (mSearch != null) {
+            // First the suggestions give way to the results, then the search closes
+            if (!mSearch.goBack()) {
+                closeSearch();
+            }
+
+            return true;
+        }
+
         BrowseSection home = findSection(MediaGroup.TYPE_HOME);
 
         if (home == null || mSections.isEmpty()) {
@@ -552,6 +573,95 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     /**
      * "Explore": a list of sections, not a presenter page.
      */
+    // region Search
+
+    /**
+     * The field grows from the search button over the logo, the keyboard opens, and the results
+     * take the place of the feed. The tabs stay: a tap on one ends the search.
+     */
+    private void openSearch() {
+        if (mSearch != null || getContext() == null || mSearchHost == null) {
+            return;
+        }
+
+        mSearch = new MobileSearchFragment();
+        mSearch.setBar(mSearchBar);
+
+        mSearchHost.setVisibility(View.VISIBLE);
+        mSearchBar.setVisibility(View.VISIBLE);
+        getChildFragmentManager().beginTransaction().add(R.id.kami_search_host, mSearch, "search").commitNowAllowingStateLoss();
+
+        animateSearch(true, null);
+    }
+
+    private void closeSearch() {
+        if (mSearch == null) {
+            return;
+        }
+
+        MobileSearchFragment search = mSearch;
+        mSearch = null;
+        search.hideKeyboard();
+        search.onFinish(); // same as leaving the search page: the presenter forgets the query and the filters
+
+        animateSearch(false, () -> {
+            if (isAdded() && search.isAdded()) {
+                getChildFragmentManager().beginTransaction().remove(search).commitNowAllowingStateLoss();
+            }
+
+            mSearchHost.setVisibility(View.GONE);
+            mSearchBar.setVisibility(View.GONE);
+        });
+    }
+
+    @Override
+    public void onSearchClosed() {
+        closeSearch();
+    }
+
+    private void animateSearch(boolean open, Runnable onEnd) {
+        int duration = 220;
+        // The field grows from the right, where the search button is, and shrinks back there
+        mSearchBar.setPivotX(mSearchBar.getWidth() > 0 ? mSearchBar.getWidth() - WindowSize.dpToPx(getContext(), 28) : 0);
+        mSearchBar.setPivotY(mSearchBar.getHeight() / 2f);
+        mSearchBar.animate().cancel();
+        mSearchHost.animate().cancel();
+        mTopBar.animate().cancel();
+
+        if (open) {
+            mSearchBar.setAlpha(0f);
+            mSearchBar.setScaleX(0.4f);
+            mSearchHost.setAlpha(0f);
+        }
+
+        mSearchBar.animate()
+                .alpha(open ? 1f : 0f)
+                .scaleX(open ? 1f : 0.4f)
+                .setDuration(duration)
+                .setInterpolator(open ? new DecelerateInterpolator() : new AccelerateInterpolator())
+                .withEndAction(() -> {
+                    if (!open) {
+                        mSearchBar.setScaleX(1f);
+                        mSearchBar.setAlpha(1f);
+                    }
+                })
+                .start();
+        mTopBar.animate().alpha(open ? 0f : 1f).setDuration(open ? 120 : duration).start();
+        mSearchHost.animate()
+                .alpha(open ? 1f : 0f)
+                .setDuration(open ? 160 : duration)
+                .withEndAction(() -> {
+                    if (onEnd != null) {
+                        onEnd.run();
+                    }
+
+                    mSearchHost.setAlpha(1f);
+                })
+                .start();
+    }
+
+    // endregion
+
     private void showHub(int hubId) {
         if (mHubId == hubId) {
             mList.smoothScrollToPosition(0);

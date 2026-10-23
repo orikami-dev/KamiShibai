@@ -33,6 +33,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -111,6 +114,8 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
     private int mMode = -1;
     private boolean mUserFullscreen;
     private boolean mSystemBarsHidden;
+    // The last layout showed the video alone (fullscreen, Shorts): a menu opened over it keeps the bars hidden
+    private static boolean sVideoOnlyShown;
     private boolean mOverlayShown;
     private boolean mSeeking;
     private boolean mPlayerGesture;
@@ -157,13 +162,51 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         mController.setCallback(this);
         mRoot.post(() -> mWindowReady = true);
         MobileScreen.applySystemBars(this);
-        overridePendingTransition(0, 0);
+        initEdgeToEdge();
+        // The watch page rises over the screen below, like a sheet
+        overridePendingTransition(R.anim.kami_slide_up_in, R.anim.kami_stay);
+    }
+
+    /**
+     * The window stops padding itself under the bars (that padding showed the black window background):
+     * the content frame takes the page color and pads itself, except while the video is alone on screen.
+     */
+    private void initEdgeToEdge() {
+        MobileScreen.edgeToEdge(this, false);
+        View content = findViewById(android.R.id.content);
+
+        if (content == null) {
+            return;
+        }
+
+        content.setBackgroundResource(R.color.kami_ink);
+        ViewCompat.setOnApplyWindowInsetsListener(content, (v, insets) -> {
+            if (mSystemBarsHidden) {
+                v.setPadding(0, 0, 0, 0);
+            } else {
+                Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+                v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            }
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+        ViewCompat.requestApplyInsets(content);
+    }
+
+    public static boolean isVideoOnlyShown() {
+        return sVideoOnlyShown;
     }
 
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(0, 0);
+        overridePendingTransition(R.anim.kami_stay, R.anim.kami_slide_down_out);
+    }
+
+    @Override
+    public void finishReally() {
+        super.finishReally();
+        overridePendingTransition(R.anim.kami_stay, R.anim.kami_slide_down_out);
     }
 
     @Override
@@ -202,6 +245,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         mComments.release();
         mRelated.release();
         mInfoOnly.release();
+        sVideoOnlyShown = false;
         super.onDestroy();
     }
 
@@ -438,7 +482,8 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         int rootHeight = mRoot.getHeight();
         boolean videoOnly = mMode == MODE_FULLSCREEN || mMode == MODE_SHORTS;
 
-        setSystemBarsHidden(videoOnly && !isInPipMode());
+        sVideoOnlyShown = videoOnly && !isInPipMode();
+        setSystemBarsHidden(sVideoOnlyShown);
 
         // Video column and player box
         LinearLayout.LayoutParams mainParams = (LinearLayout.LayoutParams) mMain.getLayoutParams();
@@ -608,6 +653,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         mRoot.setFitsSystemWindows(false);
         mRoot.setBackgroundColor(Color.BLACK);
         window.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+        setContentBackground(Color.BLACK);
 
         if (Build.VERSION.SDK_INT >= 28) {
             WindowManager.LayoutParams params = window.getAttributes();
@@ -646,6 +692,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         mFitted.clear();
         mRoot.setBackgroundColor(ink);
         window.setBackgroundDrawable(new ColorDrawable(ink));
+        setContentBackground(ink);
 
         if (Build.VERSION.SDK_INT >= 28) {
             WindowManager.LayoutParams params = window.getAttributes();
@@ -654,7 +701,8 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         }
 
         if (Build.VERSION.SDK_INT >= 30) {
-            window.setDecorFitsSystemWindows(true);
+            // The content frame keeps padding itself (see initEdgeToEdge), the window must not pad as well
+            window.setDecorFitsSystemWindows(false);
             WindowInsetsController controller = window.getInsetsController();
 
             if (controller != null) {
@@ -665,7 +713,16 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         }
 
         MobileScreen.applySystemBars(this);
+        MobileScreen.edgeToEdge(this, false);
         window.getDecorView().requestApplyInsets();
+    }
+
+    private void setContentBackground(int color) {
+        View content = findViewById(android.R.id.content);
+
+        if (content != null) {
+            content.setBackgroundColor(color);
+        }
     }
 
     // endregion
