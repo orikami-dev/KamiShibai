@@ -7,8 +7,11 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.core.view.WindowInsetsControllerCompat;
+
+import com.liskovsoft.smartyoutubetv2.tv.R;
 
 /**
  * What every Kamishibai activity does the same way: interface scale, transparent system bars.
@@ -49,11 +52,21 @@ public final class MobileScreen {
     }
 
     /**
+     * The upstream activity applies a theme that makes both bars translucent (a tint over the app).
+     * Call right after super.onCreate, before the content is set.
+     */
+    public static void applyBarsTheme(Activity activity) {
+        activity.getTheme().applyStyle(R.style.Kamishibai_Bars, true);
+    }
+
+    /**
      * Status and navigation bars let the app show through, with icons that stay readable in day and night.
      */
     @SuppressWarnings("deprecation")
     public static void applySystemBars(Activity activity) {
         Window window = activity.getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.TRANSPARENT);
         window.setNavigationBarColor(Color.TRANSPARENT);
 

@@ -26,6 +26,14 @@
 
     <style name="Kamishibai.Theme" parent="Kamishibai.Theme.Base" />
 
+    <!-- Applied over the upstream theme: it turns the status and navigation bar translucent, which adds a visible tint -->
+    <style name="Kamishibai.Bars" parent="">
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
     <!-- Screens swap instantly: no slide, no zoom, no task animation -->
     <style name="Kamishibai.NoAnimation" parent="">
         <item name="android:activityOpenEnterAnimation">@null</item>

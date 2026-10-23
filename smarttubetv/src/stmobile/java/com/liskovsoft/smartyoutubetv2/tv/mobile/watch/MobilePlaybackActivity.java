@@ -14,6 +14,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
@@ -79,6 +81,8 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
     private RecyclerView mList;
     private RecyclerView mSide;
     private View mControls;
+    private boolean mControlsShown;
+    private boolean mWindowReady; // the first layout is done: from then on the controls animate
     private ProgressBar mLine;
     private SeekBar mSeek;
     private TextView mTime;
@@ -145,6 +149,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         });
 
         mController.setCallback(this);
+        mRoot.post(() -> mWindowReady = true);
         MobileScreen.applySystemBars(this);
         overridePendingTransition(0, 0);
     }
@@ -629,8 +634,53 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
 
     private void updateOverlayVisibility() {
         boolean show = mOverlayShown && mMode != MODE_SHORTS && !isInPipMode();
-        mControls.setVisibility(show ? View.VISIBLE : View.GONE);
         mLine.setVisibility(show || mMode == MODE_FULLSCREEN ? View.GONE : View.VISIBLE);
+
+        if (show == mControlsShown) {
+            return;
+        }
+
+        mControlsShown = show;
+        animateControls(show);
+    }
+
+    /**
+     * Controls fade in while the top bar slides down, the play buttons grow a little and the bottom bar slides up.
+     * They fade out faster than they came.
+     */
+    private void animateControls(boolean show) {
+        View top = findViewById(R.id.kami_ov_top);
+        View center = findViewById(R.id.kami_ov_center);
+        float slide = 12 * getResources().getDisplayMetrics().density;
+
+        mControls.animate().cancel();
+        top.animate().cancel();
+        center.animate().cancel();
+
+        if (!mWindowReady || !mControls.isAttachedToWindow()) {
+            mControls.setAlpha(1f);
+            mControls.setVisibility(show ? View.VISIBLE : View.GONE);
+            return;
+        }
+
+        if (show) {
+            mControls.setAlpha(0f);
+            mControls.setVisibility(View.VISIBLE);
+            top.setTranslationY(-slide);
+            center.setScaleX(0.88f);
+            center.setScaleY(0.88f);
+            mControls.animate().alpha(1f).setDuration(200).setInterpolator(new DecelerateInterpolator()).start();
+            top.animate().translationY(0f).setDuration(220).setInterpolator(new DecelerateInterpolator()).start();
+            center.animate().scaleX(1f).scaleY(1f).setDuration(220).setInterpolator(new DecelerateInterpolator()).start();
+        } else {
+            top.animate().translationY(-slide / 2).setDuration(140).start();
+            mControls.animate().alpha(0f).setDuration(140).setInterpolator(new AccelerateInterpolator())
+                    .withEndAction(() -> {
+                        mControls.setVisibility(View.GONE);
+                        top.setTranslationY(0f);
+                        mControls.setAlpha(1f);
+                    }).start();
+        }
     }
 
     private void updateProgress() {

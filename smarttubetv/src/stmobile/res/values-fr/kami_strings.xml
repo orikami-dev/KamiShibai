@@ -60,4 +60,9 @@
     <string name="kami_dl_unavailable">Cette vidéo ne peut pas être téléchargée</string>
     <string name="kami_dl_channel">Téléchargements</string>
     <string name="kami_dl_cancel">Annuler</string>
+    <string name="kami_group_app">Application</string>
+    <string name="kami_group_player">Lecteur</string>
+    <string name="kami_group_content">Contenu</string>
+    <string name="kami_group_account">Compte et appareils</string>
+    <string name="kami_group_about">À propos</string>
 </resources>

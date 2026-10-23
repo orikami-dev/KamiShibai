@@ -42,24 +42,67 @@ public class SettingsSection implements MobileSection {
     private static final int MAX_COLUMNS = 3;
 
     private final Context mContext;
-    private final List<SettingsItem> mItems = new ArrayList<>();
+    private static final int TYPE_HEADER = 0;
+    private static final int TYPE_ITEM = 1;
+
+    private static final int GROUP_APP = 0;
+    private static final int GROUP_PLAYER = 1;
+    private static final int GROUP_CONTENT = 2;
+    private static final int GROUP_ACCOUNT = 3;
+    private static final int GROUP_ABOUT = 4;
+
+    /** A section title or an entry, in display order */
+    private static final class Row {
+        final int groupTitle; // string id, 0 for an entry
+        final SettingsItem item;
+
+        Row(int groupTitle, SettingsItem item) {
+            this.groupTitle = groupTitle;
+            this.item = item;
+        }
+    }
+
+    private final List<Row> mRows = new ArrayList<>();
     private final GridLayoutManager mLayoutManager;
     private final SettingsAdapter mAdapter = new SettingsAdapter();
 
     public SettingsSection(Context context) {
         mContext = context;
         mLayoutManager = new GridLayoutManager(context, 1);
+        mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return mAdapter.getItemViewType(position) == TYPE_HEADER ? mLayoutManager.getSpanCount() : 1;
+            }
+        });
     }
 
     public void update(SettingsGroup group) {
-        mItems.clear();
+        mRows.clear();
 
         if (group != null && group.getItems() != null) {
-            mItems.addAll(phoneItems());
+            List<SettingsItem> items = phoneItems();
 
             for (SettingsItem item : group.getItems()) {
                 if (item.imageResId != R.drawable.settings_afr) { // match the frame rate of a TV, nothing to do on a phone
-                    mItems.add(item);
+                    items.add(item);
+                }
+            }
+
+            int[] titles = {R.string.kami_group_app, R.string.kami_group_player, R.string.kami_group_content, R.string.kami_group_account, R.string.kami_group_about};
+
+            for (int g = 0; g < titles.length; g++) {
+                boolean titled = false;
+
+                for (SettingsItem item : items) {
+                    if (groupOf(item, mContext) == g) {
+                        if (!titled) {
+                            mRows.add(new Row(titles[g], null));
+                            titled = true;
+                        }
+
+                        mRows.add(new Row(0, item));
+                    }
                 }
             }
         }
@@ -90,7 +133,7 @@ public class SettingsSection implements MobileSection {
 
     @Override
     public boolean isEmpty() {
-        return mItems.isEmpty();
+        return mRows.isEmpty();
     }
 
     @Override
@@ -159,6 +202,25 @@ public class SettingsSection implements MobileSection {
         return R.drawable.kami_ic_settings;
     }
 
+    /**
+     * Where an entry lives: app look and language, player, content, account and devices, about.
+     */
+    private static int groupOf(SettingsItem item, Context context) {
+        String title = item.title;
+
+        if (title.equals(context.getString(R.string.kami_set_interface))) return GROUP_APP;
+        if (title.equals(context.getString(R.string.kami_set_pip)) || title.equals(context.getString(R.string.kami_set_downloads))) return GROUP_PLAYER;
+
+        int icon = item.imageResId;
+
+        if (icon == R.drawable.settings_player || icon == R.drawable.settings_subtitles) return GROUP_PLAYER;
+        if (icon == R.drawable.settings_search || icon == R.drawable.settings_block || icon == R.drawable.settings_dearrow) return GROUP_CONTENT;
+        if (icon == R.drawable.settings_account || icon == R.drawable.settings_cast || icon == R.drawable.settings_backup) return GROUP_ACCOUNT;
+        if (icon == R.drawable.settings_about) return GROUP_ABOUT;
+
+        return GROUP_APP; // language, general, main UI, and anything upstream adds later
+    }
+
     private static int iconOf(SettingsItem item, Context context) {
         String title = item.title;
 
@@ -190,16 +252,36 @@ public class SettingsSection implements MobileSection {
                 });
     }
 
-    private final class SettingsAdapter extends RecyclerView.Adapter<SettingsHolder> {
+    private final class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        @Override
+        public int getItemViewType(int position) {
+            return mRows.get(position).item == null ? TYPE_HEADER : TYPE_ITEM;
+        }
+
         @NonNull
         @Override
-        public SettingsHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new SettingsHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.kami_item_settings, parent, false));
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
+            if (viewType == TYPE_HEADER) {
+                return new RecyclerView.ViewHolder(inflater.inflate(R.layout.kami_item_block_title, parent, false)) {
+                };
+            }
+
+            return new SettingsHolder(inflater.inflate(R.layout.kami_item_settings, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(@NonNull SettingsHolder holder, int position) {
-            SettingsItem item = mItems.get(position);
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+            Row row = mRows.get(position);
+
+            if (row.item == null) {
+                ((TextView) viewHolder.itemView).setText(row.groupTitle);
+                return;
+            }
+
+            SettingsHolder holder = (SettingsHolder) viewHolder;
+            SettingsItem item = row.item;
             holder.title.setText(item.title);
 
             holder.icon.setImageResource(iconOf(item, mContext));
@@ -209,7 +291,7 @@ public class SettingsSection implements MobileSection {
 
         @Override
         public int getItemCount() {
-            return mItems.size();
+            return mRows.size();
         }
     }
 

@@ -24,6 +24,7 @@ public abstract class MobileActivity extends LeanbackActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MobileScreen.applyBarsTheme(this);
         MobileScreen.applySystemBars(this);
         overridePendingTransition(0, 0);
     }
