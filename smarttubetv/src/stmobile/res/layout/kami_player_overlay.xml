@@ -52,6 +52,12 @@
                 android:visibility="invisible" />
 
             <ImageButton
+                android:id="@+id/kami_ov_pip"
+                style="@style/Kamishibai.OverlayButton"
+                android:contentDescription="@string/kami_pip"
+                android:src="@drawable/kami_ic_pip" />
+
+            <ImageButton
                 android:id="@+id/kami_ov_subtitles"
                 style="@style/Kamishibai.OverlayButton"
                 android:contentDescription="@string/kami_subtitles"

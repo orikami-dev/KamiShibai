@@ -1,6 +1,7 @@
 package com.liskovsoft.smartyoutubetv2.tv.mobile.common;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 
 /**
@@ -17,19 +18,30 @@ public final class WindowSize {
     private static final float EXPANDED_MIN_DP = 840;
     private static final float SHORT_HEIGHT_DP = 480; // phone in landscape
 
+    /** Size in dp at the interface scale: what layouts use to count columns. */
     public final float widthDp;
     public final float heightDp;
+    /** Size in dp at the system density: the screen's own size, whatever the interface scale is. Classes rely on it. */
+    public final float physicalWidthDp;
+    public final float physicalHeightDp;
     public final int widthClass;
 
-    private WindowSize(float widthDp, float heightDp) {
+    private WindowSize(float widthDp, float heightDp, float physicalWidthDp, float physicalHeightDp) {
         this.widthDp = widthDp;
         this.heightDp = heightDp;
-        this.widthClass = widthDp < MEDIUM_MIN_DP ? COMPACT : widthDp < EXPANDED_MIN_DP ? MEDIUM : EXPANDED;
+        this.physicalWidthDp = physicalWidthDp;
+        this.physicalHeightDp = physicalHeightDp;
+        this.widthClass = physicalWidthDp < MEDIUM_MIN_DP ? COMPACT : physicalWidthDp < EXPANDED_MIN_DP ? MEDIUM : EXPANDED;
     }
 
     public static WindowSize of(View view) {
         float density = density(view.getContext());
-        return new WindowSize(view.getWidth() / density, view.getHeight() / density);
+        float systemDensity = Resources.getSystem().getDisplayMetrics().density;
+        return new WindowSize(view.getWidth() / density, view.getHeight() / density, view.getWidth() / systemDensity, view.getHeight() / systemDensity);
+    }
+
+    public boolean isLandscape() {
+        return widthDp > heightDp;
     }
 
     public boolean isCompact() {
@@ -44,11 +56,15 @@ public final class WindowSize {
      * Not enough height for both a top bar and a bottom bar (phone in landscape).
      */
     public boolean isShort() {
-        return heightDp > 0 && heightDp < SHORT_HEIGHT_DP;
+        return physicalHeightDp > 0 && physicalHeightDp < SHORT_HEIGHT_DP;
     }
 
     public boolean sameAs(WindowSize other) {
         return other != null && Math.abs(other.widthDp - widthDp) < 1 && Math.abs(other.heightDp - heightDp) < 1;
+    }
+
+    public static float systemDensity() {
+        return Resources.getSystem().getDisplayMetrics().density;
     }
 
     public static float density(Context context) {

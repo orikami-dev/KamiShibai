@@ -184,6 +184,20 @@
                 android:text="@string/kami_quality" />
 
             <TextView
+                android:id="@+id/kami_w_download"
+                style="@style/Kamishibai.ActionChip"
+                android:layout_marginStart="8dp"
+                android:drawableStart="@drawable/kami_ic_download"
+                android:text="@string/kami_download" />
+
+            <TextView
+                android:id="@+id/kami_w_pip"
+                style="@style/Kamishibai.ActionChip"
+                android:layout_marginStart="8dp"
+                android:drawableStart="@drawable/kami_ic_pip"
+                android:text="@string/kami_pip" />
+
+            <TextView
                 android:id="@+id/kami_w_more"
                 style="@style/Kamishibai.ActionChip"
                 android:layout_marginStart="8dp"

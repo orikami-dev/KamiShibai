@@ -15,18 +15,27 @@ import com.liskovsoft.smartyoutubetv2.common.app.models.data.SettingsGroup;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.SettingsItem;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
+import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionCategory;
+import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionItem;
+import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.UiOptionItem;
+import com.liskovsoft.smartyoutubetv2.common.app.presenters.AppDialogPresenter;
 import com.liskovsoft.smartyoutubetv2.common.prefs.GeneralData;
+import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerData;
+import com.liskovsoft.smartyoutubetv2.common.utils.AppDialogUtil;
 import com.liskovsoft.smartyoutubetv2.common.utils.SimpleEditDialog;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.smartyoutubetv2.tv.R;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.common.UiScale;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.download.DownloadAction;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * The Settings section: one list on a phone, tiles on wider screens.
- * Every entry opens the upstream settings dialogs, untouched.
+ * The upstream settings dialogs are reused as they are (they show as bottom sheets),
+ * with the entries that only make sense on a phone added on top and the TV only ones left out.
  */
 public class SettingsSection implements MobileSection {
     private static final float MIN_TILE_DP = 320;
@@ -46,7 +55,13 @@ public class SettingsSection implements MobileSection {
         mItems.clear();
 
         if (group != null && group.getItems() != null) {
-            mItems.addAll(group.getItems());
+            mItems.addAll(phoneItems());
+
+            for (SettingsItem item : group.getItems()) {
+                if (item.imageResId != R.drawable.settings_afr) { // match the frame rate of a TV, nothing to do on a phone
+                    mItems.add(item);
+                }
+            }
         }
 
         mAdapter.notifyDataSetChanged();
@@ -97,6 +112,63 @@ public class SettingsSection implements MobileSection {
         }
     }
 
+    private List<SettingsItem> phoneItems() {
+        List<SettingsItem> items = new ArrayList<>();
+        items.add(new SettingsItem(mContext.getString(R.string.kami_set_interface), this::showScaleDialog));
+        items.add(new SettingsItem(mContext.getString(R.string.kami_set_pip), this::showBackgroundDialog));
+        items.add(new SettingsItem(mContext.getString(R.string.kami_set_downloads), () -> DownloadAction.showSettings(mContext)));
+        return items;
+    }
+
+    private void showScaleDialog() {
+        AppDialogPresenter dialog = AppDialogPresenter.instance(mContext);
+        int current = UiScale.getChoice(mContext);
+        List<OptionItem> options = new ArrayList<>();
+
+        for (int choice : UiScale.CHOICES) {
+            String label = choice == UiScale.DYNAMIC ? mContext.getString(R.string.kami_scale_dynamic) : mContext.getString(R.string.kami_scale_percent, choice);
+            options.add(UiOptionItem.from(label, item -> UiScale.setChoice(mContext, choice), choice == current));
+        }
+
+        String title = mContext.getString(R.string.kami_set_interface);
+        dialog.appendRadioCategory(title, options);
+        dialog.showDialog(title);
+    }
+
+    private void showBackgroundDialog() {
+        AppDialogPresenter dialog = AppDialogPresenter.instance(mContext);
+        OptionCategory category = AppDialogUtil.createBackgroundPlaybackCategory(mContext, PlayerData.instance(mContext), GeneralData.instance(mContext));
+        dialog.appendCategory(category);
+        dialog.showDialog(mContext.getString(R.string.kami_set_pip));
+    }
+
+    /**
+     * Icon of our own for each upstream entry.
+     */
+    private static int iconFor(int upstreamIcon) {
+        if (upstreamIcon == R.drawable.settings_account) return R.drawable.kami_ic_person;
+        if (upstreamIcon == R.drawable.settings_cast) return R.drawable.kami_ic_cast;
+        if (upstreamIcon == R.drawable.settings_language) return R.drawable.kami_ic_language;
+        if (upstreamIcon == R.drawable.settings_main_ui) return R.drawable.kami_ic_tune;
+        if (upstreamIcon == R.drawable.settings_player) return R.drawable.kami_ic_player;
+        if (upstreamIcon == R.drawable.settings_subtitles) return R.drawable.kami_ic_subtitles;
+        if (upstreamIcon == R.drawable.settings_search) return R.drawable.kami_ic_search;
+        if (upstreamIcon == R.drawable.settings_block) return R.drawable.kami_ic_shield;
+        if (upstreamIcon == R.drawable.settings_backup) return R.drawable.kami_ic_backup;
+        if (upstreamIcon == R.drawable.settings_about) return R.drawable.kami_ic_info;
+        return R.drawable.kami_ic_settings;
+    }
+
+    private static int iconOf(SettingsItem item, Context context) {
+        String title = item.title;
+
+        if (title.equals(context.getString(R.string.kami_set_interface))) return R.drawable.kami_ic_text_size;
+        if (title.equals(context.getString(R.string.kami_set_pip))) return R.drawable.kami_ic_pip;
+        if (title.equals(context.getString(R.string.kami_set_downloads))) return R.drawable.kami_ic_download;
+
+        return iconFor(item.imageResId);
+    }
+
     private void onItemClicked(SettingsItem item) {
         String password = GeneralData.instance(mContext).getSettingsPassword();
 
@@ -130,12 +202,7 @@ public class SettingsSection implements MobileSection {
             SettingsItem item = mItems.get(position);
             holder.title.setText(item.title);
 
-            if (item.imageResId > 0) {
-                holder.icon.setImageResource(item.imageResId);
-                holder.icon.setVisibility(View.VISIBLE);
-            } else {
-                holder.icon.setVisibility(View.INVISIBLE);
-            }
+            holder.icon.setImageResource(iconOf(item, mContext));
 
             holder.itemView.setOnClickListener(v -> onItemClicked(item));
         }

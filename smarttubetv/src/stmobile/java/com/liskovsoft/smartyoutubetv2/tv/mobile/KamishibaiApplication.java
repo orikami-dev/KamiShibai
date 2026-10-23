@@ -13,10 +13,14 @@ import com.liskovsoft.smartyoutubetv2.common.app.views.SearchView;
 import com.liskovsoft.smartyoutubetv2.common.app.views.SignInView;
 import com.liskovsoft.smartyoutubetv2.common.app.views.ViewManager;
 import com.liskovsoft.smartyoutubetv2.common.app.views.WebBrowserView;
+import com.liskovsoft.sharedutils.helpers.Helpers;
+import com.liskovsoft.smartyoutubetv2.common.app.models.playback.manager.PlayerConstants;
 import com.liskovsoft.smartyoutubetv2.common.prefs.GeneralData;
+import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerData;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.browse.MobileBrowseActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.channel.MobileChannelActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.channeluploads.MobileChannelUploadsActivity;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.dialog.MobileAppDialogActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.search.MobileSearchActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.watch.MobilePlaybackActivity;
 import com.liskovsoft.smartyoutubetv2.tv.ui.main.MainApplication;
@@ -29,7 +33,7 @@ import com.liskovsoft.smartyoutubetv2.tv.ui.main.MainApplication;
 public class KamishibaiApplication extends MainApplication {
     private static final String PREFS = "kamishibai";
     private static final String KEY_DEFAULTS_VERSION = "defaults_version";
-    private static final int DEFAULTS_VERSION = 1;
+    private static final int DEFAULTS_VERSION = 2;
 
     @Override
     public void onCreate() {
@@ -46,11 +50,22 @@ public class KamishibaiApplication extends MainApplication {
     private void applyPhoneDefaults() {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
 
-        if (prefs.getInt(KEY_DEFAULTS_VERSION, 0) >= DEFAULTS_VERSION) {
+        int version = prefs.getInt(KEY_DEFAULTS_VERSION, 0);
+
+        if (version >= DEFAULTS_VERSION) {
             return;
         }
 
-        GeneralData.instance(this).setFullscreenModeEnabled(false);
+        if (version < 1) {
+            GeneralData.instance(this).setFullscreenModeEnabled(false);
+        }
+
+        if (version < 2 && Helpers.isPictureInPictureSupported(this)) {
+            // Leaving the app while a video plays keeps it in a small window
+            PlayerData.instance(this).setBackgroundMode(PlayerConstants.BACKGROUND_MODE_PIP);
+            GeneralData.instance(this).setBackgroundPlaybackShortcut(GeneralData.BACKGROUND_PLAYBACK_SHORTCUT_HOME);
+        }
+
         prefs.edit().putInt(KEY_DEFAULTS_VERSION, DEFAULTS_VERSION).apply();
     }
 
@@ -66,7 +81,7 @@ public class KamishibaiApplication extends MainApplication {
         viewManager.register(PlaybackView.class, MobilePlaybackActivity.class, root);
 
         // Untouched upstream screens. Only their parent changes.
-        reparent(viewManager, AppDialogView.class, root);
+        viewManager.register(AppDialogView.class, MobileAppDialogActivity.class, root);
         reparent(viewManager, SignInView.class, root);
         reparent(viewManager, AddDeviceView.class, root);
         reparent(viewManager, WebBrowserView.class, root);

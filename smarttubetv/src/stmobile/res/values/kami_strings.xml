@@ -3,10 +3,8 @@
     <string translatable="false" name="app_name">Kamishibai</string>
     <string translatable="false" name="kami_brand">KamiShibai</string>
     <string name="kami_more">More</string>
-    <string name="kami_all_sections">All sections</string>
     <string name="kami_search">Search</string>
     <string name="kami_search_hint">Search YouTube</string>
-    <string name="kami_settings">Settings</string>
     <string name="kami_more_actions">More actions</string>
     <string name="kami_back">Back</string>
     <string name="kami_clear">Clear</string>
@@ -17,7 +15,6 @@
     <string name="kami_you">You</string>
     <string name="kami_all">All</string>
     <string name="kami_explore">Explore</string>
-    <string name="kami_queue">Queue</string>
     <string name="kami_notifications">Notifications</string>
     <string name="kami_minimize">Minimize</string>
     <string name="kami_subtitles">Subtitles</string>
@@ -42,5 +39,27 @@
     <string name="kami_reply_one">1 reply</string>
     <string name="kami_replies_title">Replies</string>
     <string name="kami_show_more">…more</string>
-    <string name="kami_comments_open">Tap to open</string>
+    <string name="kami_set_interface">Interface size</string>
+    <string name="kami_scale_dynamic">Automatic (follows the screen)</string>
+    <string name="kami_scale_percent">%1$d%%</string>
+    <string name="kami_set_pip">Picture-in-picture and background</string>
+    <string name="kami_set_downloads">Downloads</string>
+    <string name="kami_pip">Picture-in-picture</string>
+    <string name="kami_download">Download</string>
+    <string name="kami_dl_title">Download quality</string>
+    <string name="kami_dl_ask">Ask every time</string>
+    <string name="kami_dl_audio">Audio only</string>
+    <string name="kami_dl_best">Best available</string>
+    <string name="kami_dl_height">%1$dp</string>
+    <string name="kami_dl_default">Default quality</string>
+    <string name="kami_dl_history">Downloaded videos</string>
+    <string name="kami_dl_history_empty">Nothing downloaded yet</string>
+    <string name="kami_dl_started">Download started</string>
+    <string name="kami_dl_preparing">Preparing…</string>
+    <string name="kami_dl_progress">Downloading</string>
+    <string name="kami_dl_done">Download complete</string>
+    <string name="kami_dl_failed">Download failed</string>
+    <string name="kami_dl_unavailable">This video can\'t be downloaded</string>
+    <string name="kami_dl_channel">Downloads</string>
+    <string name="kami_dl_cancel">Cancel</string>
 </resources>

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.liskovsoft.mediaserviceinterfaces.data.MediaGroup;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.BrowseSection;
@@ -91,7 +92,49 @@ public class NavAdapter extends RecyclerView.Adapter<NavAdapter.Holder> {
             }
         } else {
             icon.setImageTintList(context.getResources().getColorStateList(R.color.kami_nav_content));
-            icon.setImageResource(section.getResId() > 0 ? section.getResId() : R.drawable.kami_ic_more_horiz);
+            icon.setImageResource(iconFor(section.getId()));
+        }
+    }
+
+    /**
+     * One icon family for every section, instead of the upstream TV bitmaps.
+     */
+    static int iconFor(int sectionId) {
+        switch (sectionId) {
+            case MediaGroup.TYPE_HOME:
+                return R.drawable.kami_ic_home;
+            case MediaGroup.TYPE_SHORTS:
+                return R.drawable.kami_ic_shorts;
+            case MediaGroup.TYPE_SUBSCRIPTIONS:
+            case MediaGroup.TYPE_CHANNEL_UPLOADS:
+                return R.drawable.kami_ic_subscriptions;
+            case MediaGroup.TYPE_HISTORY:
+                return R.drawable.kami_ic_history;
+            case MediaGroup.TYPE_USER_PLAYLISTS:
+            case MediaGroup.TYPE_MY_VIDEOS:
+                return R.drawable.kami_ic_library;
+            case MediaGroup.TYPE_NOTIFICATIONS:
+                return R.drawable.kami_ic_bell;
+            case MediaGroup.TYPE_PLAYBACK_QUEUE:
+                return R.drawable.kami_ic_queue;
+            case MediaGroup.TYPE_BLOCKED_CHANNELS:
+                return R.drawable.kami_ic_block;
+            case MediaGroup.TYPE_TRENDING:
+                return R.drawable.kami_ic_trending;
+            case MediaGroup.TYPE_MUSIC:
+                return R.drawable.kami_ic_music;
+            case MediaGroup.TYPE_GAMING:
+                return R.drawable.kami_ic_gaming;
+            case MediaGroup.TYPE_NEWS:
+                return R.drawable.kami_ic_news;
+            case MediaGroup.TYPE_SPORTS:
+                return R.drawable.kami_ic_sports;
+            case MediaGroup.TYPE_LIVE:
+                return R.drawable.kami_ic_live;
+            case MediaGroup.TYPE_SETTINGS:
+                return R.drawable.kami_ic_settings;
+            default:
+                return R.drawable.kami_ic_play;
         }
     }
 

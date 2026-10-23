@@ -56,13 +56,6 @@
             style="@style/Kamishibai.IconButton"
             android:contentDescription="@string/kami_search"
             android:src="@drawable/kami_ic_search" />
-
-        <ImageButton
-            android:id="@+id/kami_action_settings"
-            style="@style/Kamishibai.IconButton"
-            android:contentDescription="@string/kami_settings"
-            android:src="@drawable/kami_ic_settings"
-            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout
@@ -133,7 +126,6 @@
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
                         android:paddingBottom="16dp"
-                        android:layoutAnimation="@anim/kami_fall_down"
                         android:scrollbarStyle="outsideOverlay"
                         android:scrollbars="vertical" />
                 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

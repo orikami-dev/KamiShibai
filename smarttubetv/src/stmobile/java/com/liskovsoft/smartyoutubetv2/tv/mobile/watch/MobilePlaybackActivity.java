@@ -1,6 +1,7 @@
 package com.liskovsoft.smartyoutubetv2.tv.mobile.watch;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -42,6 +43,8 @@ import com.liskovsoft.smartyoutubetv2.common.app.models.playback.manager.PlayerU
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.adapter.VideoCardAdapter;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileScreen;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.download.DownloadAction;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.PlaybackActivity;
 
@@ -114,6 +117,11 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
     };
 
     @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(MobileScreen.scaled(base));
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState); // inflates the flavor's fragment_playback: the watch page
 
@@ -137,6 +145,14 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         });
 
         mController.setCallback(this);
+        MobileScreen.applySystemBars(this);
+        overridePendingTransition(0, 0);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(0, 0);
     }
 
     @Override
@@ -147,6 +163,12 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (MobileScreen.needsNewScale(this)) {
+            recreate(); // the scale was changed in the settings
+            return;
+        }
+
         mHandler.post(mProgressUpdater);
 
         if (mPlayer != null) {
@@ -190,6 +212,11 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+
+        if (MobileScreen.needsNewScale(this, newConfig)) {
+            recreate();
+            return;
+        }
 
         // The window may keep its size (e.g. 180° turn): layout listener won't fire
         mRoot.post(this::applyLayout);
@@ -238,6 +265,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         findViewById(R.id.kami_ov_subtitles).setOnClickListener(v -> clickButton(R.id.lb_control_closed_captioning));
         findViewById(R.id.kami_ov_subtitles).setOnLongClickListener(v -> longClickButton(R.id.lb_control_closed_captioning));
         findViewById(R.id.kami_ov_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality));
+        findViewById(R.id.kami_ov_pip).setOnClickListener(v -> clickButton(R.id.action_pip));
         findViewById(R.id.kami_ov_previous).setOnClickListener(v -> mPresenter.onPreviousClicked());
         findViewById(R.id.kami_ov_next).setOnClickListener(v -> mPresenter.onNextClicked());
         mPlay.setOnClickListener(v -> togglePlayback());
@@ -375,9 +403,9 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
             return MODE_FULLSCREEN;
         }
 
-        if (mWindowSize != null && mWindowSize.widthDp > mWindowSize.heightDp) {
+        if (mWindowSize != null && mWindowSize.isLandscape()) {
             // Folded phone turned: not enough height for infos, the video takes the whole screen
-            return mWindowSize.heightDp < SPLIT_MIN_HEIGHT_DP ? MODE_FULLSCREEN : MODE_SPLIT;
+            return mWindowSize.physicalHeightDp < SPLIT_MIN_HEIGHT_DP ? MODE_FULLSCREEN : MODE_SPLIT;
         }
 
         return MODE_STACKED;
@@ -432,7 +460,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         } else if (mMode == MODE_STACKED) {
             mInfoOnly.setHeader(null);
             mRelated.setHeader(mHeader);
-            int columns = mWindowSize.widthDp >= TWO_COLUMNS_MIN_DP ? 2 : 1;
+            int columns = mWindowSize.physicalWidthDp >= TWO_COLUMNS_MIN_DP ? 2 : 1;
             mRelated.setEdgeToEdge(columns == 1);
             VideoCardAdapter.applyListPadding(mList, columns == 1);
             swapAdapter(mSide, null);
@@ -492,7 +520,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
     }
 
     private boolean isShortLandscape() {
-        return mWindowSize != null && mWindowSize.widthDp > mWindowSize.heightDp && mWindowSize.heightDp < SPLIT_MIN_HEIGHT_DP;
+        return mWindowSize != null && mWindowSize.isLandscape() && mWindowSize.physicalHeightDp < SPLIT_MIN_HEIGHT_DP;
     }
 
     private boolean isShorts() {
@@ -503,7 +531,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         mUserFullscreen = fullscreen;
 
         // A folded phone held upright: turn the screen for a landscape video, and back
-        boolean smallScreen = mWindowSize != null && Math.min(mWindowSize.widthDp, mWindowSize.heightDp) < TWO_COLUMNS_MIN_DP;
+        boolean smallScreen = mWindowSize != null && Math.min(mWindowSize.physicalWidthDp, mWindowSize.physicalHeightDp) < TWO_COLUMNS_MIN_DP;
 
         if (smallScreen && Build.VERSION.SDK_INT != 26) {
             setRequestedOrientation(fullscreen ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
@@ -824,6 +852,8 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
             tintChip(view, R.id.kami_w_share);
             tintChip(view, R.id.kami_w_save);
             tintChip(view, R.id.kami_w_quality);
+            tintChip(view, R.id.kami_w_download);
+            tintChip(view, R.id.kami_w_pip);
             tintChip(view, R.id.kami_w_more);
 
             view.findViewById(R.id.kami_w_title_block).setOnClickListener(v -> {
@@ -838,6 +868,8 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
             view.findViewById(R.id.kami_w_share).setOnClickListener(v -> clickButton(R.id.action_share));
             view.findViewById(R.id.kami_w_save).setOnClickListener(v -> clickButton(R.id.action_playlist_add));
             view.findViewById(R.id.kami_w_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality));
+            view.findViewById(R.id.kami_w_download).setOnClickListener(v -> DownloadAction.start(MobilePlaybackActivity.this, mVideo));
+            view.findViewById(R.id.kami_w_pip).setOnClickListener(v -> clickButton(R.id.action_pip));
             view.findViewById(R.id.kami_w_more).setOnClickListener(v -> showVideoMenu());
             view.findViewById(R.id.kami_w_comments).setOnClickListener(v -> openComments());
 

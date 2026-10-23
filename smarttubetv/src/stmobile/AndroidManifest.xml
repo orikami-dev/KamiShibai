@@ -13,6 +13,8 @@
         android:required="false"
         tools:node="replace" />
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
     <application
         android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.KamishibaiApplication"
         android:label="@string/app_name"
@@ -50,6 +52,18 @@
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
             android:screenOrientation="unspecified" />
 
+        <!-- Menus and settings: bottom sheet, same flags as the upstream dialog -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.dialog.MobileAppDialogActivity"
+            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Dialog" />
+
         <!-- Watch page: same flags as the upstream player (PIP, lock screen), plus fold/unfold without restart -->
         <activity
             android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.watch.MobilePlaybackActivity"
@@ -59,6 +73,12 @@
             android:showWhenLocked="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
             android:screenOrientation="unspecified"
-            android:theme="@style/App.Theme.Leanback.Player" />
+            android:theme="@style/Kamishibai.Theme.Player" />
+
+        <!-- Video downloads, one at a time, with a progress notification -->
+        <service
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.download.DownloadService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
     </application>
 </manifest>

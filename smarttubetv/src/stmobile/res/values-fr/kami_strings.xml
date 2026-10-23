@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="kami_more">Plus</string>
-    <string name="kami_all_sections">Toutes les rubriques</string>
     <string name="kami_search">Rechercher</string>
     <string name="kami_search_hint">Rechercher sur YouTube</string>
-    <string name="kami_settings">Réglages</string>
     <string name="kami_more_actions">Plus d\'actions</string>
     <string name="kami_back">Retour</string>
     <string name="kami_clear">Effacer</string>
@@ -15,7 +13,6 @@
     <string name="kami_you">Vous</string>
     <string name="kami_all">Tout</string>
     <string name="kami_explore">Explorer</string>
-    <string name="kami_queue">File d\'attente</string>
     <string name="kami_notifications">Notifications</string>
     <string name="kami_minimize">Réduire</string>
     <string name="kami_subtitles">Sous-titres</string>
@@ -40,5 +37,27 @@
     <string name="kami_reply_one">1 réponse</string>
     <string name="kami_replies_title">Réponses</string>
     <string name="kami_show_more">…plus</string>
-    <string name="kami_comments_open">Appuie pour ouvrir</string>
+    <string name="kami_set_interface">Taille de l\'interface</string>
+    <string name="kami_scale_dynamic">Automatique (suit l\'écran)</string>
+    <string name="kami_scale_percent">%1$d %%</string>
+    <string name="kami_set_pip">Picture-in-picture et arrière-plan</string>
+    <string name="kami_set_downloads">Téléchargements</string>
+    <string name="kami_pip">Picture-in-picture</string>
+    <string name="kami_download">Télécharger</string>
+    <string name="kami_dl_title">Qualité du téléchargement</string>
+    <string name="kami_dl_ask">Demander à chaque fois</string>
+    <string name="kami_dl_audio">Audio seulement</string>
+    <string name="kami_dl_best">Meilleure qualité</string>
+    <string name="kami_dl_height">%1$dp</string>
+    <string name="kami_dl_default">Qualité par défaut</string>
+    <string name="kami_dl_history">Vidéos téléchargées</string>
+    <string name="kami_dl_history_empty">Rien de téléchargé pour l\'instant</string>
+    <string name="kami_dl_started">Téléchargement lancé</string>
+    <string name="kami_dl_preparing">Préparation…</string>
+    <string name="kami_dl_progress">Téléchargement</string>
+    <string name="kami_dl_done">Téléchargement terminé</string>
+    <string name="kami_dl_failed">Échec du téléchargement</string>
+    <string name="kami_dl_unavailable">Cette vidéo ne peut pas être téléchargée</string>
+    <string name="kami_dl_channel">Téléchargements</string>
+    <string name="kami_dl_cancel">Annuler</string>
 </resources>

@@ -77,7 +77,6 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     private View mRoot;
     private TextView mPageTitle;
     private View mNotificationsButton;
-    private View mSettingsButton;
     private RecyclerView mDrawer;
     private LinearLayout mNavBar;
     private View mBottom;
@@ -126,7 +125,6 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         Fonts.applyBrand(mRoot.findViewById(R.id.kami_brand));
         mPageTitle = mRoot.findViewById(R.id.kami_page_title);
         mNotificationsButton = mRoot.findViewById(R.id.kami_action_notifications);
-        mSettingsButton = mRoot.findViewById(R.id.kami_action_settings);
         mDrawer = mRoot.findViewById(R.id.kami_nav_rail);
         mNavBar = mRoot.findViewById(R.id.kami_nav_bar);
         mBottom = mRoot.findViewById(R.id.kami_bottom);
@@ -140,7 +138,6 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
         mRoot.findViewById(R.id.kami_action_search).setOnClickListener(v -> SearchPresenter.instance(getContext()).startSearch(null));
         mNotificationsButton.setOnClickListener(v -> openSection(MediaGroup.TYPE_NOTIFICATIONS));
-        mSettingsButton.setOnClickListener(v -> openSettingsSection());
         mRoot.findViewById(R.id.kami_brand_group).setOnClickListener(v -> openSection(MediaGroup.TYPE_HOME));
 
         mYouTab = new BrowseSection(ID_YOU, getString(R.string.kami_you), BrowseSection.TYPE_GRID, R.drawable.kami_ic_person);
@@ -245,7 +242,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         mWindowSize = size;
 
         // Cover screen and inner screen, portrait or landscape: the bottom bar. Real tablets: a drawer.
-        boolean isDrawer = size.widthDp >= DRAWER_MIN_DP && !size.isShort();
+        boolean isDrawer = size.physicalWidthDp >= DRAWER_MIN_DP && !size.isShort();
 
         if (isDrawer != mIsDrawer || !mIsNavReady) {
             mIsDrawer = isDrawer;
@@ -255,7 +252,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
         // On a wide screen the bar keeps phone proportions, centered
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mNavBar.getLayoutParams();
-        lp.width = size.widthDp > BAR_MAX_DP + 40 ? WindowSize.dpToPx(getContext(), BAR_MAX_DP) : ViewGroup.LayoutParams.MATCH_PARENT;
+        lp.width = size.physicalWidthDp > BAR_MAX_DP + 40 ? Math.round(BAR_MAX_DP * WindowSize.systemDensity()) : ViewGroup.LayoutParams.MATCH_PARENT;
         lp.gravity = Gravity.CENTER_HORIZONTAL;
         mNavBar.setLayoutParams(lp);
 
@@ -337,6 +334,14 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         }
 
         mTabs.add(mYouTab);
+
+        // Settings are a page of their own, the fifth icon of the bar
+        BrowseSection settings = findSettingsSection();
+
+        if (settings != null) {
+            mTabs.add(settings);
+            mYouSections.remove(settings);
+        }
     }
 
     /**
@@ -386,12 +391,13 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
      * Which tab lights up: Home for its filters and "Explore", "You" for anything else that isn't a tab.
      */
     private int getSelectedTabId() {
-        if (mHubId == ID_EXPLORE || isChip(mSelectedSectionId)) {
-            return MediaGroup.TYPE_HOME;
-        }
-
+        // The hub pages come first: after Home, the selected section is still Home while "You" is shown
         if (mHubId == ID_YOU) {
             return ID_YOU;
+        }
+
+        if (mHubId == ID_EXPLORE || isChip(mSelectedSectionId)) {
+            return MediaGroup.TYPE_HOME;
         }
 
         if (isTab(mSelectedSectionId)) {
@@ -437,7 +443,6 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         mPageTitle.setVisibility(pageTitle != null && pageTitle.length() > 0 ? View.VISIBLE : View.GONE);
 
         mNotificationsButton.setVisibility(findSection(MediaGroup.TYPE_NOTIFICATIONS) != null ? View.VISIBLE : View.GONE);
-        mSettingsButton.setVisibility(mIsDrawer && findSettingsSection() != null ? View.VISIBLE : View.GONE);
 
         if (mContent instanceof YouSection) {
             ((YouSection) mContent).notifyChanged();
@@ -445,7 +450,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     }
 
     /**
-     * Home, Shorts, [queue], Subscriptions, You.
+     * Home, Shorts, Subscriptions, You, Settings.
      */
     private void rebuildBar() {
         mNavBar.removeAllViews();
@@ -458,7 +463,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
             ImageView icon = item.findViewById(R.id.kami_nav_icon);
             TextView label = item.findViewById(R.id.kami_nav_label);
             label.setText(tab.getTitle());
-            int ownIcon = getTabIcon(tab.getId());
+            int ownIcon = tab.getType() == BrowseSection.TYPE_SETTINGS_GRID ? R.drawable.kami_ic_settings : getTabIcon(tab.getId());
 
             if (ownIcon != 0) {
                 icon.setImageResource(ownIcon);
@@ -559,14 +564,6 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         }
 
         return null;
-    }
-
-    private void openSettingsSection() {
-        BrowseSection settings = findSettingsSection();
-
-        if (settings != null) {
-            selectSection(indexOfSection(settings.getId()), true);
-        }
     }
 
     private int indexOfSection(int sectionId) {
