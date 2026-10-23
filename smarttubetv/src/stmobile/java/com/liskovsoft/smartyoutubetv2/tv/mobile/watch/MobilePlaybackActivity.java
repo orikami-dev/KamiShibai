@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +19,8 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
@@ -38,7 +42,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.liskovsoft.mediaserviceinterfaces.data.ChapterItem;
 import com.liskovsoft.mediaserviceinterfaces.data.CommentItem;
 import com.liskovsoft.mediaserviceinterfaces.data.MediaItemMetadata;
-import com.liskovsoft.sharedutils.helpers.Helpers;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.manager.PlayerUI;
@@ -50,6 +53,7 @@ import com.liskovsoft.smartyoutubetv2.tv.mobile.download.DownloadAction;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.PlaybackActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,6 +86,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
     private RecyclerView mSide;
     private View mControls;
     private boolean mControlsShown;
+    private final List<View> mFitted = new ArrayList<>(); // ancestors that padded the content with the system insets
     private boolean mWindowReady; // the first layout is done: from then on the controls animate
     private ProgressBar mLine;
     private SeekBar mSeek;
@@ -567,22 +572,93 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         mSystemBarsHidden = hidden;
 
         if (hidden) {
-            Helpers.makeActivityFullscreen2(this);
-            return;
+            enterImmersive();
+        } else {
+            leaveImmersive();
+        }
+    }
+
+    /**
+     * Edge to edge, edge included: bars hidden, no inset padding left by the screens above the video,
+     * the notch area used, and a black background so nothing white shows around the picture.
+     */
+    @SuppressWarnings("deprecation")
+    private void enterImmersive() {
+        Window window = getWindow();
+        mFitted.clear();
+
+        for (ViewParent parent = mRoot.getParent(); parent instanceof View && parent != window.getDecorView(); parent = parent.getParent()) {
+            View view = (View) parent;
+
+            if (view.getFitsSystemWindows()) {
+                mFitted.add(view);
+            }
+
+            view.setFitsSystemWindows(false);
+            view.setPadding(0, 0, 0, 0);
+        }
+
+        mRoot.setFitsSystemWindows(false);
+        mRoot.setBackgroundColor(Color.BLACK);
+        window.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+        if (Build.VERSION.SDK_INT >= 28) {
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.layoutInDisplayCutoutMode = Build.VERSION.SDK_INT >= 30
+                    ? WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                    : WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            window.setAttributes(params);
         }
 
         if (Build.VERSION.SDK_INT >= 30) {
-            getWindow().setDecorFitsSystemWindows(true);
-            WindowInsetsController controller = getWindow().getInsetsController();
+            window.setDecorFitsSystemWindows(false);
+            WindowInsetsController controller = window.getInsetsController();
+
+            if (controller != null) {
+                controller.hide(WindowInsets.Type.systemBars());
+                controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+            }
+        } else {
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN);
+        }
+
+        window.getDecorView().requestApplyInsets();
+    }
+
+    @SuppressWarnings("deprecation")
+    private void leaveImmersive() {
+        Window window = getWindow();
+        int ink = getColor(R.color.kami_ink);
+
+        for (View view : mFitted) {
+            view.setFitsSystemWindows(true);
+        }
+
+        mFitted.clear();
+        mRoot.setBackgroundColor(ink);
+        window.setBackgroundDrawable(new ColorDrawable(ink));
+
+        if (Build.VERSION.SDK_INT >= 28) {
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+            window.setAttributes(params);
+        }
+
+        if (Build.VERSION.SDK_INT >= 30) {
+            window.setDecorFitsSystemWindows(true);
+            WindowInsetsController controller = window.getInsetsController();
 
             if (controller != null) {
                 controller.show(WindowInsets.Type.systemBars());
             }
         } else {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
 
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        MobileScreen.applySystemBars(this);
+        window.getDecorView().requestApplyInsets();
     }
 
     // endregion
