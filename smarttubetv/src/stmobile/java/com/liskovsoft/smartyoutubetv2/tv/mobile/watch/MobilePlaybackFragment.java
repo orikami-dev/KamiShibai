@@ -26,13 +26,13 @@ public class MobilePlaybackFragment extends PlaybackFragment {
         MotionEvent toPlayerEvent(MotionEvent event);
     }
 
-    private Host getHost() {
+    private Host host() {
         return getActivity() instanceof Host ? (Host) getActivity() : null;
     }
 
     @Override
     public void onDispatchTouchEvent(MotionEvent event) {
-        Host host = getHost();
+        Host host = host();
         MotionEvent playerEvent = host != null ? host.toPlayerEvent(event) : null;
 
         if (playerEvent == null) {
@@ -50,7 +50,7 @@ public class MobilePlaybackFragment extends PlaybackFragment {
     public void showControlsOverlay(boolean runAnimation) {
         super.showControlsOverlay(runAnimation);
 
-        Host host = getHost();
+        Host host = host();
 
         if (host != null) {
             host.onOverlayShown(true);
@@ -61,7 +61,7 @@ public class MobilePlaybackFragment extends PlaybackFragment {
     public void hideControlsOverlay(boolean runAnimation) {
         super.hideControlsOverlay(runAnimation);
 
-        Host host = getHost();
+        Host host = host();
 
         if (host != null) {
             host.onOverlayShown(false);
@@ -72,7 +72,7 @@ public class MobilePlaybackFragment extends PlaybackFragment {
     public void setVideo(Video video) {
         super.setVideo(video);
 
-        Host host = getHost();
+        Host host = host();
 
         if (host != null) {
             host.onVideoChanged(video);
@@ -83,7 +83,7 @@ public class MobilePlaybackFragment extends PlaybackFragment {
     public void updateSuggestions(VideoGroup group) {
         super.updateSuggestions(group);
 
-        Host host = getHost();
+        Host host = host();
 
         if (host != null && group != null) {
             host.onSuggestionsUpdated(group);
@@ -94,7 +94,7 @@ public class MobilePlaybackFragment extends PlaybackFragment {
     public void removeSuggestions(VideoGroup group) {
         super.removeSuggestions(group);
 
-        Host host = getHost();
+        Host host = host();
 
         if (host != null && group != null) {
             host.onSuggestionsRemoved(group);
@@ -105,7 +105,7 @@ public class MobilePlaybackFragment extends PlaybackFragment {
     public void clearSuggestions() {
         super.clearSuggestions();
 
-        Host host = getHost();
+        Host host = host();
 
         if (host != null) {
             host.onSuggestionsCleared();
@@ -116,7 +116,7 @@ public class MobilePlaybackFragment extends PlaybackFragment {
     public void setButtonState(int buttonId, int buttonState) {
         super.setButtonState(buttonId, buttonState);
 
-        Host host = getHost();
+        Host host = host();
 
         if (host != null) {
             host.onButtonStateChanged(buttonId, buttonState);
