@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.SettingsGroup;
@@ -33,13 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Settings section: one list on a phone, tiles on wider screens.
- * The upstream settings dialogs are reused as they are (they show as bottom sheets),
+ * The Settings tab: one list grouped under titles, like the Android settings, centered on wide screens.
+ * The upstream settings dialogs are reused as they are (they open as full screen pages),
  * with the entries that only make sense on a phone added on top and the TV only ones left out.
  */
 public class SettingsSection implements MobileSection {
-    private static final float MIN_TILE_DP = 320;
-    private static final int MAX_COLUMNS = 3;
+    private static final float MAX_WIDTH_DP = 720;
 
     private final Context mContext;
     private static final int TYPE_HEADER = 0;
@@ -63,18 +62,13 @@ public class SettingsSection implements MobileSection {
     }
 
     private final List<Row> mRows = new ArrayList<>();
-    private final GridLayoutManager mLayoutManager;
+    private final LinearLayoutManager mLayoutManager;
     private final SettingsAdapter mAdapter = new SettingsAdapter();
+    private RecyclerView mRecyclerView;
 
     public SettingsSection(Context context) {
         mContext = context;
-        mLayoutManager = new GridLayoutManager(context, 1);
-        mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                return mAdapter.getItemViewType(position) == TYPE_HEADER ? mLayoutManager.getSpanCount() : 1;
-            }
-        });
+        mLayoutManager = new LinearLayoutManager(context);
     }
 
     public void update(SettingsGroup group) {
@@ -112,13 +106,14 @@ public class SettingsSection implements MobileSection {
 
     @Override
     public void attach(RecyclerView recyclerView) {
+        mRecyclerView = recyclerView;
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(mAdapter);
     }
 
     @Override
     public void detach() {
-        // NOP
+        mRecyclerView = null;
     }
 
     @Override
@@ -148,11 +143,12 @@ public class SettingsSection implements MobileSection {
 
     @Override
     public void onWidthChanged(float widthDp) {
-        int columns = WindowSize.columns(widthDp, MIN_TILE_DP, MAX_COLUMNS);
-
-        if (mLayoutManager.getSpanCount() != columns) {
-            mLayoutManager.setSpanCount(columns);
+        if (mRecyclerView == null) {
+            return;
         }
+
+        int side = widthDp > MAX_WIDTH_DP ? WindowSize.dpToPx(mContext, (widthDp - MAX_WIDTH_DP) / 2) : 0;
+        mRecyclerView.setPadding(side, mRecyclerView.getPaddingTop(), side, mRecyclerView.getPaddingBottom());
     }
 
     private List<SettingsItem> phoneItems() {
@@ -264,7 +260,7 @@ public class SettingsSection implements MobileSection {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
             if (viewType == TYPE_HEADER) {
-                return new RecyclerView.ViewHolder(inflater.inflate(R.layout.kami_item_block_title, parent, false)) {
+                return new RecyclerView.ViewHolder(inflater.inflate(R.layout.kami_item_settings_header, parent, false)) {
                 };
             }
 

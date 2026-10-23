@@ -10,7 +10,8 @@
     <string name="kami_search_filters">Filtres de recherche</string>
     <string name="kami_fill_suggestion">Modifier cette suggestion</string>
     <string name="kami_search_channel">Rechercher dans la chaîne</string>
-    <string name="kami_you">Vous</string>
+    <string name="kami_topics">Thèmes</string>
+    <string name="kami_library">Ma bibliothèque</string>
     <string name="kami_all">Tout</string>
     <string name="kami_explore">Explorer</string>
     <string name="kami_notifications">Notifications</string>
@@ -65,4 +66,17 @@
     <string name="kami_group_content">Contenu</string>
     <string name="kami_group_account">Compte et appareils</string>
     <string name="kami_group_about">À propos</string>
+    <string name="kami_signin_title">Se connecter</string>
+    <string name="kami_signin_intro">Kamishibai se connecte comme une app de téléviseur : vous validez ce code sur la page d\'activation de YouTube, dans votre navigateur. Votre mot de passe ne passe jamais par l\'app.</string>
+    <string name="kami_signin_loading">Obtention du code…</string>
+    <string name="kami_signin_waiting">En attente de la validation du code…</string>
+    <string name="kami_signin_open">Ouvrir la page d\'activation</string>
+    <string name="kami_signin_copy">Copier le code</string>
+    <string name="kami_signin_copied">Code copié</string>
+    <string name="kami_signin_steps">1. Ouvrez la page d\'activation (le code est copié pour vous).\n2. Connectez-vous à votre compte Google, puis saisissez ou confirmez le code.\n3. Revenez ici : la connexion se termine toute seule.\nSi l\'app YouTube s\'ouvre à la place du navigateur, touchez « Copier le code » et allez sur %1$s dans votre navigateur.</string>
+    <string name="kami_signin_other">Depuis un autre appareil : allez sur %1$s et saisissez le code, ou scannez ce QR code.</string>
+    <string name="kami_signin_qr">QR code de la page d\'activation</string>
+    <string name="kami_signin_error">Impossible d\'obtenir un code de connexion : %1$s</string>
+    <string name="kami_signin_retry">Réessayer</string>
+    <string name="kami_signin_no_browser">Aucun navigateur trouvé</string>
 </resources>

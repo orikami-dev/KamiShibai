@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -33,13 +34,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Every menu and setting of the app, as a bottom sheet.<br/>
- * The upstream presenters build the same lists of categories and options for the TV dialogs;
- * this view shows them as rows a finger can reach: pick a category, then a value, with a back arrow.
+ * Every menu and setting of the app.<br/>
+ * The upstream presenters build the same lists of categories and options for the TV dialogs; this view shows them
+ * the Android way. Settings and their sub-menus are full screen pages with a top app bar and a back arrow:
+ * pick a category, its values open on the next page, back goes up one level.
+ * Short menus of actions (the "more" menu of a video) and anything opened over the player
+ * stay a bottom sheet, so the video and the page behind remain in sight.
  */
 public class MobileAppDialogActivity extends MobileActivity implements AppDialogView {
     private static final float SHEET_MAX_WIDTH_DP = 520;
     private static final float SHEET_MAX_HEIGHT_RATIO = 0.82f;
+    private static final float PAGE_MAX_WIDTH_DP = 720;
 
     /**
      * One screen of the sheet: the categories of a dialog, the options of one category, or a text.
@@ -85,6 +90,9 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
     private final List<Page> mStack = new ArrayList<>();
     private final Adapter mAdapter = new Adapter();
     private AppDialogPresenter mPresenter;
+    private View mRoot;
+    // Decided by the first list shown, kept for the sub-pages
+    private boolean mIsSheet;
     private View mSheet;
     private TextView mTitle;
     private View mBack;
@@ -97,28 +105,62 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.kami_activity_dialog);
 
+        mPresenter = AppDialogPresenter.instance(this);
+        mPresenter.setView(this);
+        // The first show() picks the page or the sheet
+        mPresenter.onViewInitialized();
+
+        if (mRoot == null && !isFinishing()) {
+            setupViews(true);
+        }
+    }
+
+    private void setupViews(boolean isSheet) {
+        mIsSheet = isSheet;
+        setContentView(isSheet ? R.layout.kami_activity_dialog : R.layout.kami_activity_page);
+
+        if (!isSheet) {
+            // The window is see-through for the sheet: a page paints its own background, under the system bars too
+            getWindow().setBackgroundDrawableResource(R.color.kami_ink);
+        }
+
+        mRoot = findViewById(R.id.kami_dialog_root);
         mSheet = findViewById(R.id.kami_dialog_sheet);
         mTitle = findViewById(R.id.kami_dialog_title);
         mBack = findViewById(R.id.kami_dialog_back);
         mList = findViewById(R.id.kami_dialog_list);
         mList.setLayoutManager(new LinearLayoutManager(this));
         mList.setAdapter(mAdapter);
-
-        findViewById(R.id.kami_dialog_root).setOnClickListener(v -> {
-            if (!mIsOverlay) {
-                finish();
-            }
-        });
         mBack.setOnClickListener(v -> goBack());
-        findViewById(R.id.kami_dialog_close).setOnClickListener(v -> finish());
 
-        findViewById(R.id.kami_dialog_root).addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> applySheetSize(r - l, b - t));
+        if (isSheet) {
+            mRoot.setOnClickListener(v -> {
+                if (!mIsOverlay) {
+                    finish();
+                }
+            });
+            findViewById(R.id.kami_dialog_close).setOnClickListener(v -> finish());
+        }
 
-        mPresenter = AppDialogPresenter.instance(this);
-        mPresenter.setView(this);
-        mPresenter.onViewInitialized();
+        mRoot.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> applySize(r - l, b - t));
+    }
+
+    /**
+     * Settings are pages. A menu made only of actions, or anything shown over the player, is a sheet.
+     */
+    private boolean isSheet(List<OptionCategory> categories, boolean isTransparent, boolean isOverlay) {
+        if (isTransparent || isOverlay || ViewManager.instance(this).getTopView() == PlaybackView.class) {
+            return true;
+        }
+
+        for (OptionCategory category : categories) {
+            if (category.type != OptionCategory.TYPE_SINGLE_BUTTON) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -175,7 +217,26 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
         finish();
     }
 
-    // region Sheet size
+    // region Size
+
+    private void applySize(int rootWidth, int rootHeight) {
+        if (mRoot == null || rootWidth == 0) {
+            return;
+        }
+
+        if (mIsSheet) {
+            applySheetSize(rootWidth, rootHeight);
+            return;
+        }
+
+        // Wide screens: the page keeps a readable width, centered
+        int maxWidth = Math.round(PAGE_MAX_WIDTH_DP * WindowSize.density(this));
+        int side = rootWidth > maxWidth ? (rootWidth - maxWidth) / 2 : 0;
+
+        if (mList.getPaddingLeft() != side) {
+            mList.setPadding(side, mList.getPaddingTop(), side, mList.getPaddingBottom());
+        }
+    }
 
     private void applySheetSize(int rootWidth, int rootHeight) {
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mSheet.getLayoutParams();
@@ -231,6 +292,10 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
                 finish();
             }
             return;
+        }
+
+        if (mRoot == null) {
+            setupViews(isSheet(categories, isTransparent, isOverlay));
         }
 
         if (isExpandable && categories.size() == 1 && categories.get(0).options != null) {
@@ -304,16 +369,17 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
     }
 
     private void bind() {
-        if (mStack.isEmpty()) {
+        if (mStack.isEmpty() || mRoot == null) {
             return;
         }
 
         Page page = current();
         mTitle.setText(page.title);
-        mBack.setVisibility(canGoBack() ? View.VISIBLE : View.GONE);
+        // A page always has its back arrow (it closes the first page), the sheet has a close button for that
+        mBack.setVisibility(canGoBack() || !mIsSheet ? View.VISIBLE : View.GONE);
         mAdapter.notifyDataSetChanged();
         mList.scrollToPosition(0);
-        applySheetSize(findViewById(R.id.kami_dialog_root).getWidth(), findViewById(R.id.kami_dialog_root).getHeight());
+        applySize(mRoot.getWidth(), mRoot.getHeight());
     }
 
     /**
@@ -488,7 +554,8 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
                     row.setSummary(single.getDescription());
                 }
             } else {
-                row.chevron.setVisibility(View.VISIBLE);
+                // Android settings show no arrow on a page, a menu in a sheet keeps it
+                row.chevron.setVisibility(mIsSheet ? View.VISIBLE : View.GONE);
 
                 // What is picked now, under the name of the category
                 CharSequence summary = summarize(category);
@@ -523,7 +590,8 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
             }
 
             if (page.isRadio()) {
-                row.check.setVisibility(page.selectedIndex == position ? View.VISIBLE : View.INVISIBLE);
+                row.radio.setVisibility(View.VISIBLE);
+                row.radio.setChecked(page.selectedIndex == position);
             } else {
                 row.toggle.setVisibility(View.VISIBLE);
                 row.toggle.setChecked(page.checked[position]);
@@ -536,7 +604,7 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
     private static final class RowHolder extends RecyclerView.ViewHolder {
         final TextView title;
         final TextView summary;
-        final ImageView check;
+        final RadioButton radio;
         final ImageView chevron;
         final Switch toggle;
 
@@ -544,7 +612,7 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
             super(itemView);
             title = itemView.findViewById(R.id.kami_row_title);
             summary = itemView.findViewById(R.id.kami_row_summary);
-            check = itemView.findViewById(R.id.kami_row_check);
+            radio = itemView.findViewById(R.id.kami_row_radio);
             chevron = itemView.findViewById(R.id.kami_row_chevron);
             toggle = itemView.findViewById(R.id.kami_row_switch);
         }
@@ -552,7 +620,7 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
         void reset() {
             if (summary != null) {
                 summary.setVisibility(View.GONE);
-                check.setVisibility(View.GONE);
+                radio.setVisibility(View.GONE);
                 chevron.setVisibility(View.GONE);
                 toggle.setVisibility(View.GONE);
             }

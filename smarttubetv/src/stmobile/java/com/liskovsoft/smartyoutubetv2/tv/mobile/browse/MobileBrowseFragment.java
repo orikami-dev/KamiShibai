@@ -47,17 +47,16 @@ import java.util.List;
  * Touch version of the upstream BrowseFragment: same {@link BrowseView} contract, same {@link BrowsePresenter}.<br/>
  * Same layout on the cover screen and the inner screen, portrait or landscape:
  * the name of the app on top with the notifications and search buttons, topic filters under it on Home,
- * and a bottom bar with Home, Shorts, the queue button in the middle, Subscriptions and You.<br/>
+ * and a bottom bar with Home, Shorts, Subscriptions, History and Settings.<br/>
+ * Topic feeds and the user's library (playlists, queue, notifications, pinned channels...) are on the "Explore" page.<br/>
  * One column of edge to edge cards on the narrow cover screen, a grid elsewhere.
  * Only real tablets get a drawer with every section. The layout follows every size change live.
  */
 public class MobileBrowseFragment extends Fragment implements BrowseView {
     /**
-     * Pseudo sections: the "You" page and the "Explore" page (compass at the start of the filters).
+     * Pseudo section: the "Explore" page (compass at the start of the filters).
      */
-    private static final int ID_YOU = Integer.MIN_VALUE;
     private static final int ID_EXPLORE = Integer.MIN_VALUE + 1;
-    private static final int TYPE_YOU = Integer.MIN_VALUE;
     private static final int TYPE_EXPLORE = Integer.MIN_VALUE + 1;
     private static final float DRAWER_MIN_DP = 1200;
     private static final float BAR_MAX_DP = 720;
@@ -67,8 +66,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     private final List<BrowseSection> mTabs = new ArrayList<>();
     private final List<BrowseSection> mChips = new ArrayList<>();
     private final List<BrowseSection> mExploreSections = new ArrayList<>();
-    private final List<BrowseSection> mYouSections = new ArrayList<>();
-    private BrowseSection mYouTab;
+    private final List<BrowseSection> mLibrarySections = new ArrayList<>();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private BrowsePresenter mBrowsePresenter;
     private CrashRestorer mCrashRestorer;
@@ -100,7 +98,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     private int mPendingItemIndex = -1;
     private Video mPendingItem;
     private boolean mIsProgressShowing;
-    // ID_YOU or ID_EXPLORE while one of those pages is shown, 0 otherwise
+    // ID_EXPLORE while that page is shown, 0 otherwise
     private int mHubId;
 
     @Override
@@ -140,7 +138,6 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         mNotificationsButton.setOnClickListener(v -> openSection(MediaGroup.TYPE_NOTIFICATIONS));
         mRoot.findViewById(R.id.kami_brand_group).setOnClickListener(v -> openSection(MediaGroup.TYPE_HOME));
 
-        mYouTab = new BrowseSection(ID_YOU, getString(R.string.kami_you), BrowseSection.TYPE_GRID, R.drawable.kami_ic_person);
         mChipsAdapter = new FilterChipsAdapter(mChips, mNavListener, v -> showHub(ID_EXPLORE));
         mChipsView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         mChipsView.setAdapter(mChipsAdapter);
@@ -267,7 +264,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
         @Override
         public void onSectionLongClicked(BrowseSection section) {
-            if (section.getId() != ID_YOU && section.getId() != ID_EXPLORE) {
+            if (section.getId() != ID_EXPLORE) {
                 mBrowsePresenter.onSectionLongPressed(section.getId());
             }
         }
@@ -290,23 +287,27 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     }
 
     /**
-     * Splits the upstream sections into tabs, Home filters, "Explore" and "You" entries.
+     * Splits the upstream sections into tabs, Home filters and the two groups of the "Explore" page.
      */
     private void rebuildGroups() {
         mTabs.clear();
         mChips.clear();
         mExploreSections.clear();
-        mYouSections.clear();
+        mLibrarySections.clear();
 
         BrowseSection home = findSection(MediaGroup.TYPE_HOME);
         BrowseSection shorts = findSection(MediaGroup.TYPE_SHORTS);
         BrowseSection subscriptions = findSection(MediaGroup.TYPE_SUBSCRIPTIONS);
+        BrowseSection history = findSection(MediaGroup.TYPE_HISTORY);
 
         if (subscriptions == null) {
             subscriptions = findSection(MediaGroup.TYPE_CHANNEL_UPLOADS);
         }
 
-        for (BrowseSection section : new BrowseSection[] {home, shorts, subscriptions}) {
+        // Settings are the fifth icon of the bar
+        BrowseSection settings = findSettingsSection();
+
+        for (BrowseSection section : new BrowseSection[] {home, shorts, subscriptions, history, settings}) {
             if (section != null) {
                 mTabs.add(section);
             }
@@ -324,23 +325,13 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
             if (isTopic(section)) {
                 mChips.add(section);
                 mExploreSections.add(section);
-            } else if (section.getId() != MediaGroup.TYPE_NOTIFICATIONS || findSection(MediaGroup.TYPE_NOTIFICATIONS) == null) {
-                mYouSections.add(section);
+            } else {
+                mLibrarySections.add(section);
             }
         }
 
         if (mChips.size() < 2) {
             mChips.clear();
-        }
-
-        mTabs.add(mYouTab);
-
-        // Settings are a page of their own, the fifth icon of the bar
-        BrowseSection settings = findSettingsSection();
-
-        if (settings != null) {
-            mTabs.add(settings);
-            mYouSections.remove(settings);
         }
     }
 
@@ -388,23 +379,15 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     }
 
     /**
-     * Which tab lights up: Home for its filters and "Explore", "You" for anything else that isn't a tab.
+     * Which tab lights up: the tab itself, or Home for its filters, "Explore" and the library sections opened from it.
      */
     private int getSelectedTabId() {
-        // The hub pages come first: after Home, the selected section is still Home while "You" is shown
-        if (mHubId == ID_YOU) {
-            return ID_YOU;
-        }
-
-        if (mHubId == ID_EXPLORE || isChip(mSelectedSectionId)) {
-            return MediaGroup.TYPE_HOME;
-        }
-
-        if (isTab(mSelectedSectionId)) {
+        // "Explore" first: the selected section is still the previous one while it's shown
+        if (mHubId == 0 && isTab(mSelectedSectionId)) {
             return mSelectedSectionId;
         }
 
-        return ID_YOU;
+        return MediaGroup.TYPE_HOME;
     }
 
     private void notifyNavigationChanged() {
@@ -430,9 +413,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         // Pages that aren't Home or one of its filters get their name on top
         CharSequence pageTitle = null;
 
-        if (mHubId == ID_YOU) {
-            pageTitle = getString(R.string.kami_you);
-        } else if (mHubId == ID_EXPLORE) {
+        if (mHubId == ID_EXPLORE) {
             pageTitle = getString(R.string.kami_explore);
         } else if (!showChips) {
             BrowseSection section = findSection(mSelectedSectionId);
@@ -444,13 +425,13 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
 
         mNotificationsButton.setVisibility(findSection(MediaGroup.TYPE_NOTIFICATIONS) != null ? View.VISIBLE : View.GONE);
 
-        if (mContent instanceof YouSection) {
-            ((YouSection) mContent).notifyChanged();
+        if (mContent instanceof ExploreSection) {
+            ((ExploreSection) mContent).notifyChanged();
         }
     }
 
     /**
-     * Home, Shorts, Subscriptions, You, Settings.
+     * Home, Shorts, Subscriptions, History, Settings.
      */
     private void rebuildBar() {
         mNavBar.removeAllViews();
@@ -491,8 +472,8 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
             case MediaGroup.TYPE_SUBSCRIPTIONS:
             case MediaGroup.TYPE_CHANNEL_UPLOADS:
                 return R.drawable.kami_ic_subscriptions;
-            case ID_YOU:
-                return R.drawable.kami_ic_person;
+            case MediaGroup.TYPE_HISTORY:
+                return R.drawable.kami_ic_history;
             default:
                 return 0;
         }
@@ -511,11 +492,6 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     // region Navigation
 
     private void onNavSectionClicked(BrowseSection section) {
-        if (section.getId() == ID_YOU) {
-            showHub(ID_YOU);
-            return;
-        }
-
         int index = indexOfSection(section.getId());
 
         if (section.getId() == mSelectedSectionId && mHubId == 0) {
@@ -540,7 +516,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
     }
 
     /**
-     * "You" or "Explore": lists of sections, not presenter pages.
+     * "Explore": a list of sections, not a presenter page.
      */
     private void showHub(int hubId) {
         if (mHubId == hubId) {
@@ -551,7 +527,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         mHubId = hubId;
         mHandler.removeCallbacks(mSectionFocused);
         showContent();
-        ensureContent(hubId == ID_YOU ? TYPE_YOU : TYPE_EXPLORE);
+        ensureContent(TYPE_EXPLORE);
         mList.scrollToPosition(0);
         notifyNavigationChanged();
     }
@@ -595,11 +571,8 @@ public class MobileBrowseFragment extends Fragment implements BrowseView {
         }
 
         switch (type) {
-            case TYPE_YOU:
-                mContent = new YouSection(getContext(), mYouSections, mNavListener);
-                break;
             case TYPE_EXPLORE:
-                mContent = new YouSection(getContext(), mExploreSections, mNavListener);
+                mContent = new ExploreSection(getContext(), mExploreSections, mLibrarySections, mNavListener);
                 break;
             case BrowseSection.TYPE_ROW:
                 // One vertical feed of big cards, instead of the TV rows you swipe sideways

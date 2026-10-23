@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings and their sub-pages: a full screen page with a top app bar and a back arrow, like every Android app -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/kami_dialog_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/kami_ink"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/kami_dialog_header"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <ImageButton
+            android:id="@+id/kami_dialog_back"
+            style="@style/Kamishibai.IconButton"
+            android:contentDescription="@string/kami_back"
+            android:src="@drawable/kami_ic_back" />
+
+        <TextView
+            android:id="@+id/kami_dialog_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/kami_text"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/kami_dialog_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingTop="4dp"
+        android:paddingBottom="24dp"
+        android:scrollbars="vertical" />
+</LinearLayout>

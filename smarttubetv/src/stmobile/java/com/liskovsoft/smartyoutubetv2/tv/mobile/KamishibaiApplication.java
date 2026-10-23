@@ -22,6 +22,7 @@ import com.liskovsoft.smartyoutubetv2.tv.mobile.channel.MobileChannelActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.channeluploads.MobileChannelUploadsActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.dialog.MobileAppDialogActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.search.MobileSearchActivity;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.signin.MobileSignInActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.watch.MobilePlaybackActivity;
 import com.liskovsoft.smartyoutubetv2.tv.ui.main.MainApplication;
 
@@ -79,10 +80,10 @@ public class KamishibaiApplication extends MainApplication {
         viewManager.register(ChannelView.class, MobileChannelActivity.class, root);
         viewManager.register(ChannelUploadsView.class, MobileChannelUploadsActivity.class, root);
         viewManager.register(PlaybackView.class, MobilePlaybackActivity.class, root);
+        viewManager.register(SignInView.class, MobileSignInActivity.class, root);
 
         // Untouched upstream screens. Only their parent changes.
         viewManager.register(AppDialogView.class, MobileAppDialogActivity.class, root);
-        reparent(viewManager, SignInView.class, root);
         reparent(viewManager, AddDeviceView.class, root);
         reparent(viewManager, WebBrowserView.class, root);
     }

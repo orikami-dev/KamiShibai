@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- One entry of the Settings tab: icon, title, full width row like the Android settings -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
-    android:background="@drawable/kami_tile"
+    android:background="@drawable/kami_ripple_row"
     android:gravity="center_vertical"
-    android:minHeight="64dp"
+    android:minHeight="60dp"
     android:orientation="horizontal"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp">
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp">
 
     <ImageView
         android:id="@+id/kami_settings_icon"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:scaleType="fitCenter"
         android:tint="@color/kami_text_secondary"
         android:importantForAccessibility="no" />
@@ -22,7 +22,7 @@
         android:id="@+id/kami_settings_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="24dp"
         android:layout_weight="1"
         android:ellipsize="end"
         android:maxLines="2"

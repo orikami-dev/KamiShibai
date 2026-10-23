@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- One row of a settings page or menu: optional radio button at the start, title and summary, switch or arrow at the end -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/kami_ripple_card"
+    android:background="@drawable/kami_ripple_row"
     android:gravity="center_vertical"
-    android:minHeight="56dp"
+    android:minHeight="64dp"
     android:orientation="horizontal"
-    android:paddingStart="20dp"
-    android:paddingTop="8dp"
-    android:paddingEnd="16dp"
-    android:paddingBottom="8dp">
+    android:paddingStart="24dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="10dp">
+
+    <RadioButton
+        android:id="@+id/kami_row_radio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-6dp"
+        android:layout_marginEnd="12dp"
+        android:background="@null"
+        android:clickable="false"
+        android:focusable="false"
+        android:importantForAccessibility="no"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -30,18 +43,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:textColor="@color/kami_text_secondary"
-            android:textSize="13.5sp"
+            android:textSize="14sp"
             android:visibility="gone" />
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/kami_row_check"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="12dp"
-        android:importantForAccessibility="no"
-        android:src="@drawable/kami_ic_check"
-        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/kami_row_chevron"
@@ -57,7 +61,8 @@
         android:id="@+id/kami_row_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="16dp"
+        android:background="@null"
         android:clickable="false"
         android:focusable="false"
         android:visibility="gone" />

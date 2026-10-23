@@ -15,6 +15,15 @@
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
+    <!-- Sign in: find the browser app, so the activation page doesn't open in the YouTube app -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
     <application
         android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.KamishibaiApplication"
         android:label="@string/app_name"
@@ -52,7 +61,15 @@
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
             android:screenOrientation="unspecified" />
 
-        <!-- Menus and settings: bottom sheet, same flags as the upstream dialog -->
+        <!-- Google account sign in, phone layout. Stays alive while the browser is open, the presenter keeps polling. -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.signin.MobileSignInActivity"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:screenOrientation="unspecified" />
+
+        <!-- Settings (full screen pages) and menus (bottom sheet), same flags as the upstream dialog -->
         <activity
             android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.dialog.MobileAppDialogActivity"
             android:noHistory="true"

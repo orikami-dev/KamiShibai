@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Night: the panels of Origami's Torii theme (red tinted ink), its vermilion and its gold -->
-    <color name="kami_ink">#FF120C0D</color>
-    <color name="kami_surface">#FF1E1416</color>
-    <color name="kami_surface_high">#FF2B1C1F</color>
-    <color name="kami_fill">#FF46353A</color>
-    <color name="kami_bar">#FF1E1416</color>
+    <!-- Night: the first Kamishibai palette, neutral ink and a brighter vermilion -->
+    <color name="kami_ink">#FF0F0F13</color>
+    <color name="kami_surface">#FF18181E</color>
+    <color name="kami_surface_high">#FF24242C</color>
+    <color name="kami_fill">#FF34343E</color>
+    <color name="kami_bar">#FF18181E</color>
     <color name="kami_highlight">#24FFFFFF</color>
-    <color name="kami_outline">#FF46353A</color>
-    <color name="kami_accent">#FFFF5A4E</color>
-    <color name="kami_accent_soft">#33FF5A4E</color>
-    <color name="kami_text">#FFF1F1F1</color>
-    <color name="kami_text_secondary">#FF8A8F9C</color>
+    <color name="kami_outline">#FF34343E</color>
+    <color name="kami_accent">#FFFF5A40</color>
+    <color name="kami_accent_soft">#33FF5A40</color>
+    <color name="kami_text">#FFF4F1EA</color>
+    <color name="kami_text_secondary">#FFA9A6A0</color>
     <color name="kami_scrim">#99000000</color>
-    <color name="kami_shimmer_a">#FF2B1C1F</color>
-    <color name="kami_shimmer_b">#FF1E1416</color>
+    <color name="kami_shimmer_a">#FF24242C</color>
+    <color name="kami_shimmer_b">#FF2E2E38</color>
 </resources>

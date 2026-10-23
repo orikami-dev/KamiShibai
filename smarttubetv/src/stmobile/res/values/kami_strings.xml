@@ -12,7 +12,8 @@
     <string name="kami_search_filters">Search filters</string>
     <string name="kami_fill_suggestion">Edit this suggestion</string>
     <string name="kami_search_channel">Search in this channel</string>
-    <string name="kami_you">You</string>
+    <string name="kami_topics">Topics</string>
+    <string name="kami_library">My library</string>
     <string name="kami_all">All</string>
     <string name="kami_explore">Explore</string>
     <string name="kami_notifications">Notifications</string>
@@ -67,4 +68,17 @@
     <string name="kami_group_content">Content</string>
     <string name="kami_group_account">Account and devices</string>
     <string name="kami_group_about">About</string>
+    <string name="kami_signin_title">Sign in</string>
+    <string name="kami_signin_intro">Kamishibai signs in like a TV app: you confirm this code on the YouTube activation page, in your browser. Your password never goes through the app.</string>
+    <string name="kami_signin_loading">Getting a code…</string>
+    <string name="kami_signin_waiting">Waiting for you to confirm the code…</string>
+    <string name="kami_signin_open">Open the activation page</string>
+    <string name="kami_signin_copy">Copy the code</string>
+    <string name="kami_signin_copied">Code copied</string>
+    <string name="kami_signin_steps">1. Open the activation page (the code is copied for you).\n2. Sign in to your Google account and enter or confirm the code.\n3. Come back here: the sign-in finishes by itself.\nIf the YouTube app opens instead of the browser, use “Copy the code” and go to %1$s in your browser.</string>
+    <string name="kami_signin_other">From another device: go to %1$s and enter the code, or scan this QR code.</string>
+    <string name="kami_signin_qr">QR code of the activation page</string>
+    <string name="kami_signin_error">Couldn\'t get a sign-in code: %1$s</string>
+    <string name="kami_signin_retry">Try again</string>
+    <string name="kami_signin_no_browser">No browser found</string>
 </resources>
