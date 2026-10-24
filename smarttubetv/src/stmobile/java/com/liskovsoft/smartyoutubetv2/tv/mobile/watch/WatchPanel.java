@@ -132,6 +132,9 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
     private MediaItemMetadata mMetadata;
     private int mMode = -1;
     private boolean mUserFullscreen;
+    // Hinge of a foldable half open on a table, in panel coordinates, -1 otherwise (see Tabletop)
+    private int mHingeTop = -1;
+    private int mHingeBottom = -1;
     private boolean mSystemBarsHidden;
     private boolean mShortsChrome; // a short is shown: black page, light status icons, the tabs stay under it
     // The last layout showed the video alone (fullscreen, Shorts): a menu opened over it keeps the bars hidden
@@ -396,7 +399,11 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         mMoreVideos = mRoot.findViewById(R.id.kami_ov_more_videos);
 
         // Tap outside the buttons: hide the controls
-        mControls.setOnClickListener(v -> hideControls());
+        mControls.setOnClickListener(v -> {
+            if (!isTabletop()) {
+                hideControls();
+            }
+        });
 
         mRoot.findViewById(R.id.kami_ov_collapse).setOnClickListener(v -> {
             if (mMode == MODE_FULLSCREEN) {
@@ -798,7 +805,62 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         mFullActions.setVisibility(mMode == MODE_FULLSCREEN ? View.VISIBLE : View.GONE);
         mMoreVideos.setVisibility(mMode == MODE_FULLSCREEN && !isShortLandscape() ? View.VISIBLE : View.GONE);
         mFullscreenButton.setImageResource(mMode == MODE_FULLSCREEN ? R.drawable.kami_ic_fullscreen_exit : R.drawable.kami_ic_fullscreen);
+        applyTabletop();
         updateOverlayVisibility();
+    }
+
+    /**
+     * The hinge of a foldable half open with the hinge across the screen, or -1 when there's none (flat, closed, upright).
+     */
+    public void setTabletopHinge(int top, int bottom) {
+        if (mHingeTop == top && mHingeBottom == bottom) {
+            return;
+        }
+
+        mHingeTop = top;
+        mHingeBottom = bottom;
+        applyLayout();
+    }
+
+    private boolean isTabletop() {
+        return mMode == MODE_FULLSCREEN && mHingeTop > 0 && !mActivity.isInPipMode();
+    }
+
+    /**
+     * Fullscreen on a half open foldable: the video alone above the hinge, the controls always shown under it.
+     * Anywhere else both take the whole player.
+     */
+    private void applyTabletop() {
+        View video = mRoot.findViewById(R.id.playback_controls_fragment);
+        View overlay = mRoot.findViewById(R.id.kami_overlay);
+
+        if (video == null || !(video.getLayoutParams() instanceof FrameLayout.LayoutParams)) {
+            return;
+        }
+
+        boolean tabletop = isTabletop();
+        // The player box starts at the top of the panel in fullscreen
+        int boxTop = 0;
+
+        for (View view = mPlayerBox; view != null && view != mRoot && view.getParent() instanceof View; view = (View) view.getParent()) {
+            boxTop += view.getTop();
+        }
+
+        FrameLayout.LayoutParams videoParams = (FrameLayout.LayoutParams) video.getLayoutParams();
+        FrameLayout.LayoutParams overlayParams = (FrameLayout.LayoutParams) overlay.getLayoutParams();
+        int videoHeight = tabletop ? mHingeTop - boxTop : ViewGroup.LayoutParams.MATCH_PARENT;
+        int overlayTop = tabletop ? mHingeBottom - boxTop : 0;
+
+        if (videoParams.height != videoHeight) {
+            videoParams.height = videoHeight;
+            videoParams.gravity = Gravity.TOP;
+            video.setLayoutParams(videoParams);
+        }
+
+        if (overlayParams.topMargin != overlayTop) {
+            overlayParams.topMargin = overlayTop;
+            overlay.setLayoutParams(overlayParams);
+        }
     }
 
     private void setColumns(int columns) {
@@ -1079,7 +1141,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
     }
 
     private void updateOverlayVisibility() {
-        boolean show = mOverlayShown && mMode != MODE_SHORTS && mMode != MODE_MINI && !mActivity.isInPipMode();
+        boolean show = (mOverlayShown || isTabletop()) && mMode != MODE_SHORTS && mMode != MODE_MINI && !mActivity.isInPipMode();
         mLine.setVisibility(show || mMode == MODE_FULLSCREEN ? View.GONE : View.VISIBLE);
 
         if (show == mControlsShown) {

@@ -27,9 +27,11 @@ import com.liskovsoft.smartyoutubetv2.common.prefs.GeneralData;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiTheme;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiUpdate;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileScreen;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.watch.MobilePlaybackFragment;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.watch.Tabletop;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.watch.WatchController;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.watch.WatchPanel;
 import com.liskovsoft.smartyoutubetv2.tv.ui.common.keyhandler.DoubleBackManager2;
@@ -69,6 +71,7 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
     private View mBrowseView;
     private MobilePlaybackFragment mPlayer;
     private WatchPanel mPanel;
+    private Tabletop mTabletop;
     private DoubleBackManager2 mDoubleBack;
     private boolean mPlayerShown;
     private boolean mResumed;
@@ -103,10 +106,24 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
         PlaybackPresenter presenter = PlaybackPresenter.instance(this);
         WatchController controller = WatchController.install(presenter);
         mPanel = new WatchPanel(this, findViewById(R.id.kami_watch_root), mPlayer, presenter, controller);
+        mTabletop = new Tabletop(this, mPanel, findViewById(R.id.kami_watch_root));
 
         ViewManager.instance(this).setViewHost(MobileBrowseActivity.class, this);
         mPendingView = sPendingView;
         sPendingView = null;
+        KamiUpdate.checkOnStart(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mTabletop.start();
+    }
+
+    @Override
+    protected void onStop() {
+        mTabletop.stop();
+        super.onStop();
     }
 
     @Override
