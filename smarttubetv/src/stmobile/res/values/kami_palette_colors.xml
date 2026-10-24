@@ -12,8 +12,8 @@
     <color name="kami_pal_day_sumi_text_secondary">#FF66666C</color>
     <color name="kami_pal_day_sumi_shimmer_a">#FFE9E9EC</color>
     <color name="kami_pal_day_sumi_shimmer_b">#FFF2F2F4</color>
-    <color name="kami_pal_day_sumi_accent">#FFE23B22</color>
-    <color name="kami_pal_day_sumi_accent_soft">#1FE23B22</color>
+    <color name="kami_pal_day_sumi_accent">#FF6A4BC4</color>
+    <color name="kami_pal_day_sumi_accent_soft">#1F6A4BC4</color>
     <color name="kami_pal_day_ai_accent">#FF2B57A6</color>
     <color name="kami_pal_day_ai_accent_soft">#1F2B57A6</color>
     <color name="kami_pal_day_matcha_accent">#FF4E7F2E</color>
@@ -30,8 +30,8 @@
     <color name="kami_pal_night_sumi_outline">#FF262626</color>
     <color name="kami_pal_night_sumi_shimmer_a">#FF1A1A1A</color>
     <color name="kami_pal_night_sumi_shimmer_b">#FF222222</color>
-    <color name="kami_pal_night_sumi_accent">#FFFF5A40</color>
-    <color name="kami_pal_night_sumi_accent_soft">#33FF5A40</color>
+    <color name="kami_pal_night_sumi_accent">#FFA993F5</color>
+    <color name="kami_pal_night_sumi_accent_soft">#33A993F5</color>
     <color name="kami_pal_night_ai_accent">#FF7A9DE8</color>
     <color name="kami_pal_night_ai_accent_soft">#337A9DE8</color>
     <color name="kami_pal_night_matcha_accent">#FF8DC26A</color>

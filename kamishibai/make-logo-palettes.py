@@ -13,7 +13,7 @@ SHEET = [("back", "#7A2A24", "M38,6L106,46L38,86Z"),
          ("corner", "#FFD23F", "M26,40L47.76,26.8L49.1,52Z")]
 # name: (accent used for the hue, or None to keep the vermilion sheet; tile color; corner color; brightness of the sheet)
 PALETTES = {
-    "sumi":   (None,      "#000000", "#FFD23F", 1.0),
+    "sumi":   ("#6A4BC4", "#000000", "#FFD23F", 1.0),
     "ai":     ("#2B57A6", "#0A0D16", "#FFD23F", 1.0),
     "matcha": ("#4E7F2E", "#0B110A", "#FFD23F", 0.80),
     "sakura": ("#C8486F", "#160B10", "#FFD23F", 1.0),
