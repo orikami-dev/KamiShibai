@@ -21,4 +21,6 @@
     <attr name="kamiShimmerB" format="color" />
     <!-- Text and icons drawn on the accent color (buttons) -->
     <attr name="kamiOnAccent" format="color" />
+    <!-- Kamishibai mark in the colors of the palette -->
+    <attr name="kamiLogo" format="reference" />
 </resources>

@@ -35,7 +35,7 @@ public final class MobileScreen {
 
         Configuration system = base.getResources().getConfiguration();
 
-        return base.createConfigurationContext(KamiTheme.applyMode(base, UiScale.scale(system, UiScale.forConfiguration(base, system))));
+        return base.createConfigurationContext(UiScale.scale(system, UiScale.forConfiguration(base, system)));
     }
 
     /**

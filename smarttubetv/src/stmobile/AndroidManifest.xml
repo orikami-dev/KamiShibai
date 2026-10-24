@@ -86,6 +86,96 @@
             android:screenOrientation="unspecified"
             android:theme="@style/Kamishibai.Theme.Dialog" />
 
+        <!-- App icon in the colors of the palette (KamiIcon): the launcher entry moves from SplashActivity to one alias per palette -->
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+            <intent-filter tools:node="remove">
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity-alias
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.IconWashi"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/app_icon"
+            android:label="@string/app_name"
+            android:targetActivity="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.IconSumi"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/kami_icon_sumi"
+            android:label="@string/app_name"
+            android:targetActivity="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.IconAi"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/kami_icon_ai"
+            android:label="@string/app_name"
+            android:targetActivity="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.IconMatcha"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/kami_icon_matcha"
+            android:label="@string/app_name"
+            android:targetActivity="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.IconSakura"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/kami_icon_sakura"
+            android:label="@string/app_name"
+            android:targetActivity="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.IconKin"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/kami_icon_kin"
+            android:label="@string/app_name"
+            android:targetActivity="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
         <!-- The watch page is a panel of the main screen since v9 (MobileBrowseActivity) -->
 
         <!-- Video downloads, one at a time, with a progress notification -->

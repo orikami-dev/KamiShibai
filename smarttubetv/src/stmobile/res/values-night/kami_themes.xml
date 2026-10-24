@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Night versions of the interface palettes, applied over Kamishibai.Theme (see KamiTheme). Washi is the theme itself. -->
-    <style name="Kamishibai.Palette.Washi" parent="" />
+    <style name="Kamishibai.Palette.Washi" parent="">
+        <item name="kamiLogo">@drawable/kami_logo</item>
+    </style>
     <style name="Kamishibai.Palette.Sumi" parent="">
+        <item name="kamiLogo">@drawable/kami_logo_sumi</item>
         <item name="kamiInk">@color/kami_pal_night_sumi_ink</item>
         <item name="kamiSurface">@color/kami_pal_night_sumi_surface</item>
         <item name="kamiSurfaceHigh">@color/kami_pal_night_sumi_surface_high</item>
@@ -15,18 +18,22 @@
         <item name="kamiAccentSoft">@color/kami_pal_night_sumi_accent_soft</item>
     </style>
     <style name="Kamishibai.Palette.Ai" parent="">
+        <item name="kamiLogo">@drawable/kami_logo_ai</item>
         <item name="kamiAccent">@color/kami_pal_night_ai_accent</item>
         <item name="kamiAccentSoft">@color/kami_pal_night_ai_accent_soft</item>
     </style>
     <style name="Kamishibai.Palette.Matcha" parent="">
+        <item name="kamiLogo">@drawable/kami_logo_matcha</item>
         <item name="kamiAccent">@color/kami_pal_night_matcha_accent</item>
         <item name="kamiAccentSoft">@color/kami_pal_night_matcha_accent_soft</item>
     </style>
     <style name="Kamishibai.Palette.Sakura" parent="">
+        <item name="kamiLogo">@drawable/kami_logo_sakura</item>
         <item name="kamiAccent">@color/kami_pal_night_sakura_accent</item>
         <item name="kamiAccentSoft">@color/kami_pal_night_sakura_accent_soft</item>
     </style>
     <style name="Kamishibai.Palette.Kin" parent="">
+        <item name="kamiLogo">@drawable/kami_logo_kin</item>
         <item name="kamiAccent">@color/kami_pal_night_kin_accent</item>
         <item name="kamiAccentSoft">@color/kami_pal_night_kin_accent_soft</item>
         <item name="kamiOnAccent">@color/kami_pal_night_kin_on_accent</item>

@@ -34,7 +34,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:importantForAccessibility="no"
-                android:src="@drawable/kami_logo" />
+                android:src="?attr/kamiLogo" />
 
             <TextView
                 android:id="@+id/kami_brand"

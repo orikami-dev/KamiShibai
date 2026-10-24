@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainUISettingsPresenter extends BasePresenter<Void> {
+    /** Off in apps with their own themes (Kamishibai): the color schemes are then not offered */
+    public static boolean sColorSchemesShown = true;
     private final MainUIData mMainUIData;
     private final GeneralData mGeneralData;
     private final PlayerData mPlayerData;
@@ -49,7 +51,9 @@ public class MainUISettingsPresenter extends BasePresenter<Void> {
         AppDialogPresenter settingsPresenter = AppDialogPresenter.instance(getContext());
 
         appendTopButtonsCategory(settingsPresenter);
-        appendColorScheme(settingsPresenter);
+        if (sColorSchemesShown) {
+            appendColorScheme(settingsPresenter);
+        }
         if (Build.VERSION.SDK_INT > 19) {
             appendCardTextScrollSpeed(settingsPresenter);
         }

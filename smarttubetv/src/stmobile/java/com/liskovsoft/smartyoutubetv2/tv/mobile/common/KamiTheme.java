@@ -6,22 +6,17 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 
 import androidx.core.content.ContextCompat;
 
 import com.liskovsoft.smartyoutubetv2.tv.R;
 
 /**
- * Interface theme chosen in the settings: the mode (system, light, dark) and the palette.<br/>
- * The mode is applied with the configuration of each screen (see {@link MobileScreen#scaled}), the palette as a
- * style over the activity theme: every color of the interface is a theme attribute (kamiInk, kamiAccent...).
+ * Interface theme chosen in the settings: the palette.<br/>
+ * Light or dark follows the system. The palette is a style over the activity theme: every color of the interface is a theme attribute (kamiInk, kamiAccent...).
  */
 public final class KamiTheme {
-    public static final int MODE_SYSTEM = 0;
-    public static final int MODE_LIGHT = 1;
-    public static final int MODE_DARK = 2;
-    public static final int[] MODES = {MODE_SYSTEM, MODE_LIGHT, MODE_DARK};
-
     public static final int PALETTE_WASHI = 0;
     public static final int PALETTE_SUMI = 1;
     public static final int PALETTE_AI = 2;
@@ -38,10 +33,13 @@ public final class KamiTheme {
             R.string.kami_palette_washi, R.string.kami_palette_sumi, R.string.kami_palette_ai,
             R.string.kami_palette_matcha, R.string.kami_palette_sakura, R.string.kami_palette_kin
     };
-    private static final int[] MODE_NAMES = {R.string.kami_theme_system, R.string.kami_theme_light, R.string.kami_theme_dark};
+    private static final int[] PALETTE_NOTES = {
+            R.string.kami_palette_washi_note, R.string.kami_palette_sumi_note, R.string.kami_palette_ai_note,
+            R.string.kami_palette_matcha_note, R.string.kami_palette_sakura_note, R.string.kami_palette_kin_note
+    };
 
     private static final String PREFS = "kamishibai";
-    private static final String KEY_MODE = "theme_mode";
+    private static final String KEY_MODE = "theme_mode"; // light or dark forced, before v12: no longer offered
     private static final String KEY_PALETTE = "theme_palette";
     private static final String KEY_STARTING = "theme_starting";
     private static final String TAG = "KamiTheme";
@@ -49,51 +47,27 @@ public final class KamiTheme {
     private KamiTheme() {
     }
 
-    public static int getMode(Context context) {
-        return clamp(prefs(context).getInt(KEY_MODE, MODE_SYSTEM), MODES.length);
-    }
-
     public static int getPalette(Context context) {
         return clamp(prefs(context).getInt(KEY_PALETTE, PALETTE_WASHI), PALETTES.length);
     }
 
-    public static void setMode(Context context, int mode) {
-        prefs(context).edit().putInt(KEY_MODE, mode).apply();
-    }
-
     public static void setPalette(Context context, int palette) {
-        prefs(context).edit().putInt(KEY_PALETTE, palette).apply();
-    }
-
-    public static String modeName(Context context, int mode) {
-        return context.getString(MODE_NAMES[clamp(mode, MODES.length)]);
+        prefs(context).edit().putInt(KEY_PALETTE, palette).remove(KEY_MODE).apply();
     }
 
     public static String paletteName(Context context, int palette) {
         return context.getString(PALETTE_NAMES[clamp(palette, PALETTES.length)]);
     }
 
+    public static String paletteNote(Context context, int palette) {
+        return context.getString(PALETTE_NOTES[clamp(palette, PALETTES.length)]);
+    }
+
     /**
      * What a screen was built with: compared in onResume, the screen is rebuilt when the theme changed meanwhile.
      */
     public static int stamp(Context context) {
-        return getMode(context) * 100 + getPalette(context);
-    }
-
-    /**
-     * Day or night forced by the chosen mode, on the configuration the screen is built with.
-     */
-    public static Configuration applyMode(Context context, Configuration config) {
-        int mode = getMode(context);
-
-        if (mode == MODE_SYSTEM) {
-            return config;
-        }
-
-        int night = mode == MODE_DARK ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO;
-        config.uiMode = (config.uiMode & ~Configuration.UI_MODE_NIGHT_MASK) | night;
-
-        return config;
+        return getPalette(context);
     }
 
     /**
@@ -105,8 +79,8 @@ public final class KamiTheme {
         if (prefs.getBoolean(KEY_STARTING, false)) {
             // The last screen built with the theme never reached onResume: back to the default theme, so that a theme
             // can never keep the app from starting
-            Log.w(TAG, "Previous start failed, theme reset (mode " + getMode(activity) + ", palette " + getPalette(activity) + ")");
-            prefs.edit().remove(KEY_MODE).remove(KEY_PALETTE).commit();
+            Log.w(TAG, "Previous start failed, theme reset (palette " + getPalette(activity) + ")");
+            prefs.edit().remove(KEY_PALETTE).commit();
         }
 
         prefs.edit().putBoolean(KEY_STARTING, true).commit(); // written now: the process may die before onResume
@@ -122,6 +96,15 @@ public final class KamiTheme {
         if (prefs.getBoolean(KEY_STARTING, false)) {
             prefs.edit().putBoolean(KEY_STARTING, false).apply();
         }
+    }
+
+    /**
+     * A context that shows a palette other than the current one: the previews of the theme picker.
+     */
+    public static Context paletteContext(Context base, int palette) {
+        ContextThemeWrapper context = new ContextThemeWrapper(base, R.style.Kamishibai_Theme);
+        context.getTheme().applyStyle(PALETTE_STYLES[clamp(palette, PALETTES.length)], true);
+        return context;
     }
 
     /**

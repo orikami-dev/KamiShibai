@@ -1,8 +1,11 @@
 package com.liskovsoft.smartyoutubetv2.tv.mobile;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 
+import com.liskovsoft.smartyoutubetv2.common.app.presenters.settings.MainUISettingsPresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.views.AddDeviceView;
 import com.liskovsoft.smartyoutubetv2.common.app.views.AppDialogView;
 import com.liskovsoft.smartyoutubetv2.common.app.views.BrowseView;
@@ -20,6 +23,7 @@ import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerData;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.browse.MobileBrowseActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.channel.MobileChannelActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.channeluploads.MobileChannelUploadsActivity;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiIcon;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.dialog.MobileAppDialogActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.search.MobileSearchActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.signin.MobileSignInActivity;
@@ -41,6 +45,49 @@ public class KamishibaiApplication extends MainApplication {
 
         applyPhoneDefaults();
         setupMobileViews();
+        MainUISettingsPresenter.sColorSchemesShown = false; // replaced by the palettes of Settings > Theme
+        registerActivityLifecycleCallbacks(new IconSwitcher());
+    }
+
+    /**
+     * The app icon follows the palette once no screen of the app is visible (see {@link KamiIcon}).
+     */
+    private static final class IconSwitcher implements Application.ActivityLifecycleCallbacks {
+        private int mStarted;
+
+        @Override
+        public void onActivityStarted(Activity activity) {
+            mStarted++;
+        }
+
+        @Override
+        public void onActivityStopped(Activity activity) {
+            mStarted = Math.max(0, mStarted - 1);
+
+            if (mStarted == 0 && !activity.isChangingConfigurations()) {
+                KamiIcon.sync(activity.getApplicationContext());
+            }
+        }
+
+        @Override
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {
+        }
+
+        @Override
+        public void onActivityPaused(Activity activity) {
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+        }
+
+        @Override
+        public void onActivityDestroyed(Activity activity) {
+        }
     }
 
     /**

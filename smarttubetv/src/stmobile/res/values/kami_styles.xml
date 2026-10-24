@@ -18,6 +18,7 @@
         <item name="kamiShimmerA">@color/kami_shimmer_a</item>
         <item name="kamiShimmerB">@color/kami_shimmer_b</item>
         <item name="kamiOnAccent">@android:color/white</item>
+        <item name="kamiLogo">@drawable/kami_logo</item>
         <item name="android:windowBackground">?attr/kamiInk</item>
         <item name="shelfBackground">?attr/kamiInk</item>
         <item name="brandColor">?attr/kamiSurface</item>
@@ -87,6 +88,7 @@
         <item name="kamiShimmerA">@color/kami_shimmer_a</item>
         <item name="kamiShimmerB">@color/kami_shimmer_b</item>
         <item name="kamiOnAccent">@android:color/white</item>
+        <item name="kamiLogo">@drawable/kami_logo</item>
         <item name="android:windowBackground">?attr/kamiInk</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>

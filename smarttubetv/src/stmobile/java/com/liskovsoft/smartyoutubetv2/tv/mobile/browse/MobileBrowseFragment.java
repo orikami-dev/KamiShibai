@@ -66,6 +66,8 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
     private static final float DRAWER_MIN_DP = 1200;
     private static final float BAR_MAX_DP = 720;
     private static final long REFRESH_TIMEOUT_MS = 8_000;
+    /** The screen is rebuilt for a new theme: the Settings tab opens again as soon as it is there */
+    private static boolean sReopenSettings;
 
     private final List<BrowseSection> mSections = new ArrayList<>();
     // Derived from mSections each time it changes
@@ -883,6 +885,15 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
         }
 
         notifyNavigationChanged();
+
+        if (sReopenSettings && section.getType() == BrowseSection.TYPE_SETTINGS_GRID && mRoot != null) {
+            sReopenSettings = false;
+            mRoot.post(() -> openSection(section.getId()));
+        }
+    }
+
+    public static void reopenSettings() {
+        sReopenSettings = true;
     }
 
     @Override
