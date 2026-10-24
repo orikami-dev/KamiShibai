@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.util.Log;
 import android.util.TypedValue;
 
 import androidx.core.content.ContextCompat;
@@ -42,6 +43,8 @@ public final class KamiTheme {
     private static final String PREFS = "kamishibai";
     private static final String KEY_MODE = "theme_mode";
     private static final String KEY_PALETTE = "theme_palette";
+    private static final String KEY_STARTING = "theme_starting";
+    private static final String TAG = "KamiTheme";
 
     private KamiTheme() {
     }
@@ -97,7 +100,28 @@ public final class KamiTheme {
      * The palette over the theme of the activity. Call right after setTheme(), before the content is set.
      */
     public static void applyPalette(Activity activity) {
+        SharedPreferences prefs = prefs(activity);
+
+        if (prefs.getBoolean(KEY_STARTING, false)) {
+            // The last screen built with the theme never reached onResume: back to the default theme, so that a theme
+            // can never keep the app from starting
+            Log.w(TAG, "Previous start failed, theme reset (mode " + getMode(activity) + ", palette " + getPalette(activity) + ")");
+            prefs.edit().remove(KEY_MODE).remove(KEY_PALETTE).commit();
+        }
+
+        prefs.edit().putBoolean(KEY_STARTING, true).commit(); // written now: the process may die before onResume
         activity.getTheme().applyStyle(PALETTE_STYLES[getPalette(activity)], true);
+    }
+
+    /**
+     * The screen was built with the theme. Call in onResume, before the screen may be recreated.
+     */
+    public static void onStarted(Context context) {
+        SharedPreferences prefs = prefs(context);
+
+        if (prefs.getBoolean(KEY_STARTING, false)) {
+            prefs.edit().putBoolean(KEY_STARTING, false).apply();
+        }
     }
 
     /**

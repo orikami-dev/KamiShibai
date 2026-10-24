@@ -177,6 +177,7 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
     @Override
     protected void onResume() {
         super.onResume();
+        KamiTheme.onStarted(this);
 
         if (MobileScreen.needsNewScale(this) || mThemeStamp != KamiTheme.stamp(this)) {
             recreate(); // the scale or the theme was changed in the settings

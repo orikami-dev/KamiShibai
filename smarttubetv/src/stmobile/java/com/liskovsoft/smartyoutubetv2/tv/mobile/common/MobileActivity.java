@@ -52,6 +52,7 @@ public abstract class MobileActivity extends LeanbackActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        KamiTheme.onStarted(this);
         setLastResumed(this);
 
         if (MobileScreen.needsNewScale(this) || mThemeStamp != KamiTheme.stamp(this)) {

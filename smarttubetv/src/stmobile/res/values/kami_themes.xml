@@ -3,33 +3,33 @@
     <!-- Day versions of the interface palettes, applied over Kamishibai.Theme (see KamiTheme). Washi is the theme itself. -->
     <style name="Kamishibai.Palette.Washi" parent="" />
     <style name="Kamishibai.Palette.Sumi" parent="">
-        <item name="kamiInk">#FFF4F4F5</item>
-        <item name="kamiSurface">#FFFFFFFF</item>
-        <item name="kamiSurfaceHigh">#FFE9E9EC</item>
-        <item name="kamiFill">#FFDCDCE0</item>
-        <item name="kamiBar">#FFFFFFFF</item>
-        <item name="kamiOutline">#FFD4D4D8</item>
-        <item name="kamiText">#FF111113</item>
-        <item name="kamiTextSecondary">#FF66666C</item>
-        <item name="kamiShimmerA">#FFE9E9EC</item>
-        <item name="kamiShimmerB">#FFF2F2F4</item>
-        <item name="kamiAccent">#FFE23B22</item>
-        <item name="kamiAccentSoft">#1FE23B22</item>
+        <item name="kamiInk">@color/kami_pal_day_sumi_ink</item>
+        <item name="kamiSurface">@color/kami_pal_day_sumi_surface</item>
+        <item name="kamiSurfaceHigh">@color/kami_pal_day_sumi_surface_high</item>
+        <item name="kamiFill">@color/kami_pal_day_sumi_fill</item>
+        <item name="kamiBar">@color/kami_pal_day_sumi_bar</item>
+        <item name="kamiOutline">@color/kami_pal_day_sumi_outline</item>
+        <item name="kamiText">@color/kami_pal_day_sumi_text</item>
+        <item name="kamiTextSecondary">@color/kami_pal_day_sumi_text_secondary</item>
+        <item name="kamiShimmerA">@color/kami_pal_day_sumi_shimmer_a</item>
+        <item name="kamiShimmerB">@color/kami_pal_day_sumi_shimmer_b</item>
+        <item name="kamiAccent">@color/kami_pal_day_sumi_accent</item>
+        <item name="kamiAccentSoft">@color/kami_pal_day_sumi_accent_soft</item>
     </style>
     <style name="Kamishibai.Palette.Ai" parent="">
-        <item name="kamiAccent">#FF2B57A6</item>
-        <item name="kamiAccentSoft">#1F2B57A6</item>
+        <item name="kamiAccent">@color/kami_pal_day_ai_accent</item>
+        <item name="kamiAccentSoft">@color/kami_pal_day_ai_accent_soft</item>
     </style>
     <style name="Kamishibai.Palette.Matcha" parent="">
-        <item name="kamiAccent">#FF4E7F2E</item>
-        <item name="kamiAccentSoft">#1F4E7F2E</item>
+        <item name="kamiAccent">@color/kami_pal_day_matcha_accent</item>
+        <item name="kamiAccentSoft">@color/kami_pal_day_matcha_accent_soft</item>
     </style>
     <style name="Kamishibai.Palette.Sakura" parent="">
-        <item name="kamiAccent">#FFC8486F</item>
-        <item name="kamiAccentSoft">#1FC8486F</item>
+        <item name="kamiAccent">@color/kami_pal_day_sakura_accent</item>
+        <item name="kamiAccentSoft">@color/kami_pal_day_sakura_accent_soft</item>
     </style>
     <style name="Kamishibai.Palette.Kin" parent="">
-        <item name="kamiAccent">#FFA87C00</item>
-        <item name="kamiAccentSoft">#24A87C00</item>
+        <item name="kamiAccent">@color/kami_pal_day_kin_accent</item>
+        <item name="kamiAccentSoft">@color/kami_pal_day_kin_accent_soft</item>
     </style>
 </resources>
