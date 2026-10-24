@@ -5,7 +5,7 @@
     android:id="@+id/kami_mini"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/selectableItemBackground"
+    android:background="@drawable/kami_ripple_overlay"
     android:clickable="true"
     android:contentDescription="@string/kami_mini_open"
     android:focusable="true"
