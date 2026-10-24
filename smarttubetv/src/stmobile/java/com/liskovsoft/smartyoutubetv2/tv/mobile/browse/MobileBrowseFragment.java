@@ -18,6 +18,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -87,6 +89,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
     private RecyclerView mDrawer;
     private LinearLayout mNavBar;
     private View mBottom;
+    private boolean mDarkTabs; // a short is playing over Home: the tabs are drawn on black
     private RecyclerView mChipsView;
     private FilterChipsAdapter mChipsAdapter;
     private SwipeRefreshLayout mRefresh;
@@ -480,6 +483,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
                 NavAdapter.bindIcon(icon, tab);
             }
             item.setSelected(tab.getId() == selectedId); // reaches the icon, its pill and the label
+            paintTab(item);
             item.setContentDescription(tab.getTitle());
             item.setOnClickListener(v -> onNavSectionClicked(tab));
             item.setOnLongClickListener(v -> {
@@ -488,6 +492,52 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
             });
             mNavBar.addView(item);
         }
+    }
+
+    private void paintTab(View item) {
+        if (getContext() == null) {
+            return;
+        }
+
+        android.content.res.ColorStateList content = ContextCompat.getColorStateList(getContext(), mDarkTabs ? R.color.kami_nav_content_dark : R.color.kami_nav_content);
+        ImageViewCompat.setImageTintList(item.findViewById(R.id.kami_nav_icon), content);
+        ((TextView) item.findViewById(R.id.kami_nav_label)).setTextColor(content);
+        item.findViewById(R.id.kami_nav_pill).setBackgroundResource(mDarkTabs ? R.drawable.kami_tab_indicator_dark : R.drawable.kami_tab_indicator);
+    }
+
+    /**
+     * Under a short the tabs stay, dark like the YouTube app; back to the page colors when it ends.
+     */
+    public void setDarkTabs(boolean dark) {
+        if (mBottom == null || mDarkTabs == dark) {
+            return;
+        }
+
+        mDarkTabs = dark;
+
+        if (dark) {
+            mBottom.setBackgroundColor(0xFF0F0F0F);
+        } else {
+            mBottom.setBackgroundResource(R.drawable.kami_bottom_bar_bg);
+        }
+
+        for (int i = 0; i < mNavBar.getChildCount(); i++) {
+            paintTab(mNavBar.getChildAt(i));
+        }
+    }
+
+    /**
+     * Height of the bottom tabs, 0 when they're hidden (side rail, keyboard).
+     */
+    public int getTabBarHeight() {
+        return mBottom != null && mBottom.getVisibility() == View.VISIBLE ? mBottom.getHeight() : 0;
+    }
+
+    /**
+     * Search asked from outside Home (the Shorts player).
+     */
+    public void showSearch() {
+        openSearch();
     }
 
     private static int getTabIcon(int sectionId) {
@@ -519,6 +569,10 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
     // region Navigation
 
     private void onNavSectionClicked(BrowseSection section) {
+        if (getActivity() instanceof MobileBrowseActivity) {
+            ((MobileBrowseActivity) getActivity()).closePlayer(); // a tab tapped under a short: the short ends
+        }
+
         closeSearch();
         int index = indexOfSection(section.getId());
 

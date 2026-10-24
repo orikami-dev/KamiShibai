@@ -1,6 +1,12 @@
 package com.liskovsoft.smartyoutubetv2.tv.mobile.watch;
 
+import android.os.Bundle;
 import android.view.MotionEvent;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.liskovsoft.sharedutils.helpers.Helpers;
 
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
@@ -38,6 +44,22 @@ public class MobilePlaybackFragment extends PlaybackFragment {
     public android.view.LayoutInflater onGetLayoutInflater(android.os.Bundle savedInstanceState) {
         android.view.LayoutInflater inflater = super.onGetLayoutInflater(savedInstanceState);
         return inflater.cloneInContext(new android.view.ContextThemeWrapper(inflater.getContext(), com.liskovsoft.smartyoutubetv2.tv.R.style.Kamishibai_Theme_Player));
+    }
+
+    /**
+     * The fragment is attached again each time a video is picked. The video comes from the presenter: an id kept
+     * by an earlier session of the screen must not open an old video, empty, in the panel.
+     */
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        Helpers.setField(this, "mSelectedVideoId", null);
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.remove("SelectedVideoId"); // see onActivityCreated
     }
 
     @Override

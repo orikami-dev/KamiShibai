@@ -2,6 +2,7 @@
 <resources>
     <string translatable="false" name="app_name">Kamishibai</string>
     <string translatable="false" name="kami_brand">KamiShibai</string>
+    <string translatable="false" name="kami_shorts_title">Shorts</string>
     <string name="kami_more">More</string>
     <string name="kami_search">Search</string>
     <string name="kami_search_hint">Search YouTube</string>

@@ -34,6 +34,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -77,6 +78,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
     private static final long PROGRESS_INTERVAL_MS = 500;
 
     private static final long PANEL_ANIMATION_MS = 260;
+    private static final float SHORTS_ICON_DP = 32;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final MobileBrowseActivity mActivity;
@@ -118,6 +120,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
     private int mMode = -1;
     private boolean mUserFullscreen;
     private boolean mSystemBarsHidden;
+    private boolean mShortsChrome; // a short is shown: black page, light status icons, the tabs stay under it
     // The last layout showed the video alone (fullscreen, Shorts): a menu opened over it keeps the bars hidden
     private static boolean sVideoOnlyShown;
     private boolean mOverlayShown;
@@ -175,6 +178,13 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         return mSystemBarsHidden;
     }
 
+    /**
+     * A short is shown: the panel ends above the tabs, Home stays drawn under it.
+     */
+    public boolean isShortsShown() {
+        return mShortsChrome;
+    }
+
     // region Panel over Home
 
     /**
@@ -190,6 +200,9 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
 
         mShown = true;
         mWindowReady = false;
+        // The video the presenter opens: its layout (short or not) is right from the first frame
+        mVideo = mPresenter.getVideo();
+        mMetadata = null;
         mRoot.animate().cancel();
         mRoot.setVisibility(View.VISIBLE);
         mRoot.setAlpha(1f);
@@ -236,6 +249,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         }
 
         setSystemBarsHidden(false);
+        setShortsChrome(false);
         mRoot.animate().cancel();
         mRoot.animate().translationY(mRoot.getHeight()).setDuration(220).setInterpolator(new AccelerateInterpolator())
                 .withEndAction(() -> {
@@ -248,6 +262,15 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
                         onHidden.run();
                     }
                 }).start();
+
+        // Never left half-way on screen, even if the animation is cut short
+        mHandler.postDelayed(() -> {
+            if (!mShown && mRoot.getVisibility() != View.GONE) {
+                mRoot.animate().cancel();
+                mRoot.setVisibility(View.GONE);
+                mRoot.setTranslationY(0f);
+            }
+        }, 600);
     }
 
     private void applyWindowSize() {
@@ -457,7 +480,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         });
         mShortsOverlay.setOnTouchListener((v, event) -> detector.onTouchEvent(event));
 
-        mRoot.findViewById(R.id.kami_sh_back).setOnClickListener(v -> mActivity.closePlayer());
+        mRoot.findViewById(R.id.kami_sh_search).setOnClickListener(v -> mActivity.openSearch());
         mRoot.findViewById(R.id.kami_sh_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality));
         mRoot.findViewById(R.id.kami_sh_more).setOnClickListener(v -> showVideoMenu());
         mRoot.findViewById(R.id.kami_sh_like).setOnClickListener(v -> clickButton(R.id.action_thumbs_up));
@@ -467,6 +490,19 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         mRoot.findViewById(R.id.kami_sh_share).setOnClickListener(v -> clickButton(R.id.action_share));
         mRoot.findViewById(R.id.kami_sh_channel).setOnClickListener(v -> clickButton(R.id.action_channel));
         mRoot.findViewById(R.id.kami_sh_subscribe).setOnClickListener(v -> clickButton(R.id.action_subscribe));
+
+        // Large icons, as on YouTube
+        int iconSize = WindowSize.dpToPx(mActivity, SHORTS_ICON_DP);
+
+        for (int id : new int[] {R.id.kami_sh_like, R.id.kami_sh_dislike, R.id.kami_sh_comments, R.id.kami_sh_save, R.id.kami_sh_share}) {
+            TextView action = mRoot.findViewById(id);
+            android.graphics.drawable.Drawable[] drawables = action.getCompoundDrawablesRelative();
+
+            if (drawables[1] != null) {
+                drawables[1].setBounds(0, 0, iconSize, iconSize);
+                action.setCompoundDrawablesRelative(null, drawables[1], null, null);
+            }
+        }
     }
 
     private void initLists() {
@@ -528,8 +564,10 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         int rootHeight = mRoot.getHeight();
         boolean videoOnly = mMode == MODE_FULLSCREEN || mMode == MODE_SHORTS;
 
-        sVideoOnlyShown = videoOnly && !mActivity.isInPipMode();
+        // Fullscreen hides the bars. A short keeps them, like the tabs under it.
+        sVideoOnlyShown = mMode == MODE_FULLSCREEN && !mActivity.isInPipMode();
         setSystemBarsHidden(sVideoOnlyShown);
+        setShortsChrome(mMode == MODE_SHORTS);
 
         // Video column and player box
         LinearLayout.LayoutParams mainParams = (LinearLayout.LayoutParams) mMain.getLayoutParams();
@@ -761,6 +799,45 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         MobileScreen.applySystemBars(mActivity);
         MobileScreen.edgeToEdge(mActivity, false);
         window.getDecorView().requestApplyInsets();
+
+        if (mShortsChrome) {
+            paintShortsChrome(true);
+        }
+    }
+
+    /**
+     * Shorts are shown like on YouTube: the panel ends right above the tabs, which turn dark, Home stays under it,
+     * the page around the video is black and the status icons light.
+     */
+    private void setShortsChrome(boolean shorts) {
+        if (mShortsChrome == shorts) {
+            return;
+        }
+
+        mShortsChrome = shorts;
+        mActivity.onShortsShown(shorts);
+
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) mRoot.getLayoutParams();
+        params.bottomMargin = shorts ? mActivity.getTabBarHeight() : 0;
+        mRoot.setLayoutParams(params);
+
+        if (!mSystemBarsHidden) {
+            paintShortsChrome(shorts);
+        }
+    }
+
+    private void paintShortsChrome(boolean shorts) {
+        int background = shorts ? Color.BLACK : color(R.color.kami_ink);
+        mRoot.setBackgroundColor(background);
+        setContentBackground(background);
+
+        if (shorts) {
+            WindowInsetsControllerCompat controller = new WindowInsetsControllerCompat(mActivity.getWindow(), mActivity.getWindow().getDecorView());
+            controller.setAppearanceLightStatusBars(false);
+            controller.setAppearanceLightNavigationBars(false);
+        } else {
+            MobileScreen.applySystemBars(mActivity);
+        }
     }
 
     private void setContentBackground(int color) {

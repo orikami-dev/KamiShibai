@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Shorts: vertical video, actions on the right, channel and title at the bottom left. Always visible. -->
+<!-- Shorts, laid out like the YouTube app: "Shorts" and its buttons on top, the actions in a column on the right,
+     the channel, its subscribe pill and the title at the bottom left, the progress line right above the tabs. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/kami_shorts_overlay"
     android:layout_width="match_parent"
@@ -8,27 +9,43 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="120dp"
+        android:layout_gravity="top"
+        android:background="@drawable/kami_shorts_shade_top" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="260dp"
         android:layout_gravity="bottom"
         android:background="@drawable/kami_shorts_shade" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_gravity="top"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="4dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="4dp">
+
+        <TextView
+            android:id="@+id/kami_sh_heading"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-medium"
+            android:shadowColor="#66000000"
+            android:shadowRadius="3"
+            android:text="@string/kami_shorts_title"
+            android:textColor="@android:color/white"
+            android:textSize="21sp"
+            android:textStyle="bold" />
 
         <ImageButton
-            android:id="@+id/kami_sh_back"
+            android:id="@+id/kami_sh_search"
             style="@style/Kamishibai.OverlayButton"
-            android:contentDescription="@string/kami_back"
-            android:src="@drawable/kami_ic_back" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:contentDescription="@string/kami_search"
+            android:src="@drawable/kami_ic_search" />
 
         <ImageButton
             android:id="@+id/kami_sh_quality"
@@ -46,20 +63,22 @@
     <!-- Paused indicator, in the middle -->
     <ImageView
         android:id="@+id/kami_sh_paused"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="76dp"
+        android:layout_height="76dp"
         android:layout_gravity="center"
         android:background="@drawable/kami_overlay_round"
         android:importantForAccessibility="no"
-        android:padding="18dp"
+        android:padding="20dp"
         android:src="@drawable/kami_ic_play"
         android:visibility="gone" />
 
+    <!-- Actions: large icons, the count or the name under each -->
     <LinearLayout
-        android:layout_width="84dp"
+        android:layout_width="72dp"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="28dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="18dp"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -97,10 +116,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_marginEnd="88dp"
+        android:layout_marginEnd="80dp"
         android:orientation="vertical"
         android:paddingStart="14dp"
-        android:paddingBottom="22dp">
+        android:paddingBottom="20dp">
 
         <LinearLayout
             android:id="@+id/kami_sh_channel"
@@ -111,8 +130,8 @@
 
             <ImageView
                 android:id="@+id/kami_sh_avatar"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:background="@drawable/kami_round_frame"
                 android:clipToOutline="true"
                 android:importantForAccessibility="no"
@@ -123,40 +142,46 @@
                 android:id="@+id/kami_sh_author"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="10dp"
                 android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
                 android:maxLines="1"
-                android:maxWidth="180dp"
+                android:maxWidth="170dp"
+                android:shadowColor="#66000000"
+                android:shadowRadius="3"
                 android:textColor="@android:color/white"
-                android:textSize="15sp"
-                android:fontFamily="sans-serif-medium" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/kami_sh_subscribe"
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_marginStart="10dp"
-                android:background="@drawable/kami_subscribe_button"
+                android:layout_height="32dp"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/kami_shorts_subscribe"
+                android:fontFamily="sans-serif-medium"
                 android:gravity="center"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
                 android:text="@string/kami_subscribe"
-                android:textColor="@color/kami_subscribe_text"
-                android:textSize="13sp"
-                android:fontFamily="sans-serif-medium" />
+                android:textColor="@color/kami_shorts_subscribe_text"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/kami_sh_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="12dp"
             android:ellipsize="end"
+            android:lineSpacingExtra="2dp"
             android:maxLines="2"
+            android:shadowColor="#66000000"
+            android:shadowRadius="3"
             android:textColor="@android:color/white"
-            android:textSize="14sp" />
+            android:textSize="15sp" />
     </LinearLayout>
 
+    <!-- Right above the tabs, like YouTube -->
     <ProgressBar
         android:id="@+id/kami_sh_line"
         style="?android:attr/progressBarStyleHorizontal"

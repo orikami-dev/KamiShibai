@@ -163,16 +163,18 @@
     <style name="Kamishibai.ShortsAction" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">14dp</item>
+        <item name="android:layout_marginTop">10dp</item>
         <item name="android:background">@drawable/kami_ripple_overlay</item>
-        <item name="android:drawablePadding">4dp</item>
+        <item name="android:drawablePadding">2dp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:gravity">center_horizontal</item>
-        <item name="android:maxLines">2</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:padding">4dp</item>
         <item name="android:shadowColor">#99000000</item>
         <item name="android:shadowRadius">3</item>
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">12.5sp</item>
     </style>
 
     <style name="Kamishibai.ActionChip" parent="">

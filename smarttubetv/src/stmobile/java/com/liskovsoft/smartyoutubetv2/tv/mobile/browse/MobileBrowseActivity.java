@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -39,6 +41,9 @@ import com.liskovsoft.smartyoutubetv2.tv.ui.playback.PlaybackActivity;
  * depending on what is shown (see {@link ViewManager.ViewHost}).
  */
 public class MobileBrowseActivity extends PlaybackActivity implements MobilePlaybackFragment.Host, ViewManager.ViewHost {
+    private static final String TAG = "KamiBrowse";
+    // Right after the panel closed, the video it showed isn't opened again unless picked again
+    private static final long REOPEN_GUARD_MS = 1_500;
     // View asked before the screen exists (a link opened from another app): shown once it's created
     private static Class<?> sPendingView;
 
@@ -70,6 +75,8 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
     // The screen the video was opened from (a channel...), shown again when the video closes
     private Class<? extends android.app.Activity> mReturnTo;
     private boolean mClosingApp;
+    private long mClosedAtMs;
+    private String mClosedVideoId;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -262,7 +269,7 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
 
         setPlayerAttached(true);
         mPanel.show(() -> {
-            if (mPlayerShown && mBrowseView != null) {
+            if (mPlayerShown && mBrowseView != null && !mPanel.isShortsShown()) {
                 mBrowseView.setVisibility(View.INVISIBLE); // Home keeps its state, it just stops drawing
             }
         });
@@ -278,15 +285,13 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
         }
 
         mPlayerShown = false;
+        mPendingView = null;
+        Video closed = PlaybackPresenter.instance(this).getVideo();
+        mClosedVideoId = closed != null ? closed.videoId : null;
+        mClosedAtMs = SystemClock.uptimeMillis();
         mPanel.onPause();
 
-        if (mPlayer != null) {
-            mPlayer.blockEngine(false); // no background playback when the panel closes
-            mPlayer.onFinish(); // releases the engine, the presenter saves the position
-        }
-
-        setPlayerAttached(false);
-
+        // The panel goes down first: whatever the engine does while it's released, the screen is Home again
         if (mBrowseView != null) {
             mBrowseView.setVisibility(View.VISIBLE);
         }
@@ -296,6 +301,17 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
                 mBrowse.onPlayerShown(false);
             }
         });
+
+        try {
+            if (mPlayer != null) {
+                mPlayer.blockEngine(false); // no background playback when the panel closes
+                mPlayer.onFinish(); // releases the engine, the presenter saves the position
+            }
+
+            setPlayerAttached(false);
+        } catch (Exception e) {
+            Log.e(TAG, "closePlayer: player release failed", e);
+        }
 
         if (mReturnTo != null) {
             // Opened from a channel or a list page: back there, as before
@@ -353,6 +369,12 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
         }
 
         if (viewClass == PlaybackView.class) {
+            if (isUnwantedReopen()) {
+                // Logged with its caller: what asked for it shows in the logs
+                Log.w(TAG, "showView: ignored reopen of the video just closed", new Exception("caller"));
+                return true;
+            }
+
             showPlayer();
             return true;
         }
@@ -363,6 +385,58 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
         }
 
         return false;
+    }
+
+    /**
+     * Nothing to play, or the video the panel just closed asked again by itself (the user didn't pick it).
+     */
+    private boolean isUnwantedReopen() {
+        if (mPlayerShown) {
+            return false;
+        }
+
+        Video video = PlaybackPresenter.instance(this).getVideo();
+
+        if (video == null) {
+            return true;
+        }
+
+        return SystemClock.uptimeMillis() - mClosedAtMs < REOPEN_GUARD_MS && Helpers.equals(video.videoId, mClosedVideoId);
+    }
+
+    // endregion
+
+    // region Shorts
+
+    /**
+     * Called by the panel when a short starts or ends: Home and its tabs stay under a short, the tabs dark.
+     */
+    public void onShortsShown(boolean shown) {
+        if (mBrowse != null) {
+            mBrowse.setDarkTabs(shown);
+        }
+
+        if (mBrowseView != null) {
+            mBrowseView.setVisibility(shown || !mPlayerShown ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    /**
+     * Height of the tabs at the bottom of Home, 0 when the side rail is used instead.
+     */
+    public int getTabBarHeight() {
+        return mBrowse != null ? mBrowse.getTabBarHeight() : 0;
+    }
+
+    /**
+     * Search button of the Shorts player: the player closes, the search opens on Home.
+     */
+    public void openSearch() {
+        closePlayer();
+
+        if (mBrowse != null) {
+            mBrowse.showSearch();
+        }
     }
 
     // endregion
