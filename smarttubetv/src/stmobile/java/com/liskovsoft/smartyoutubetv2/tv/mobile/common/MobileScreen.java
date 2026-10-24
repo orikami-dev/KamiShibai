@@ -139,9 +139,10 @@ public final class MobileScreen {
         }
 
         View decor = window.getDecorView();
-        boolean night = (activity.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        // Dark icons on a light page, light icons on a dark one: read from the page color of the theme in use
+        boolean darkPage = androidx.core.graphics.ColorUtils.calculateLuminance(KamiTheme.color(activity, R.attr.kamiInk)) < 0.5;
         WindowInsetsControllerCompat controller = new WindowInsetsControllerCompat(window, decor);
-        controller.setAppearanceLightStatusBars(!night);
-        controller.setAppearanceLightNavigationBars(!night);
+        controller.setAppearanceLightStatusBars(!darkPage);
+        controller.setAppearanceLightNavigationBars(!darkPage);
     }
 }

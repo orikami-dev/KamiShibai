@@ -46,7 +46,7 @@
     <string name="kami_scale_percent">%1$d%%</string>
     <string name="kami_set_pip">Picture-in-picture and background</string>
     <string name="kami_set_downloads">Downloads</string>
-    <string name="kami_pip">Picture-in-picture</string>
+    <string name="kami_pip">Mini player</string>
     <string name="kami_download">Download</string>
     <string name="kami_dl_title">Download quality</string>
     <string name="kami_dl_ask">Ask every time</string>
@@ -98,4 +98,7 @@
     <string name="kami_palette_kin_note">Gold</string>
     <string name="kami_group_appearance">Appearance</string>
     <string name="kami_group_playback">Playback</string>
+    <string name="kami_mini_open">Open the player</string>
+    <string name="kami_mini_play">Play or pause</string>
+    <string name="kami_mini_close">Close the player</string>
 </resources>

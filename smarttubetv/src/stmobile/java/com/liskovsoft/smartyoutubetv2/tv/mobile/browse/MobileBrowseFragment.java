@@ -573,7 +573,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
 
     private void onNavSectionClicked(BrowseSection section) {
         if (getActivity() instanceof MobileBrowseActivity) {
-            ((MobileBrowseActivity) getActivity()).closePlayer(); // a tab tapped under a short: the short ends
+            ((MobileBrowseActivity) getActivity()).onTabTapped(); // a short under the tabs ends, the mini player goes on
         }
 
         closeSearch();

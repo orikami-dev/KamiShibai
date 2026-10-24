@@ -66,4 +66,6 @@
     </LinearLayout>
 
     <include layout="@layout/kami_comments_panel" />
+
+    <include layout="@layout/kami_mini_overlay" />
 </FrameLayout>

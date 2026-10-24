@@ -245,6 +245,7 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
      */
     private void showPlayer() {
         if (mPlayerShown) {
+            mPanel.setMini(false); // a video picked on Home under the mini player
             return;
         }
 
@@ -410,6 +411,28 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
     }
 
     /**
+     * Mini player shown or gone: Home is drawn and usable under the card, hidden again under the full player.
+     */
+    public void onMiniShown(boolean mini) {
+        if (mBrowseView != null) {
+            mBrowseView.setVisibility(mini || !mPlayerShown || mPanel.isShortsShown() ? View.VISIBLE : View.INVISIBLE);
+        }
+
+        if (mBrowse != null) {
+            mBrowse.onPlayerShown(!mini);
+        }
+    }
+
+    /**
+     * A tab tapped: a short under it ends, the mini player goes on.
+     */
+    public void onTabTapped() {
+        if (mPlayerShown && !mPanel.isMini()) {
+            closePlayer();
+        }
+    }
+
+    /**
      * Height of the tabs at the bottom of Home, 0 when the side rail is used instead.
      */
     public int getTabBarHeight() {
@@ -434,7 +457,7 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
     @SuppressWarnings("deprecation")
     @Override
     public void onBackPressed() {
-        if (mPlayerShown) {
+        if (mPlayerShown && !mPanel.isMini()) {
             if (!mPanel.onBackPressed()) {
                 closePlayer();
             }

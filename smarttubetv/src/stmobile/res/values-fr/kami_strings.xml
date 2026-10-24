@@ -43,7 +43,7 @@
     <string name="kami_scale_percent">%1$d %%</string>
     <string name="kami_set_pip">Picture-in-picture et arrière-plan</string>
     <string name="kami_set_downloads">Téléchargements</string>
-    <string name="kami_pip">Picture-in-picture</string>
+    <string name="kami_pip">Mini-lecteur</string>
     <string name="kami_download">Télécharger</string>
     <string name="kami_dl_title">Qualité du téléchargement</string>
     <string name="kami_dl_ask">Demander à chaque fois</string>
@@ -95,4 +95,7 @@
     <string name="kami_palette_kin_note">Or</string>
     <string name="kami_group_appearance">Apparence</string>
     <string name="kami_group_playback">Lecture</string>
+    <string name="kami_mini_open">Ouvrir le lecteur</string>
+    <string name="kami_mini_play">Lecture ou pause</string>
+    <string name="kami_mini_close">Fermer le lecteur</string>
 </resources>
