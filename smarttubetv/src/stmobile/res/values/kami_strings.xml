@@ -34,6 +34,8 @@
     <string name="kami_subscribe">Subscribe</string>
     <string name="kami_subscribed">Subscribed</string>
     <string name="kami_close">Close</string>
+    <string name="kami_on">On</string>
+    <string name="kami_off">Off</string>
     <string name="kami_comments_disabled">Comments are turned off</string>
     <string name="kami_comments_live">Live chat is shown on the video</string>
     <string name="kami_no_comments">No comments yet</string>

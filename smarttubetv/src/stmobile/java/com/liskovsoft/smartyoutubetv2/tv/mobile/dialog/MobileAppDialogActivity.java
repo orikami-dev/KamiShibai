@@ -1,11 +1,13 @@
 package com.liskovsoft.smartyoutubetv2.tv.mobile.dialog;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -15,6 +17,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,12 +45,18 @@ import java.util.List;
  * the Android way. Settings and their sub-menus are full screen pages with a top app bar and a back arrow:
  * pick a category, its values open on the next page, back goes up one level.
  * Short menus of actions (the "more" menu of a video) and anything opened over the player
- * stay a bottom sheet, so the video and the page behind remain in sight.
+ * stay a bottom sheet, so the video and the page behind remain in sight.<br/>
+ * A menu opened from a button of the player ({@link DialogAnchor}) grows out of that button and stays inside its
+ * block (the video, the page under it), like the search field in the top bar. Its settings are tiles on about
+ * three rows, as many columns as needed, and the values of a setting open in the same place.
  */
 public class MobileAppDialogActivity extends MobileActivity implements AppDialogView {
     private static final float SHEET_MAX_WIDTH_DP = 520;
     private static final float SHEET_MAX_HEIGHT_RATIO = 0.82f;
     private static final float PAGE_MAX_WIDTH_DP = 720;
+    private static final int MENU_INSET_DP = 6;
+    private static final int MENU_ROWS = 3;
+    private static final int TILE_MIN_WIDTH_DP = 104;
 
     /**
      * One screen of the sheet: the categories of a dialog, the options of one category, or a text.
@@ -104,11 +113,19 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
     private boolean mIsOverlay;
     private boolean mIsPaused;
     private int mId;
+    // Menu grown out of a button, null for the usual sheet and page
+    private DialogAnchor mAnchor;
+    private final Rect mMenuArea = new Rect();
+    private final Rect mMenuButton = new Rect();
+    private int mMenuMaxList;
+    private boolean mMenuShown;
+    private boolean mClosing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mAnchor = DialogAnchor.take();
         mPresenter = AppDialogPresenter.instance(this);
         mPresenter.setView(this);
         // The first show() picks the page or the sheet
@@ -121,7 +138,12 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
 
     private void setupViews(boolean isSheet) {
         mIsSheet = isSheet;
-        setContentView(isSheet ? R.layout.kami_activity_dialog : R.layout.kami_activity_page);
+
+        if (!isSheet) {
+            mAnchor = null; // settings stay pages
+        }
+
+        setContentView(mAnchor != null ? R.layout.kami_activity_dialog_menu : isSheet ? R.layout.kami_activity_dialog : R.layout.kami_activity_page);
 
         if (!isSheet) {
             // The window is see-through for the sheet: a page paints its own background, under the system bars too
@@ -153,6 +175,19 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
             if (WatchPanel.isVideoOnlyShown()) {
                 // Over the fullscreen video the bars stay away, as in the player below
                 MobileScreen.hideSystemBars(this);
+            }
+
+            if (mAnchor != null) {
+                // No window animation: the menu itself grows out of its button once placed
+                overridePendingTransition(0, 0);
+                mSheet.setAlpha(0f);
+                mSheet.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+                    if (r - l != or - ol || b - t != ob - ot) {
+                        placeMenu();
+                    }
+                });
+                mRoot.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> applySize(r - l, b - t));
+                return;
             }
 
             // Rises from the bottom while the scrim fades in
@@ -224,8 +259,32 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
             return;
         }
 
+        if (mClosing) {
+            return;
+        }
+
         if (mPresenter != null && mPresenter.getView() == this) {
             mPresenter.onFinish();
+        }
+
+        if (mAnchor != null && mSheet != null && mMenuShown) {
+            // Back into its button
+            mClosing = true;
+            mSheet.animate().cancel();
+            mSheet.animate()
+                    .alpha(0f)
+                    .scaleX(0.3f)
+                    .scaleY(0.3f)
+                    .setDuration(150)
+                    .setInterpolator(new AccelerateInterpolator())
+                    .withEndAction(() -> {
+                        if (!isFinishing()) {
+                            finishReally();
+                            overridePendingTransition(0, 0);
+                        }
+                    })
+                    .start();
+            return;
         }
 
         finishReally();
@@ -251,6 +310,11 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
 
     private void applySize(int rootWidth, int rootHeight) {
         if (mRoot == null || rootWidth == 0) {
+            return;
+        }
+
+        if (mAnchor != null) {
+            applyMenuSize(rootWidth, rootHeight);
             return;
         }
 
@@ -301,6 +365,150 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
                 mList.setLayoutParams(params);
             }
         });
+    }
+
+    /**
+     * The menu takes the width of its block (up to the sheet width), and at most the block's height:
+     * more than that scrolls inside.
+     */
+    private void applyMenuSize(int rootWidth, int rootHeight) {
+        int[] rootScreen = new int[2];
+        mRoot.getLocationOnScreen(rootScreen);
+        int inset = WindowSize.dpToPx(this, MENU_INSET_DP);
+
+        Rect area = new Rect(mRoot.getPaddingLeft(), mRoot.getPaddingTop(), rootWidth - mRoot.getPaddingRight(), rootHeight - mRoot.getPaddingBottom());
+        Rect block = new Rect(mAnchor.block);
+        block.offset(-rootScreen[0], -rootScreen[1]);
+
+        if (!area.intersect(block)) {
+            // The block went away (rotation...): the whole screen is the block
+            area.set(mRoot.getPaddingLeft(), mRoot.getPaddingTop(), rootWidth - mRoot.getPaddingRight(), rootHeight - mRoot.getPaddingBottom());
+        }
+
+        area.inset(inset, inset);
+        mMenuArea.set(area);
+        mMenuButton.set(mAnchor.button);
+        mMenuButton.offset(-rootScreen[0], -rootScreen[1]);
+
+        int width = Math.max(WindowSize.dpToPx(this, 200), Math.min(area.width(), Math.round(SHEET_MAX_WIDTH_DP * WindowSize.density(this))));
+        mMenuMaxList = Math.max(WindowSize.dpToPx(this, 96), area.height() - mRoot.findViewById(R.id.kami_dialog_header).getLayoutParams().height);
+
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mSheet.getLayoutParams();
+
+        if (lp.width != width) {
+            lp.width = width;
+            mSheet.setLayoutParams(lp);
+        }
+
+        applyListLayout(width);
+        capMenuList();
+        mSheet.post(this::placeMenu);
+    }
+
+    /**
+     * RecyclerView doesn't wrap with a maximum: measure the content and cap it.
+     */
+    private void capMenuList() {
+        mList.post(() -> {
+            int range = mList.computeVerticalScrollRange();
+            ViewGroup.LayoutParams params = mList.getLayoutParams();
+            int wanted = range > mMenuMaxList ? mMenuMaxList : ViewGroup.LayoutParams.WRAP_CONTENT;
+
+            if (params.height != wanted) {
+                params.height = wanted;
+                mList.setLayoutParams(params);
+            }
+        });
+    }
+
+    /**
+     * Next to its button, on the side of the block where there is room, then it grows out of the button
+     * the first time.
+     */
+    private void placeMenu() {
+        int width = mSheet.getWidth();
+        int height = mSheet.getHeight();
+
+        if (mAnchor == null || width == 0 || mMenuArea.isEmpty()) {
+            return;
+        }
+
+        Rect area = mMenuArea;
+        float x = clamp(mMenuButton.centerX() - width / 2f, area.left, area.right - width);
+        // A button low in its block opens the menu upwards, a button high opens it downwards
+        float y = mMenuButton.centerY() > area.centerY() ? area.bottom - height : area.top;
+        y = clamp(y, mRoot.getPaddingTop(), mRoot.getHeight() - mRoot.getPaddingBottom() - height);
+
+        mSheet.setX(x);
+        mSheet.setY(y);
+        mSheet.setPivotX(clamp(mMenuButton.centerX() - x, 0, width));
+        mSheet.setPivotY(clamp(mMenuButton.centerY() - y, 0, height));
+
+        if (!mMenuShown) {
+            mMenuShown = true;
+            mSheet.setScaleX(0.3f);
+            mSheet.setScaleY(0.3f);
+            mSheet.animate()
+                    .alpha(1f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(220)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .start();
+        }
+    }
+
+    private static float clamp(float value, float min, float max) {
+        return max < min ? min : Math.max(min, Math.min(max, value));
+    }
+
+    /**
+     * Tiles for the settings and their values: about {@link #MENU_ROWS} rows, as many columns as that takes
+     * and the width allows. A plain list for menus of actions and texts.
+     */
+    private void applyListLayout(int widthPx) {
+        if (mStack.isEmpty()) {
+            return;
+        }
+
+        RecyclerView.LayoutManager manager = mList.getLayoutManager();
+
+        if (!isGrid(current())) {
+            if (manager instanceof GridLayoutManager || manager == null) {
+                mList.setLayoutManager(new LinearLayoutManager(this));
+            }
+            return;
+        }
+
+        int count = mAdapter.getItemCount();
+        int widthDp = Math.round(widthPx / WindowSize.density(this));
+        int span = Math.max(1, Math.min((count + MENU_ROWS - 1) / MENU_ROWS, widthDp / TILE_MIN_WIDTH_DP));
+
+        if (manager instanceof GridLayoutManager) {
+            if (((GridLayoutManager) manager).getSpanCount() != span) {
+                ((GridLayoutManager) manager).setSpanCount(span);
+            }
+        } else {
+            mList.setLayoutManager(new GridLayoutManager(this, span));
+        }
+    }
+
+    private boolean isGrid(Page page) {
+        if (mAnchor == null || page.kind == Page.TEXT) {
+            return false;
+        }
+
+        if (page.kind == Page.OPTIONS) {
+            return true;
+        }
+
+        for (OptionCategory category : page.categories) {
+            if (category.type != OptionCategory.TYPE_SINGLE_BUTTON) {
+                return true;
+            }
+        }
+
+        return false; // a menu of actions
     }
 
     // endregion
@@ -373,7 +581,7 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
 
     @Override
     public boolean isShown() {
-        return !mIsPaused && !isFinishing();
+        return !mIsPaused && !isFinishing() && !mClosing;
     }
 
     @Override
@@ -411,6 +619,10 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
         mTitle.setText(page.title);
         // A page always has its back arrow (it closes the first page), the sheet has a close button for that
         mBack.setVisibility(canGoBack() || !mIsSheet ? View.VISIBLE : View.GONE);
+        if (mAnchor != null && mSheet.getLayoutParams().width > 0) {
+            applyListLayout(mSheet.getLayoutParams().width);
+        }
+
         mAdapter.notifyDataSetChanged();
         mList.scrollToPosition(0);
         applySize(mRoot.getWidth(), mRoot.getHeight());
@@ -520,6 +732,7 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
     private final class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private static final int TYPE_ROW = 0;
         private static final int TYPE_TEXT = 1;
+        private static final int TYPE_TILE = 2;
 
         @Override
         public int getItemCount() {
@@ -541,13 +754,19 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
 
         @Override
         public int getItemViewType(int position) {
-            return current().kind == Page.TEXT ? TYPE_TEXT : TYPE_ROW;
+            Page page = current();
+            return page.kind == Page.TEXT ? TYPE_TEXT : isGrid(page) ? TYPE_TILE : TYPE_ROW;
         }
 
         @NonNull
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
+            if (viewType == TYPE_TILE) {
+                return new TileHolder(inflater.inflate(R.layout.kami_item_dialog_tile, parent, false));
+            }
+
             int layout = viewType == TYPE_TEXT ? R.layout.kami_item_dialog_text : R.layout.kami_item_dialog_row;
 
             return new RowHolder(inflater.inflate(layout, parent, false));
@@ -555,8 +774,14 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            RowHolder row = (RowHolder) holder;
             Page page = current();
+
+            if (holder instanceof TileHolder) {
+                bindTile((TileHolder) holder, page, position);
+                return;
+            }
+
+            RowHolder row = (RowHolder) holder;
 
             switch (page.kind) {
                 case Page.CATEGORIES:
@@ -600,6 +825,29 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
             }
         }
 
+        private void bindTile(TileHolder tile, Page page, int position) {
+            if (page.kind == Page.OPTIONS) {
+                OptionItem item = page.category.options.get(position);
+                tile.set(item.getTitle(), item.getDescription(), page.isRadio() ? page.selectedIndex == position : page.checked[position]);
+                tile.itemView.setOnClickListener(v -> onOptionClicked(page, tile.getAdapterPosition()));
+                return;
+            }
+
+            OptionCategory category = page.categories.get(position);
+            OptionItem single = category.options != null && category.options.size() == 1 ? category.options.get(0) : null;
+
+            if (category.type == OptionCategory.TYPE_SINGLE_SWITCH && single != null) {
+                boolean on = single.isSelected();
+                tile.set(single.getTitle(), getString(on ? R.string.kami_on : R.string.kami_off), on);
+            } else if (category.type == OptionCategory.TYPE_SINGLE_BUTTON && single != null) {
+                tile.set(single.getTitle(), single.getDescription(), false);
+            } else {
+                tile.set(category.title, summarize(category), false);
+            }
+
+            tile.itemView.setOnClickListener(v -> onCategoryClicked(category));
+        }
+
         private CharSequence summarize(OptionCategory category) {
             if (category.options == null || category.type != OptionCategory.TYPE_RADIO_LIST) {
                 return null;
@@ -632,6 +880,24 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
             }
 
             row.itemView.setOnClickListener(v -> onOptionClicked(page, row.getAdapterPosition()));
+        }
+    }
+
+    private static final class TileHolder extends RecyclerView.ViewHolder {
+        final TextView title;
+        final TextView value;
+
+        TileHolder(View itemView) {
+            super(itemView);
+            title = itemView.findViewById(R.id.kami_tile_title);
+            value = itemView.findViewById(R.id.kami_tile_value);
+        }
+
+        void set(CharSequence name, CharSequence current, boolean picked) {
+            title.setText(name);
+            value.setText(current);
+            value.setVisibility(current != null && current.length() > 0 ? View.VISIBLE : View.GONE);
+            itemView.setActivated(picked);
         }
     }
 

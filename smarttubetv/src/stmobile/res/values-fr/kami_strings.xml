@@ -31,6 +31,8 @@
     <string name="kami_subscribe">S\'abonner</string>
     <string name="kami_subscribed">Abonné</string>
     <string name="kami_close">Fermer</string>
+    <string name="kami_on">Activé</string>
+    <string name="kami_off">Désactivé</string>
     <string name="kami_comments_disabled">Les commentaires sont désactivés</string>
     <string name="kami_comments_live">Le chat en direct s\'affiche sur la vidéo</string>
     <string name="kami_no_comments">Aucun commentaire pour l\'instant</string>

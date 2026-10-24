@@ -50,6 +50,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.adapter.VideoCardAdapter;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.browse.MobileBrowseActivity;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.dialog.DialogAnchor;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiTheme;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileScreen;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.download.DownloadAction;
@@ -404,9 +405,9 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
                 mActivity.closePlayer();
             }
         });
-        mRoot.findViewById(R.id.kami_ov_subtitles).setOnClickListener(v -> clickButton(R.id.lb_control_closed_captioning));
+        mRoot.findViewById(R.id.kami_ov_subtitles).setOnClickListener(v -> clickButton(R.id.lb_control_closed_captioning, v, R.id.kami_player_box));
         mRoot.findViewById(R.id.kami_ov_subtitles).setOnLongClickListener(v -> longClickButton(R.id.lb_control_closed_captioning));
-        mRoot.findViewById(R.id.kami_ov_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality));
+        mRoot.findViewById(R.id.kami_ov_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality, v, R.id.kami_player_box));
         mRoot.findViewById(R.id.kami_ov_pip).setOnClickListener(v -> setMini(true));
         mRoot.findViewById(R.id.kami_ov_previous).setOnClickListener(v -> mPresenter.onPreviousClicked());
         mRoot.findViewById(R.id.kami_ov_next).setOnClickListener(v -> mPresenter.onNextClicked());
@@ -422,7 +423,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         mRoot.findViewById(R.id.kami_ov_like).setOnClickListener(v -> clickButton(R.id.action_thumbs_up));
         mRoot.findViewById(R.id.kami_ov_dislike).setOnClickListener(v -> clickButton(R.id.action_thumbs_down));
         mRoot.findViewById(R.id.kami_ov_comments).setOnClickListener(v -> openComments());
-        mRoot.findViewById(R.id.kami_ov_save).setOnClickListener(v -> clickButton(R.id.action_playlist_add));
+        mRoot.findViewById(R.id.kami_ov_save).setOnClickListener(v -> clickButton(R.id.action_playlist_add, v, R.id.kami_player_box));
         mRoot.findViewById(R.id.kami_ov_share).setOnClickListener(v -> clickButton(R.id.action_share));
         mMoreVideos.setOnClickListener(v -> {
             leaveFullscreen();
@@ -499,12 +500,15 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         mShortsOverlay.setOnTouchListener((v, event) -> detector.onTouchEvent(event));
 
         mRoot.findViewById(R.id.kami_sh_search).setOnClickListener(v -> mActivity.openSearch());
-        mRoot.findViewById(R.id.kami_sh_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality));
-        mRoot.findViewById(R.id.kami_sh_more).setOnClickListener(v -> showVideoMenu());
+        mRoot.findViewById(R.id.kami_sh_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality, v, R.id.kami_player_box));
+        mRoot.findViewById(R.id.kami_sh_more).setOnClickListener(v -> {
+            DialogAnchor.set(v, mRoot.findViewById(R.id.kami_player_box));
+            showVideoMenu();
+        });
         mRoot.findViewById(R.id.kami_sh_like).setOnClickListener(v -> clickButton(R.id.action_thumbs_up));
         mRoot.findViewById(R.id.kami_sh_dislike).setOnClickListener(v -> clickButton(R.id.action_thumbs_down));
         mRoot.findViewById(R.id.kami_sh_comments).setOnClickListener(v -> openComments());
-        mRoot.findViewById(R.id.kami_sh_save).setOnClickListener(v -> clickButton(R.id.action_playlist_add));
+        mRoot.findViewById(R.id.kami_sh_save).setOnClickListener(v -> clickButton(R.id.action_playlist_add, v, R.id.kami_player_box));
         mRoot.findViewById(R.id.kami_sh_share).setOnClickListener(v -> clickButton(R.id.action_share));
         mRoot.findViewById(R.id.kami_sh_channel).setOnClickListener(v -> clickButton(R.id.action_channel));
         mRoot.findViewById(R.id.kami_sh_subscribe).setOnClickListener(v -> clickButton(R.id.action_subscribe));
@@ -1008,6 +1012,35 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         }
     }
 
+    /**
+     * A button whose menu grows out of it and stays inside the given block (the video, the page under it).
+     */
+    private void clickButton(int buttonId, View button, int blockId) {
+        clickButton(buttonId, button, mRoot.findViewById(blockId));
+    }
+
+    private void clickButton(int buttonId, View button, View block) {
+        DialogAnchor.set(button, block);
+        clickButton(buttonId);
+    }
+
+    /**
+     * The list holding a button of the infos: under the video, or beside it on wide screens.
+     */
+    private static View listOf(View view) {
+        View parent = view;
+
+        while (parent.getParent() instanceof View) {
+            parent = (View) parent.getParent();
+
+            if (parent instanceof RecyclerView) {
+                return parent;
+            }
+        }
+
+        return view.getRootView();
+    }
+
     private boolean longClickButton(int buttonId) {
         if (mPlayer != null) {
             mPresenter.onButtonLongClicked(buttonId, mPlayer.getButtonState(buttonId));
@@ -1367,11 +1400,14 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
             view.findViewById(R.id.kami_w_like).setOnClickListener(v -> clickButton(R.id.action_thumbs_up));
             view.findViewById(R.id.kami_w_dislike).setOnClickListener(v -> clickButton(R.id.action_thumbs_down));
             view.findViewById(R.id.kami_w_share).setOnClickListener(v -> clickButton(R.id.action_share));
-            view.findViewById(R.id.kami_w_save).setOnClickListener(v -> clickButton(R.id.action_playlist_add));
-            view.findViewById(R.id.kami_w_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality));
+            view.findViewById(R.id.kami_w_save).setOnClickListener(v -> clickButton(R.id.action_playlist_add, v, listOf(v)));
+            view.findViewById(R.id.kami_w_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality, v, listOf(v)));
             view.findViewById(R.id.kami_w_download).setOnClickListener(v -> DownloadAction.start(mActivity, mVideo));
             view.findViewById(R.id.kami_w_pip).setOnClickListener(v -> setMini(true));
-            view.findViewById(R.id.kami_w_more).setOnClickListener(v -> showVideoMenu());
+            view.findViewById(R.id.kami_w_more).setOnClickListener(v -> {
+                DialogAnchor.set(v, listOf(v));
+                showVideoMenu();
+            });
             view.findViewById(R.id.kami_w_comments).setOnClickListener(v -> openComments());
 
             return view;
