@@ -19,15 +19,32 @@ import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiTheme;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
 
 /**
- * The palettes of the Theme entry, side by side: each one is a small Kamishibai screen painted with it.<br/>
- * A tap saves the palette and rebuilds the screen at once; the Settings tab comes back with it.
+ * The Theme entry: a tap unfolds the palettes, side by side, each one a small Kamishibai screen painted with it.<br/>
+ * A tap on a palette saves it and rebuilds the screen at once; the Settings tab comes back with the palettes unfolded.
  */
 final class ThemePicker {
+    private static boolean sOpen; // kept while the app runs, so that the palettes stay unfolded after a change
+
     private ThemePicker() {
     }
 
     static void bind(View row) {
         Context context = row.getContext();
+        View scroll = row.findViewById(R.id.kami_theme_scroll);
+        View chevron = row.findViewById(R.id.kami_theme_chevron);
+        ((TextView) row.findViewById(R.id.kami_theme_current)).setText(KamiTheme.paletteName(context, KamiTheme.getPalette(context)));
+        scroll.setVisibility(sOpen ? View.VISIBLE : View.GONE);
+        chevron.setRotation(sOpen ? 180 : 0);
+        row.findViewById(R.id.kami_theme_header).setOnClickListener(v -> {
+            sOpen = !sOpen;
+            scroll.setVisibility(sOpen ? View.VISIBLE : View.GONE);
+            chevron.animate().rotation(sOpen ? 180 : 0).setDuration(200).start();
+
+            if (sOpen) {
+                scroll.post(() -> showChosen(scroll));
+            }
+        });
+
         ViewGroup cards = row.findViewById(R.id.kami_theme_cards);
         cards.removeAllViews();
         int current = KamiTheme.getPalette(context);
@@ -42,10 +59,24 @@ final class ThemePicker {
             card.setContentDescription(KamiTheme.paletteName(context, palette) + ", " + KamiTheme.paletteNote(context, palette));
             card.setOnClickListener(v -> choose(v.getContext(), palette));
             cards.addView(card);
+        }
 
-            if (palette == current) {
-                // The chosen palette is in sight even when it is the last one
-                card.post(() -> row.<View>findViewById(R.id.kami_theme_scroll).scrollTo(Math.max(0, card.getLeft() - card.getWidth()), 0));
+        if (sOpen) {
+            scroll.post(() -> showChosen(scroll));
+        }
+    }
+
+    /**
+     * The chosen palette is in sight even when it is the last one.
+     */
+    private static void showChosen(View scroll) {
+        ViewGroup cards = scroll.findViewById(R.id.kami_theme_cards);
+
+        for (int i = 0; i < cards.getChildCount(); i++) {
+            View card = cards.getChildAt(i);
+
+            if (card.isActivated()) {
+                scroll.scrollTo(Math.max(0, card.getLeft() - card.getWidth()), 0);
             }
         }
     }
