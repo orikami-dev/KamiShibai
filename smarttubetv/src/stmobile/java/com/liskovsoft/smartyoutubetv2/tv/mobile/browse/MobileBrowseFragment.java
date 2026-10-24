@@ -81,6 +81,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
     private View mSearchBar;
     private View mSearchHost;
     private MobileSearchFragment mSearch;
+    private int mKeyboardHeight;
     private TextView mPageTitle;
     private View mNotificationsButton;
     private RecyclerView mDrawer;
@@ -285,7 +286,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
     };
 
     private void setupNavigation() {
-        mBottom.setVisibility(mIsDrawer ? View.GONE : View.VISIBLE);
+        mBottom.setVisibility(mIsDrawer || mKeyboardHeight > 0 ? View.GONE : View.VISIBLE);
         mDrawer.setVisibility(mIsDrawer ? View.VISIBLE : View.GONE);
 
         if (mIsDrawer) {
@@ -617,6 +618,30 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
     @Override
     public void onSearchClosed() {
         closeSearch();
+    }
+
+    /**
+     * Keyboard height over the content, 0 when it's closed. The keyboard covers the tabs (hidden meanwhile)
+     * and the lists end right above it, so the suggestions and results get all the room left.
+     */
+    public void onKeyboardChanged(int height) {
+        if (mRoot == null || mKeyboardHeight == height) {
+            return;
+        }
+
+        mKeyboardHeight = height;
+        mBottom.setVisibility(mIsDrawer || height > 0 ? View.GONE : View.VISIBLE);
+        int padding = height > 0 ? Math.max(0, height) : 0;
+        mRoot.setPadding(mRoot.getPaddingLeft(), mRoot.getPaddingTop(), mRoot.getPaddingRight(), padding);
+    }
+
+    /**
+     * The watch panel goes over Home (true) or leaves it (false). Home keeps its place and its search.
+     */
+    public void onPlayerShown(boolean shown) {
+        if (shown && mSearch != null) {
+            mSearch.hideKeyboard();
+        }
     }
 
     private void animateSearch(boolean open, Runnable onEnd) {

@@ -39,6 +39,7 @@
             android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.browse.MobileBrowseActivity"
             android:launchMode="singleInstance"
             android:resizeableActivity="true"
+            android:supportsPictureInPicture="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="unspecified" />
@@ -85,16 +86,7 @@
             android:screenOrientation="unspecified"
             android:theme="@style/Kamishibai.Theme.Dialog" />
 
-        <!-- Watch page: same flags as the upstream player (PIP, lock screen), plus fold/unfold without restart -->
-        <activity
-            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.watch.MobilePlaybackActivity"
-            android:launchMode="singleInstance"
-            android:resizeableActivity="true"
-            android:supportsPictureInPicture="true"
-            android:showWhenLocked="true"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
-            android:screenOrientation="unspecified"
-            android:theme="@style/Kamishibai.Theme.Player" />
+        <!-- The watch page is a panel of the main screen since v9 (MobileBrowseActivity) -->
 
         <!-- Video downloads, one at a time, with a progress notification -->
         <service

@@ -23,7 +23,6 @@ import com.liskovsoft.smartyoutubetv2.tv.mobile.channeluploads.MobileChannelUplo
 import com.liskovsoft.smartyoutubetv2.tv.mobile.dialog.MobileAppDialogActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.search.MobileSearchActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.signin.MobileSignInActivity;
-import com.liskovsoft.smartyoutubetv2.tv.mobile.watch.MobilePlaybackActivity;
 import com.liskovsoft.smartyoutubetv2.tv.ui.main.MainApplication;
 
 /**
@@ -79,7 +78,9 @@ public class KamishibaiApplication extends MainApplication {
         viewManager.register(SearchView.class, MobileSearchActivity.class, root);
         viewManager.register(ChannelView.class, MobileChannelActivity.class, root);
         viewManager.register(ChannelUploadsView.class, MobileChannelUploadsActivity.class, root);
-        viewManager.register(PlaybackView.class, MobilePlaybackActivity.class, root);
+        // The player is a panel of the main screen, see MobileBrowseActivity (a ViewManager.ViewHost)
+        viewManager.register(PlaybackView.class, root);
+        viewManager.setViewHost(root, MobileBrowseActivity.EARLY_HOST);
         viewManager.register(SignInView.class, MobileSignInActivity.class, root);
 
         // Untouched upstream screens. Only their parent changes.

@@ -30,7 +30,7 @@ import com.liskovsoft.smartyoutubetv2.tv.R;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileScreen;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
-import com.liskovsoft.smartyoutubetv2.tv.mobile.watch.MobilePlaybackActivity;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.watch.WatchPanel;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.PlaybackActivity;
 
 import java.util.ArrayList;
@@ -150,7 +150,7 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
             // The scrim covers the bars, the sheet stays above the navigation bar and the keyboard
             MobileScreen.padForBars(mRoot, true);
 
-            if (MobilePlaybackActivity.isVideoOnlyShown()) {
+            if (WatchPanel.isVideoOnlyShown()) {
                 // Over the fullscreen video the bars stay away, as in the player below
                 MobileScreen.hideSystemBars(this);
             }

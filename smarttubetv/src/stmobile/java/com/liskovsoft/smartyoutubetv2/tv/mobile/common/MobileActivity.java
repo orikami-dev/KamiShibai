@@ -16,6 +16,16 @@ import com.liskovsoft.smartyoutubetv2.tv.ui.common.LeanbackActivity;
  * transparent system bars and no window animation between screens.
  */
 public abstract class MobileActivity extends LeanbackActivity {
+    // Last screen in front, weakly held: the main screen goes back to it when a video opened from it closes
+    private static java.lang.ref.WeakReference<android.app.Activity> sLastResumed = new java.lang.ref.WeakReference<>(null);
+
+    public static void setLastResumed(android.app.Activity activity) {
+        sLastResumed = new java.lang.ref.WeakReference<>(activity);
+    }
+
+    public static android.app.Activity getLastResumed() {
+        return sLastResumed.get();
+    }
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(MobileScreen.scaled(base));
@@ -41,6 +51,7 @@ public abstract class MobileActivity extends LeanbackActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        setLastResumed(this);
 
         if (MobileScreen.needsNewScale(this)) {
             recreate(); // the scale was changed in the settings

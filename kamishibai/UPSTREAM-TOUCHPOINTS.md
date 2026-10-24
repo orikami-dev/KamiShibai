@@ -6,6 +6,7 @@ Everything else is new files, so upstream updates merge without conflicts.
 |---|---|---|
 | `smarttubetv/build.gradle` | last 3 lines: `apply from: 'kamishibai.gradle'` | keep upstream's file, re-add the 3 lines at the end |
 | `common/.../misc/MotherActivity.java` | `isTvDensityEnabled()` hook (11 lines) used by `initDpi()` | keep upstream's version, re-add the hook: `initDpi()` returns early when the hook is false |
+| `common/.../app/views/ViewManager.java` | `ViewHost` hook (~40 lines): one activity hosts several views (Home + player). `startView()` asks the host first, `getTopView()` asks it which view is on screen | keep upstream's version, re-add the interface, `setViewHost()`, the block at the top of `startView()` and the one in `getTopView()` |
 
 ## New files (never in upstream, never conflict)
 

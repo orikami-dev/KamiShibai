@@ -152,11 +152,14 @@
 
                 <ImageButton
                     android:id="@+id/kami_w_dislike"
-                    android:layout_width="48dp"
+                    android:layout_width="46dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/kami_action_half"
                     android:contentDescription="@string/kami_dislike"
-                    android:padding="8dp"
+                    android:paddingStart="10dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/kami_ic_thumb_down"
                     android:tint="@color/kami_text" />

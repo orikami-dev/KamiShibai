@@ -51,7 +51,7 @@
         android:layout_gravity="center"
         android:background="@drawable/kami_overlay_round"
         android:importantForAccessibility="no"
-        android:padding="16dp"
+        android:padding="18dp"
         android:src="@drawable/kami_ic_play"
         android:visibility="gone" />
 

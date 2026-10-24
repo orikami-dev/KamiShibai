@@ -112,22 +112,39 @@
     </style>
 
     <!-- Watch page -->
+    <!-- Player buttons share one grid: every icon is 24dp (bars, pill), the transport row is 28dp and 36dp -->
     <style name="Kamishibai.OverlayButton" parent="">
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
-        <item name="android:padding">11dp</item>
+        <item name="android:padding">12dp</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:background">@drawable/kami_ripple_overlay</item>
         <item name="android:tint">@android:color/white</item>
     </style>
 
     <style name="Kamishibai.OverlaySmallButton" parent="">
-        <item name="android:layout_width">40dp</item>
-        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">44dp</item>
         <item name="android:padding">10dp</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:background">@drawable/kami_ripple_overlay</item>
         <item name="android:tint">@android:color/white</item>
+    </style>
+
+    <!-- Previous and next: same round as play, smaller -->
+    <style name="Kamishibai.TransportButton" parent="">
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">@drawable/kami_overlay_round</item>
+        <item name="android:tint">@android:color/white</item>
+    </style>
+
+    <style name="Kamishibai.TransportButton.Main">
+        <item name="android:layout_width">72dp</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="android:padding">18dp</item>
     </style>
 
     <style name="Kamishibai.OverlayPill" parent="">

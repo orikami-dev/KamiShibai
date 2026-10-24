@@ -40,6 +40,9 @@ public class ViewManager {
     private static ViewManager sInstance;
     private final Context mContext;
     private final Map<Class<?>, Class<? extends Activity>> mViewMapping;
+    // Kamishibai: one activity may show several views (Home and the player). It tells which one is on screen and switches by itself.
+    private ViewHost mViewHost;
+    private Class<? extends Activity> mViewHostClass;
     private final Map<Class<? extends Activity>, Class<? extends Activity>> mParentMapping;
     private final Stack<Class<? extends Activity>> mActivityStack;
     private Class<? extends Activity> mRootActivity;
@@ -71,6 +74,30 @@ public class ViewManager {
         register(viewClass, activityClass, null);
     }
 
+    /**
+     * An activity that hosts several views.
+     */
+    public interface ViewHost {
+        /**
+         * The view shown by the activity right now, or null to fall back to the registry.
+         */
+        Class<?> getCurrentView();
+
+        /**
+         * Asked to show the view. True when done on the spot, false when the activity has to be started first.
+         */
+        boolean showView(Class<?> viewClass);
+    }
+
+    public void setViewHost(Class<? extends Activity> activityClass, ViewHost host) {
+        mViewHostClass = activityClass;
+        mViewHost = host;
+    }
+
+    public ViewHost getViewHost() {
+        return mViewHost;
+    }
+
     public void register(Class<?> viewClass, Class<? extends Activity> activityClass, Class<? extends Activity> parentActivityClass) {
         mViewMapping.put(viewClass, activityClass);
 
@@ -88,6 +115,10 @@ public class ViewManager {
     }
     
     public Class<?> getView(Class<? extends Activity> activityClass) {
+        if (mViewHost != null && activityClass == mViewHostClass && mViewHost.getCurrentView() != null) {
+            return mViewHost.getCurrentView();
+        }
+
         return Helpers.getKey(mViewMapping, activityClass);
     }
 
@@ -108,6 +139,16 @@ public class ViewManager {
      * On running activity, this method invokes standard activity lifecycle: pause, resume etc...
      */
     public void startView(Class<?> viewClass, boolean forceStart) {
+        // The host activity switches between its views without being restarted
+        if (mViewHost != null && mViewHostClass != null && mViewMapping.get(viewClass) == mViewHostClass) {
+            boolean shown = mViewHost.showView(viewClass);
+
+            if (shown && Utils.isAppInForegroundFixed() && getTopActivity() == mViewHostClass) {
+                mIsMoveToBackEnabled = false;
+                return;
+            }
+        }
+
         // Skip starting activity twice to get rid of pausing/resuming activity cycle
         if (Utils.isAppInForegroundFixed() && getTopView() == viewClass) {
             return;
@@ -357,6 +398,14 @@ public class ViewManager {
 
         if (topActivity == null) {
             return null;
+        }
+
+        if (mViewHost != null && topActivity == mViewHostClass) {
+            Class<?> current = mViewHost.getCurrentView();
+
+            if (current != null) {
+                return current;
+            }
         }
 
         for (Map.Entry<Class<?>, Class<? extends Activity>> entry: mViewMapping.entrySet()) {

@@ -27,7 +27,17 @@ public class MobilePlaybackFragment extends PlaybackFragment {
     }
 
     private Host host() {
+        // The main screen forwards to its watch panel
         return getActivity() instanceof Host ? (Host) getActivity() : null;
+    }
+
+    /**
+     * The main screen uses the touch theme; the upstream player controls (kept hidden) need the player theme.
+     */
+    @Override
+    public android.view.LayoutInflater onGetLayoutInflater(android.os.Bundle savedInstanceState) {
+        android.view.LayoutInflater inflater = super.onGetLayoutInflater(savedInstanceState);
+        return inflater.cloneInContext(new android.view.ContextThemeWrapper(inflater.getContext(), com.liskovsoft.smartyoutubetv2.tv.R.style.Kamishibai_Theme_Player));
     }
 
     @Override

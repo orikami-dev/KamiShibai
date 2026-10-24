@@ -1,5 +1,6 @@
 package com.liskovsoft.smartyoutubetv2.tv.mobile.watch;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -8,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.content.res.Configuration;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.GestureDetector;
@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.Window;
@@ -33,11 +34,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.TextViewCompat;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,10 +48,10 @@ import com.liskovsoft.smartyoutubetv2.common.app.models.playback.manager.PlayerU
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.adapter.VideoCardAdapter;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.browse.MobileBrowseActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileScreen;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.download.DownloadAction;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
-import com.liskovsoft.smartyoutubetv2.tv.ui.playback.PlaybackActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +60,11 @@ import java.util.List;
  * Watch page for phones, foldables and tablets.<br/>
  * The video keeps its 16:9 box with the infos, actions, comments card and suggestions below it (portrait),
  * or the suggestions beside it (wide landscape). Fullscreen only on demand, or when a folded phone is turned.
- * Shorts get a vertical page of their own. Playback itself is the upstream player, untouched.
+ * Shorts get a vertical page of their own. Playback itself is the upstream player, untouched.<br/>
+ * Since v9 the page is a panel of the main screen ({@link MobileBrowseActivity}): it rises over Home when a video
+ * is picked and goes down when the player closes, Home stays underneath as it was.
  */
-public class MobilePlaybackActivity extends PlaybackActivity implements MobilePlaybackFragment.Host, WatchController.Callback {
+public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.Callback {
     private static final int MODE_STACKED = 0; // portrait: video, then infos and suggestions
     private static final int MODE_SPLIT = 1; // wide landscape: video and infos on the left, suggestions on the right
     private static final int MODE_FULLSCREEN = 2;
@@ -77,12 +76,17 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
     private static final float PANEL_MIN_WIDTH_DP = 360;
     private static final long PROGRESS_INTERVAL_MS = 500;
 
-    private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private PlaybackPresenter mPresenter;
-    private WatchController mController;
-    private MobilePlaybackFragment mPlayer;
+    private static final long PANEL_ANIMATION_MS = 260;
 
-    private View mRoot;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final MobileBrowseActivity mActivity;
+    private final PlaybackPresenter mPresenter;
+    private final WatchController mController;
+    private final MobilePlaybackFragment mPlayer;
+    private boolean mShown;
+    private boolean mResumed;
+
+    private final View mRoot;
     private View mMain;
     private FrameLayout mPlayerBox;
     private RecyclerView mList;
@@ -131,19 +135,12 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         }
     };
 
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(MobileScreen.scaled(base));
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState); // inflates the flavor's fragment_playback: the watch page
-
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(getString(R.string.playback_tag));
-        mPlayer = fragment instanceof MobilePlaybackFragment ? (MobilePlaybackFragment) fragment : null;
-        mPresenter = PlaybackPresenter.instance(this);
-        mController = WatchController.install(mPresenter);
+    public WatchPanel(MobileBrowseActivity activity, View root, MobilePlaybackFragment player, PlaybackPresenter presenter, WatchController controller) {
+        mActivity = activity;
+        mRoot = root;
+        mPlayer = player;
+        mPresenter = presenter;
+        mController = controller;
 
         initViews();
         initOverlay();
@@ -160,175 +157,218 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         });
 
         mController.setCallback(this);
-        mRoot.post(() -> mWindowReady = true);
-        MobileScreen.applySystemBars(this);
-        initEdgeToEdge();
-        // The watch page rises over the screen below, like a sheet
-        overridePendingTransition(R.anim.kami_slide_up_in, R.anim.kami_stay);
-    }
-
-    /**
-     * The window stops padding itself under the bars (that padding showed the black window background):
-     * the content frame takes the page color and pads itself, except while the video is alone on screen.
-     */
-    private void initEdgeToEdge() {
-        MobileScreen.edgeToEdge(this, false);
-        View content = findViewById(android.R.id.content);
-
-        if (content == null) {
-            return;
-        }
-
-        content.setBackgroundResource(R.color.kami_ink);
-        ViewCompat.setOnApplyWindowInsetsListener(content, (v, insets) -> {
-            if (mSystemBarsHidden) {
-                v.setPadding(0, 0, 0, 0);
-            } else {
-                Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
-                v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
-            }
-
-            return WindowInsetsCompat.CONSUMED;
-        });
-        ViewCompat.requestApplyInsets(content);
+        mRoot.setVisibility(View.GONE);
     }
 
     public static boolean isVideoOnlyShown() {
         return sVideoOnlyShown;
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(R.anim.kami_stay, R.anim.kami_slide_down_out);
+    public boolean isShown() {
+        return mShown;
     }
 
-    @Override
-    public void finishReally() {
-        super.finishReally();
-        overridePendingTransition(R.anim.kami_stay, R.anim.kami_slide_down_out);
+    /**
+     * Bars hidden by the panel (fullscreen, Shorts): the screen must not pad itself.
+     */
+    public boolean isSystemBarsHidden() {
+        return mSystemBarsHidden;
     }
 
-    @Override
-    protected boolean isTvDensityEnabled() {
-        return false; // real density: controls keep their physical size
-    }
+    // region Panel over Home
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (MobileScreen.needsNewScale(this)) {
-            recreate(); // the scale was changed in the settings
+    /**
+     * The panel rises from the bottom over Home. Called once the player fragment is attached.
+     */
+    public void show(Runnable onShown) {
+        if (mShown) {
+            if (onShown != null) {
+                onShown.run();
+            }
             return;
         }
 
-        mHandler.post(mProgressUpdater);
+        mShown = true;
+        mWindowReady = false;
+        mRoot.animate().cancel();
+        mRoot.setVisibility(View.VISIBLE);
+        mRoot.setAlpha(1f);
+        mRoot.post(() -> {
+            if (!mShown) {
+                return;
+            }
 
-        if (mPlayer != null) {
-            onOverlayShown(mPlayer.isOverlayShown());
+            mWindowSize = null; // force a layout pass for the sizes of this screen
+            applyWindowSize();
+            mRoot.setTranslationY(mRoot.getHeight());
+            mRoot.animate().translationY(0f).setDuration(PANEL_ANIMATION_MS).setInterpolator(new DecelerateInterpolator())
+                    .withEndAction(() -> {
+                        mWindowReady = true;
+
+                        if (onShown != null) {
+                            onShown.run();
+                        }
+                    }).start();
+        });
+    }
+
+    /**
+     * The panel goes down, Home is back as it was. The player must be released by the caller.
+     */
+    public void hide(Runnable onHidden) {
+        if (!mShown) {
+            if (onHidden != null) {
+                onHidden.run();
+            }
+            return;
+        }
+
+        mShown = false;
+        mComments.hide();
+        mUserFullscreen = false;
+        mRelated.clear();
+        mVideo = null;
+        mMetadata = null;
+        sVideoOnlyShown = false;
+
+        if (Build.VERSION.SDK_INT != 26) {
+            mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        }
+
+        setSystemBarsHidden(false);
+        mRoot.animate().cancel();
+        mRoot.animate().translationY(mRoot.getHeight()).setDuration(220).setInterpolator(new AccelerateInterpolator())
+                .withEndAction(() -> {
+                    if (!mShown) {
+                        mRoot.setVisibility(View.GONE);
+                        mRoot.setTranslationY(0f);
+                    }
+
+                    if (onHidden != null) {
+                        onHidden.run();
+                    }
+                }).start();
+    }
+
+    private void applyWindowSize() {
+        if (mRoot.getWidth() == 0) {
+            return;
+        }
+
+        WindowSize size = WindowSize.of(mRoot);
+
+        if (!size.sameAs(mWindowSize)) {
+            mWindowSize = size;
+            applyLayout();
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+    // endregion
+
+    // region Lifecycle, driven by the activity
+
+    public void onResume() {
+        mResumed = true;
+
+        if (!mShown) {
+            return;
+        }
+
+        mHandler.removeCallbacks(mProgressUpdater);
+        mHandler.post(mProgressUpdater);
+        onOverlayShown(mPlayer.isOverlayShown());
+    }
+
+    public void onPause() {
+        mResumed = false;
         mHandler.removeCallbacks(mProgressUpdater);
     }
 
-    @Override
-    protected void onDestroy() {
-        if (mController != null) {
-            mController.setCallback(null);
-        }
-
+    public void release() {
+        mHandler.removeCallbacksAndMessages(null);
+        mController.setCallback(null);
         mComments.release();
         mRelated.release();
         mInfoOnly.release();
-        sVideoOnlyShown = false;
-        super.onDestroy();
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public void onBackPressed() {
+    /**
+     * Back key while the panel is shown. True when the panel handled it (comments closed, fullscreen left);
+     * false when the panel itself should close.
+     */
+    public boolean onBackPressed() {
         if (mComments.goBack()) {
-            return;
+            return true;
         }
 
         if (mUserFullscreen) {
             setUserFullscreen(false);
-            return;
+            return true;
         }
 
-        if (mMode == MODE_FULLSCREEN && isShortLandscape() && !isInPipMode()) {
+        if (mMode == MODE_FULLSCREEN && isShortLandscape() && !mActivity.isInPipMode()) {
             // Fullscreen because the folded phone is turned: back leaves fullscreen, it doesn't leave the video
             leaveFullscreen();
-            return;
+            return true;
         }
 
-        super.onBackPressed();
+        return false;
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        if (MobileScreen.needsNewScale(this, newConfig)) {
-            recreate();
-            return;
+    public void onConfigurationChanged() {
+        if (mShown) {
+            // The window may keep its size (e.g. 180° turn): layout listener won't fire
+            mRoot.post(this::applyLayout);
         }
-
-        // The window may keep its size (e.g. 180° turn): layout listener won't fire
-        mRoot.post(this::applyLayout);
     }
 
-    @Override
-    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
-        super.onPictureInPictureModeChanged(isInPictureInPictureMode);
-        mRoot.post(this::applyLayout);
+    public void onPipChanged() {
+        if (mShown) {
+            mRoot.post(this::applyLayout);
+        }
     }
+
+    // endregion
 
     // region Views
 
     private void initViews() {
-        mRoot = findViewById(R.id.kami_watch_root);
-        mMain = findViewById(R.id.kami_watch_main);
-        mPlayerBox = findViewById(R.id.kami_player_box);
-        mList = findViewById(R.id.kami_watch_list);
-        mSide = findViewById(R.id.kami_watch_side);
-        mComments = new CommentsPanel(findViewById(R.id.kami_comments), null);
+        mMain = mRoot.findViewById(R.id.kami_watch_main);
+        mPlayerBox = mRoot.findViewById(R.id.kami_player_box);
+        mList = mRoot.findViewById(R.id.kami_watch_list);
+        mSide = mRoot.findViewById(R.id.kami_watch_side);
+        mComments = new CommentsPanel(mRoot.findViewById(R.id.kami_comments), null);
         mComments.setController(mController);
     }
 
     private void initOverlay() {
-        mControls = findViewById(R.id.kami_ov_controls);
-        mLine = findViewById(R.id.kami_ov_line);
-        mSeek = findViewById(R.id.kami_ov_seek);
-        mTime = findViewById(R.id.kami_ov_time);
-        mChapter = findViewById(R.id.kami_ov_chapter);
-        mPlay = findViewById(R.id.kami_ov_play);
-        mFullscreenButton = findViewById(R.id.kami_ov_fullscreen);
-        mOverlayTitle = findViewById(R.id.kami_ov_title);
-        mFullActions = findViewById(R.id.kami_ov_full_actions);
-        mMoreVideos = findViewById(R.id.kami_ov_more_videos);
+        mControls = mRoot.findViewById(R.id.kami_ov_controls);
+        mLine = mRoot.findViewById(R.id.kami_ov_line);
+        mSeek = mRoot.findViewById(R.id.kami_ov_seek);
+        mTime = mRoot.findViewById(R.id.kami_ov_time);
+        mChapter = mRoot.findViewById(R.id.kami_ov_chapter);
+        mPlay = mRoot.findViewById(R.id.kami_ov_play);
+        mFullscreenButton = mRoot.findViewById(R.id.kami_ov_fullscreen);
+        mOverlayTitle = mRoot.findViewById(R.id.kami_ov_title);
+        mFullActions = mRoot.findViewById(R.id.kami_ov_full_actions);
+        mMoreVideos = mRoot.findViewById(R.id.kami_ov_more_videos);
 
         // Tap outside the buttons: hide the controls
         mControls.setOnClickListener(v -> hideControls());
 
-        findViewById(R.id.kami_ov_collapse).setOnClickListener(v -> {
+        mRoot.findViewById(R.id.kami_ov_collapse).setOnClickListener(v -> {
             if (mMode == MODE_FULLSCREEN) {
                 leaveFullscreen();
             } else {
-                onBackPressed();
+                mActivity.closePlayer();
             }
         });
-        findViewById(R.id.kami_ov_subtitles).setOnClickListener(v -> clickButton(R.id.lb_control_closed_captioning));
-        findViewById(R.id.kami_ov_subtitles).setOnLongClickListener(v -> longClickButton(R.id.lb_control_closed_captioning));
-        findViewById(R.id.kami_ov_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality));
-        findViewById(R.id.kami_ov_pip).setOnClickListener(v -> clickButton(R.id.action_pip));
-        findViewById(R.id.kami_ov_previous).setOnClickListener(v -> mPresenter.onPreviousClicked());
-        findViewById(R.id.kami_ov_next).setOnClickListener(v -> mPresenter.onNextClicked());
+        mRoot.findViewById(R.id.kami_ov_subtitles).setOnClickListener(v -> clickButton(R.id.lb_control_closed_captioning));
+        mRoot.findViewById(R.id.kami_ov_subtitles).setOnLongClickListener(v -> longClickButton(R.id.lb_control_closed_captioning));
+        mRoot.findViewById(R.id.kami_ov_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality));
+        mRoot.findViewById(R.id.kami_ov_pip).setOnClickListener(v -> clickButton(R.id.action_pip));
+        mRoot.findViewById(R.id.kami_ov_previous).setOnClickListener(v -> mPresenter.onPreviousClicked());
+        mRoot.findViewById(R.id.kami_ov_next).setOnClickListener(v -> mPresenter.onNextClicked());
         mPlay.setOnClickListener(v -> togglePlayback());
         mFullscreenButton.setOnClickListener(v -> {
             if (mMode == MODE_FULLSCREEN) {
@@ -338,11 +378,11 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
             }
         });
 
-        findViewById(R.id.kami_ov_like).setOnClickListener(v -> clickButton(R.id.action_thumbs_up));
-        findViewById(R.id.kami_ov_dislike).setOnClickListener(v -> clickButton(R.id.action_thumbs_down));
-        findViewById(R.id.kami_ov_comments).setOnClickListener(v -> openComments());
-        findViewById(R.id.kami_ov_save).setOnClickListener(v -> clickButton(R.id.action_playlist_add));
-        findViewById(R.id.kami_ov_share).setOnClickListener(v -> clickButton(R.id.action_share));
+        mRoot.findViewById(R.id.kami_ov_like).setOnClickListener(v -> clickButton(R.id.action_thumbs_up));
+        mRoot.findViewById(R.id.kami_ov_dislike).setOnClickListener(v -> clickButton(R.id.action_thumbs_down));
+        mRoot.findViewById(R.id.kami_ov_comments).setOnClickListener(v -> openComments());
+        mRoot.findViewById(R.id.kami_ov_save).setOnClickListener(v -> clickButton(R.id.action_playlist_add));
+        mRoot.findViewById(R.id.kami_ov_share).setOnClickListener(v -> clickButton(R.id.action_share));
         mMoreVideos.setOnClickListener(v -> {
             leaveFullscreen();
             // Infos stay on top, the first suggestions right under them
@@ -360,6 +400,12 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
                 mSeeking = true;
+                Object running = seekBar.getTag(R.id.kami_progress_animator);
+
+                if (running instanceof ObjectAnimator) {
+                    ((ObjectAnimator) running).cancel();
+                }
+
             }
 
             @Override
@@ -377,12 +423,12 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
 
     @SuppressLint("ClickableViewAccessibility")
     private void initShortsOverlay() {
-        mShortsOverlay = findViewById(R.id.kami_shorts_overlay);
-        mShortsLine = findViewById(R.id.kami_sh_line);
-        mShortsPaused = findViewById(R.id.kami_sh_paused);
+        mShortsOverlay = mRoot.findViewById(R.id.kami_shorts_overlay);
+        mShortsLine = mRoot.findViewById(R.id.kami_sh_line);
+        mShortsPaused = mRoot.findViewById(R.id.kami_sh_paused);
 
         // Tap: play/pause. Swipe up: next short. Swipe down: previous one.
-        GestureDetector detector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+        GestureDetector detector = new GestureDetector(mActivity, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDown(MotionEvent e) {
                 return true;
@@ -411,16 +457,16 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         });
         mShortsOverlay.setOnTouchListener((v, event) -> detector.onTouchEvent(event));
 
-        findViewById(R.id.kami_sh_back).setOnClickListener(v -> onBackPressed());
-        findViewById(R.id.kami_sh_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality));
-        findViewById(R.id.kami_sh_more).setOnClickListener(v -> showVideoMenu());
-        findViewById(R.id.kami_sh_like).setOnClickListener(v -> clickButton(R.id.action_thumbs_up));
-        findViewById(R.id.kami_sh_dislike).setOnClickListener(v -> clickButton(R.id.action_thumbs_down));
-        findViewById(R.id.kami_sh_comments).setOnClickListener(v -> openComments());
-        findViewById(R.id.kami_sh_save).setOnClickListener(v -> clickButton(R.id.action_playlist_add));
-        findViewById(R.id.kami_sh_share).setOnClickListener(v -> clickButton(R.id.action_share));
-        findViewById(R.id.kami_sh_channel).setOnClickListener(v -> clickButton(R.id.action_channel));
-        findViewById(R.id.kami_sh_subscribe).setOnClickListener(v -> clickButton(R.id.action_subscribe));
+        mRoot.findViewById(R.id.kami_sh_back).setOnClickListener(v -> mActivity.closePlayer());
+        mRoot.findViewById(R.id.kami_sh_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality));
+        mRoot.findViewById(R.id.kami_sh_more).setOnClickListener(v -> showVideoMenu());
+        mRoot.findViewById(R.id.kami_sh_like).setOnClickListener(v -> clickButton(R.id.action_thumbs_up));
+        mRoot.findViewById(R.id.kami_sh_dislike).setOnClickListener(v -> clickButton(R.id.action_thumbs_down));
+        mRoot.findViewById(R.id.kami_sh_comments).setOnClickListener(v -> openComments());
+        mRoot.findViewById(R.id.kami_sh_save).setOnClickListener(v -> clickButton(R.id.action_playlist_add));
+        mRoot.findViewById(R.id.kami_sh_share).setOnClickListener(v -> clickButton(R.id.action_share));
+        mRoot.findViewById(R.id.kami_sh_channel).setOnClickListener(v -> clickButton(R.id.action_channel));
+        mRoot.findViewById(R.id.kami_sh_subscribe).setOnClickListener(v -> clickButton(R.id.action_subscribe));
     }
 
     private void initLists() {
@@ -443,8 +489,8 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
 
         mRelated = new VideoCardAdapter(VideoCardAdapter.STYLE_GRID, listener);
         mInfoOnly = new VideoCardAdapter(VideoCardAdapter.STYLE_GRID, null);
-        mList.setLayoutManager(new GridLayoutManager(this, 1));
-        mSide.setLayoutManager(new LinearLayoutManager(this));
+        mList.setLayoutManager(new GridLayoutManager(mActivity, 1));
+        mSide.setLayoutManager(new LinearLayoutManager(mActivity));
     }
 
     // endregion
@@ -452,7 +498,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
     // region Layout: stacked, split, fullscreen, shorts
 
     private int computeMode() {
-        if (isInPipMode()) {
+        if (mActivity.isInPipMode()) {
             return MODE_FULLSCREEN;
         }
 
@@ -473,7 +519,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
     }
 
     private void applyLayout() {
-        if (mWindowSize == null || mRoot.getWidth() == 0) {
+        if (!mShown || mWindowSize == null || mRoot.getWidth() == 0) {
             return;
         }
 
@@ -482,7 +528,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         int rootHeight = mRoot.getHeight();
         boolean videoOnly = mMode == MODE_FULLSCREEN || mMode == MODE_SHORTS;
 
-        sVideoOnlyShown = videoOnly && !isInPipMode();
+        sVideoOnlyShown = videoOnly && !mActivity.isInPipMode();
         setSystemBarsHidden(sVideoOnlyShown);
 
         // Video column and player box
@@ -531,7 +577,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         }
 
         // Comments panel: under the video in portrait, on the side otherwise
-        View panel = findViewById(R.id.kami_comments);
+        View panel = mRoot.findViewById(R.id.kami_comments);
         FrameLayout.LayoutParams panelParams = (FrameLayout.LayoutParams) panel.getLayoutParams();
 
         if (mMode == MODE_STACKED) {
@@ -543,7 +589,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
             panelParams.height = Math.round(rootHeight * 0.66f);
             panelParams.gravity = Gravity.BOTTOM;
         } else {
-            int minWidth = WindowSize.dpToPx(this, PANEL_MIN_WIDTH_DP);
+            int minWidth = WindowSize.dpToPx(mActivity, PANEL_MIN_WIDTH_DP);
             int width = mMode == MODE_SPLIT ? rootWidth - mainParams.width : Math.round(rootWidth * 0.4f);
             panelParams.width = Math.min(rootWidth, Math.max(minWidth, width));
             panelParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -553,9 +599,9 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         panel.setLayoutParams(panelParams);
 
         // Overlays
-        boolean pip = isInPipMode();
+        boolean pip = mActivity.isInPipMode();
         mShortsOverlay.setVisibility(mMode == MODE_SHORTS && !pip ? View.VISIBLE : View.GONE);
-        findViewById(R.id.kami_overlay).setVisibility(mMode == MODE_SHORTS || pip ? View.GONE : View.VISIBLE);
+        mRoot.findViewById(R.id.kami_overlay).setVisibility(mMode == MODE_SHORTS || pip ? View.GONE : View.VISIBLE);
         mOverlayTitle.setVisibility(mMode == MODE_FULLSCREEN ? View.VISIBLE : View.INVISIBLE);
         mFullActions.setVisibility(mMode == MODE_FULLSCREEN ? View.VISIBLE : View.GONE);
         mMoreVideos.setVisibility(mMode == MODE_FULLSCREEN && !isShortLandscape() ? View.VISIBLE : View.GONE);
@@ -596,7 +642,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         boolean smallScreen = mWindowSize != null && Math.min(mWindowSize.physicalWidthDp, mWindowSize.physicalHeightDp) < TWO_COLUMNS_MIN_DP;
 
         if (smallScreen && Build.VERSION.SDK_INT != 26) {
-            setRequestedOrientation(fullscreen ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            mActivity.setRequestedOrientation(fullscreen ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
         applyLayout();
@@ -610,8 +656,8 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
             setUserFullscreen(false);
         } else if (isShortLandscape() && Build.VERSION.SDK_INT != 26) {
             // Fullscreen because the folded phone is turned: put it back upright
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT);
-            mHandler.postDelayed(() -> setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED), 3_000);
+            mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT);
+            mHandler.postDelayed(() -> mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED), 3_000);
         }
     }
 
@@ -636,7 +682,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
      */
     @SuppressWarnings("deprecation")
     private void enterImmersive() {
-        Window window = getWindow();
+        Window window = mActivity.getWindow();
         mFitted.clear();
 
         for (ViewParent parent = mRoot.getParent(); parent instanceof View && parent != window.getDecorView(); parent = parent.getParent()) {
@@ -682,8 +728,8 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
 
     @SuppressWarnings("deprecation")
     private void leaveImmersive() {
-        Window window = getWindow();
-        int ink = getColor(R.color.kami_ink);
+        Window window = mActivity.getWindow();
+        int ink = color(R.color.kami_ink);
 
         for (View view : mFitted) {
             view.setFitsSystemWindows(true);
@@ -712,13 +758,13 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
             window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
 
-        MobileScreen.applySystemBars(this);
-        MobileScreen.edgeToEdge(this, false);
+        MobileScreen.applySystemBars(mActivity);
+        MobileScreen.edgeToEdge(mActivity, false);
         window.getDecorView().requestApplyInsets();
     }
 
     private void setContentBackground(int color) {
-        View content = findViewById(android.R.id.content);
+        View content = mActivity.findViewById(android.R.id.content);
 
         if (content != null) {
             content.setBackgroundColor(color);
@@ -773,7 +819,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
     }
 
     private void updateOverlayVisibility() {
-        boolean show = mOverlayShown && mMode != MODE_SHORTS && !isInPipMode();
+        boolean show = mOverlayShown && mMode != MODE_SHORTS && !mActivity.isInPipMode();
         mLine.setVisibility(show || mMode == MODE_FULLSCREEN ? View.GONE : View.VISIBLE);
 
         if (show == mControlsShown) {
@@ -789,9 +835,9 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
      * They fade out faster than they came.
      */
     private void animateControls(boolean show) {
-        View top = findViewById(R.id.kami_ov_top);
-        View center = findViewById(R.id.kami_ov_center);
-        float slide = 12 * getResources().getDisplayMetrics().density;
+        View top = mRoot.findViewById(R.id.kami_ov_top);
+        View center = mRoot.findViewById(R.id.kami_ov_center);
+        float slide = 12 * mActivity.getResources().getDisplayMetrics().density;
 
         mControls.animate().cancel();
         top.animate().cancel();
@@ -833,12 +879,12 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         int progress = duration > 0 ? (int) (position * 1000 / duration) : 0;
 
         if (!mSeeking) {
-            mSeek.setProgress(progress);
+            animateProgress(mSeek, progress);
             mTime.setText(formatTime(position, duration));
         }
 
-        mLine.setProgress(progress);
-        mShortsLine.setProgress(progress);
+        animateProgress(mLine, progress);
+        animateProgress(mShortsLine, progress);
 
         boolean playing = mPlayer.getPlayWhenReady();
 
@@ -852,6 +898,32 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         String chapter = findChapter(position);
         mChapter.setVisibility(chapter != null ? View.VISIBLE : View.GONE);
         mChapter.setText(chapter);
+    }
+
+    /**
+     * The bar glides to the new position over the refresh interval, so it moves continuously instead of by steps.
+     * A jump (seek, new video) or a move back is drawn at once.
+     */
+    private void animateProgress(ProgressBar bar, int target) {
+        Object running = bar.getTag(R.id.kami_progress_animator);
+
+        if (running instanceof ObjectAnimator) {
+            ((ObjectAnimator) running).cancel();
+        }
+
+        int current = bar.getProgress();
+        int step = target - current;
+
+        if (step <= 0 || step > 60 || !bar.isShown() || !mWindowReady) {
+            bar.setProgress(target);
+            return;
+        }
+
+        ObjectAnimator animator = ObjectAnimator.ofInt(bar, "progress", current, target);
+        animator.setDuration(PROGRESS_INTERVAL_MS);
+        animator.setInterpolator(new LinearInterpolator());
+        bar.setTag(R.id.kami_progress_animator, animator);
+        animator.start();
     }
 
     private String findChapter(long positionMs) {
@@ -895,11 +967,11 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         String message = null;
 
         if (mMetadata == null) {
-            message = getString(R.string.kami_no_comments);
+            message = mActivity.getString(R.string.kami_no_comments);
         } else if (mMetadata.getLiveChatKey() != null) {
-            message = getString(R.string.kami_comments_live);
+            message = mActivity.getString(R.string.kami_comments_live);
         } else if (mMetadata.getCommentsKey() == null) {
-            message = getString(R.string.kami_comments_disabled);
+            message = mActivity.getString(R.string.kami_comments_disabled);
         }
 
         hideControls();
@@ -973,7 +1045,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
         int action = event.getActionMasked();
 
         if (action == MotionEvent.ACTION_DOWN) {
-            mPlayerGesture = isInside(mPlayerBox, event) && !(mComments.isShown() && isInside(findViewById(R.id.kami_comments), event));
+            mPlayerGesture = isInside(mPlayerBox, event) && !(mComments.isShown() && isInside(mRoot.findViewById(R.id.kami_comments), event));
         }
 
         if (!mPlayerGesture) {
@@ -1063,7 +1135,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
             view.findViewById(R.id.kami_w_share).setOnClickListener(v -> clickButton(R.id.action_share));
             view.findViewById(R.id.kami_w_save).setOnClickListener(v -> clickButton(R.id.action_playlist_add));
             view.findViewById(R.id.kami_w_quality).setOnClickListener(v -> clickButton(R.id.lb_control_high_quality));
-            view.findViewById(R.id.kami_w_download).setOnClickListener(v -> DownloadAction.start(MobilePlaybackActivity.this, mVideo));
+            view.findViewById(R.id.kami_w_download).setOnClickListener(v -> DownloadAction.start(mActivity, mVideo));
             view.findViewById(R.id.kami_w_pip).setOnClickListener(v -> clickButton(R.id.action_pip));
             view.findViewById(R.id.kami_w_more).setOnClickListener(v -> showVideoMenu());
             view.findViewById(R.id.kami_w_comments).setOnClickListener(v -> openComments());
@@ -1101,7 +1173,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
 
             String description = metadata != null ? metadata.getDescription() : null;
             boolean hasDescription = description != null && !description.isEmpty();
-            String more = getString(R.string.kami_show_more);
+            String more = mActivity.getString(R.string.kami_show_more);
             setText(view, R.id.kami_w_meta, meta != null && hasDescription && !mDescriptionExpanded ? meta + "  " + more : meta);
             TextView descriptionView = view.findViewById(R.id.kami_w_description);
             descriptionView.setVisibility(mDescriptionExpanded && hasDescription ? View.VISIBLE : View.GONE);
@@ -1121,7 +1193,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
             boolean disliked = getState(R.id.action_thumbs_down) == PlayerUI.BUTTON_ON;
             TextView like = view.findViewById(R.id.kami_w_like);
             String likeCount = metadata != null ? metadata.getLikeCount() : null;
-            like.setText(likeCount != null ? likeCount : getString(R.string.kami_like));
+            like.setText(likeCount != null ? likeCount : mActivity.getString(R.string.kami_like));
             tint(like, liked);
             ((ImageView) view.findViewById(R.id.kami_w_dislike)).setColorFilter(color(disliked ? R.color.kami_accent : R.color.kami_text));
 
@@ -1132,7 +1204,7 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
             boolean live = metadata != null && metadata.getLiveChatKey() != null;
             boolean off = metadata != null && !live && metadata.getCommentsKey() == null;
             view.findViewById(R.id.kami_w_comments).setVisibility(live ? View.GONE : View.VISIBLE);
-            commentsTitle.setText(off ? getString(R.string.kami_comments_disabled) : getString(R.string.kami_comments));
+            commentsTitle.setText(off ? mActivity.getString(R.string.kami_comments_disabled) : mActivity.getString(R.string.kami_comments));
             topComment.setVisibility(top != null && !off ? View.VISIBLE : View.GONE);
 
             if (top != null) {
@@ -1156,20 +1228,20 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
             String author = metadata != null && metadata.getAuthor() != null ? metadata.getAuthor() : video != null ? video.getAuthor() : null;
 
             mOverlayTitle.setText(title);
-            ((TextView) findViewById(R.id.kami_ov_like_count)).setText(likeCount);
-            ((ImageView) findViewById(R.id.kami_ov_like)).setColorFilter(liked ? accent : 0xFFFFFFFF);
-            ((ImageView) findViewById(R.id.kami_ov_dislike)).setColorFilter(disliked ? accent : 0xFFFFFFFF);
+            ((TextView) mRoot.findViewById(R.id.kami_ov_like_count)).setText(likeCount);
+            ((ImageView) mRoot.findViewById(R.id.kami_ov_like)).setColorFilter(liked ? accent : 0xFFFFFFFF);
+            ((ImageView) mRoot.findViewById(R.id.kami_ov_dislike)).setColorFilter(disliked ? accent : 0xFFFFFFFF);
 
-            TextView shortsLike = findViewById(R.id.kami_sh_like);
-            shortsLike.setText(likeCount != null ? likeCount : getString(R.string.kami_like));
+            TextView shortsLike = mRoot.findViewById(R.id.kami_sh_like);
+            shortsLike.setText(likeCount != null ? likeCount : mActivity.getString(R.string.kami_like));
             TextViewCompat.setCompoundDrawableTintList(shortsLike, ColorStateList.valueOf(liked ? accent : 0xFFFFFFFF));
-            TextViewCompat.setCompoundDrawableTintList(findViewById(R.id.kami_sh_dislike), ColorStateList.valueOf(disliked ? accent : 0xFFFFFFFF));
-            ((TextView) findViewById(R.id.kami_sh_title)).setText(title);
-            ((TextView) findViewById(R.id.kami_sh_author)).setText(author);
-            TextView shortsSubscribe = findViewById(R.id.kami_sh_subscribe);
+            TextViewCompat.setCompoundDrawableTintList(mRoot.findViewById(R.id.kami_sh_dislike), ColorStateList.valueOf(disliked ? accent : 0xFFFFFFFF));
+            ((TextView) mRoot.findViewById(R.id.kami_sh_title)).setText(title);
+            ((TextView) mRoot.findViewById(R.id.kami_sh_author)).setText(author);
+            TextView shortsSubscribe = mRoot.findViewById(R.id.kami_sh_subscribe);
             shortsSubscribe.setSelected(subscribed);
             shortsSubscribe.setText(subscribed ? R.string.kami_subscribed : R.string.kami_subscribe);
-            CommentsPanel.loadAvatar(findViewById(R.id.kami_sh_avatar), metadata != null ? metadata.getAuthorImageUrl() : null);
+            CommentsPanel.loadAvatar(mRoot.findViewById(R.id.kami_sh_avatar), metadata != null ? metadata.getAuthorImageUrl() : null);
         }
 
         private int getState(int buttonId) {
@@ -1201,6 +1273,6 @@ public class MobilePlaybackActivity extends PlaybackActivity implements MobilePl
     }
 
     private int color(int colorResId) {
-        return ContextCompat.getColor(this, colorResId);
+        return ContextCompat.getColor(mActivity, colorResId);
     }
 }

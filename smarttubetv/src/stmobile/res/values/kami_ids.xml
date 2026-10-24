@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tag holding the running progress animation of a bar -->
+    <item name="kami_progress_animator" type="id" />
+</resources>
