@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="AspectFrameLayout">
+        <attr name="kamiRatio" format="float" />
+    </declare-styleable>
+
     <!-- Colors of the interface theme (palette). Defaults in Kamishibai.Theme.Base, the other palettes in kami_themes.xml -->
     <attr name="kamiInk" format="color" />
     <attr name="kamiSurface" format="color" />
