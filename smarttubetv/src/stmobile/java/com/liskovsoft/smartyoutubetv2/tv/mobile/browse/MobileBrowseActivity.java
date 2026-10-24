@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.liskovsoft.sharedutils.helpers.Helpers;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
+import com.liskovsoft.smartyoutubetv2.common.app.presenters.AppDialogPresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.views.BrowseView;
 import com.liskovsoft.smartyoutubetv2.common.app.views.PlaybackView;
@@ -69,7 +70,6 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
     private WatchPanel mPanel;
     private DoubleBackManager2 mDoubleBack;
     private boolean mPlayerShown;
-    private boolean mPlayerAttached;
     private boolean mResumed;
     private Class<?> mPendingView;
     // The screen the video was opened from (a channel...), shown again when the video closes
@@ -101,10 +101,6 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
         PlaybackPresenter presenter = PlaybackPresenter.instance(this);
         WatchController controller = WatchController.install(presenter);
         mPanel = new WatchPanel(this, findViewById(R.id.kami_watch_root), mPlayer, presenter, controller);
-
-        // No engine while nothing plays: the player fragment sleeps until a video is picked
-        mPlayerAttached = true;
-        setPlayerAttached(false);
 
         ViewManager.instance(this).setViewHost(MobileBrowseActivity.class, this);
         mPendingView = sPendingView;
@@ -238,24 +234,10 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
     // region Player panel
 
     /**
-     * The player fragment lives in the layout (the upstream activity needs it from the start) but sleeps,
-     * detached, while no video is shown: no engine, no timers. Attaching it starts the engine, which loads the
-     * video the presenter holds.
+     * The player fragment lives in the layout (the upstream activity needs it from the start) and stays attached:
+     * a fragment declared in a layout can't be detached for real (seen on device, v9). While the panel is hidden
+     * it has no engine (see MobilePlaybackFragment.onResume); showing the panel starts one for the picked video.
      */
-    private void setPlayerAttached(boolean attached) {
-        if (mPlayer == null || mPlayerAttached == attached) {
-            return;
-        }
-
-        mPlayerAttached = attached;
-
-        if (attached) {
-            getSupportFragmentManager().beginTransaction().attach(mPlayer).commitNowAllowingStateLoss();
-        } else {
-            getSupportFragmentManager().beginTransaction().detach(mPlayer).commitNowAllowingStateLoss();
-        }
-    }
-
     private void showPlayer() {
         if (mPlayerShown) {
             return;
@@ -267,7 +249,10 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
             mBrowse.onPlayerShown(true);
         }
 
-        setPlayerAttached(true);
+        if (mPlayer != null) {
+            mPlayer.ensureEngine(); // released when the panel closed: the picked video needs a new one
+        }
+
         mPanel.show(() -> {
             if (mPlayerShown && mBrowseView != null && !mPanel.isShortsShown()) {
                 mBrowseView.setVisibility(View.INVISIBLE); // Home keeps its state, it just stops drawing
@@ -307,8 +292,6 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
                 mPlayer.blockEngine(false); // no background playback when the panel closes
                 mPlayer.onFinish(); // releases the engine, the presenter saves the position
             }
-
-            setPlayerAttached(false);
         } catch (Exception e) {
             Log.e(TAG, "closePlayer: player release failed", e);
         }
@@ -549,7 +532,8 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
      */
     @Override
     public void onUserLeaveHint() {
-        if (mPlayerShown) {
+        // A menu sheet opening over the video is not leaving the app: no PIP, no engine kept for the background
+        if (mPlayerShown && !AppDialogPresenter.instance(this).isDialogShown()) {
             super.onUserLeaveHint();
         }
     }
@@ -586,6 +570,11 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
     @Override
     public void onButtonStateChanged(int buttonId, int buttonState) {
         mPanel.onButtonStateChanged(buttonId, buttonState);
+    }
+
+    @Override
+    public boolean isPanelShown() {
+        return mPlayerShown;
     }
 
     @Override

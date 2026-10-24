@@ -27,6 +27,11 @@ public class MobilePlaybackFragment extends PlaybackFragment {
         void onButtonStateChanged(int buttonId, int buttonState);
 
         /**
+         * The watch panel is on screen. While it's hidden the player keeps no engine.
+         */
+        boolean isPanelShown();
+
+        /**
          * The touch event in player coordinates, or null when the touch is elsewhere (infos, suggestions, comments).
          */
         MotionEvent toPlayerEvent(MotionEvent event);
@@ -54,6 +59,30 @@ public class MobilePlaybackFragment extends PlaybackFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         Helpers.setField(this, "mSelectedVideoId", null);
         super.onActivityCreated(savedInstanceState);
+    }
+
+    /**
+     * The fragment stays attached under Home: coming back to the app must not start an engine (and the last
+     * video with it) behind a hidden panel.
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Host host = host();
+
+        if (host != null && !host.isPanelShown()) {
+            maybeReleasePlayer();
+        }
+    }
+
+    /**
+     * The panel opens: the engine released when it last closed is created again, it loads the presenter's video.
+     */
+    public void ensureEngine() {
+        if (getView() != null && Helpers.getField(this, "mPlayer") == null) {
+            restartEngine();
+        }
     }
 
     @Override

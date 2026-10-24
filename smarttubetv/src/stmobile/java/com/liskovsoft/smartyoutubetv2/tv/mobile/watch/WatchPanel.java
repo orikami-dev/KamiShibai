@@ -188,7 +188,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
     // region Panel over Home
 
     /**
-     * The panel rises from the bottom over Home. Called once the player fragment is attached.
+     * The panel rises from the bottom over Home. Called once the engine is asked for the picked video.
      */
     public void show(Runnable onShown) {
         if (mShown) {
@@ -1058,6 +1058,11 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
     // endregion
 
     // region MobilePlaybackFragment.Host
+
+    @Override
+    public boolean isPanelShown() {
+        return mShown;
+    }
 
     @Override
     public void onOverlayShown(boolean shown) {
