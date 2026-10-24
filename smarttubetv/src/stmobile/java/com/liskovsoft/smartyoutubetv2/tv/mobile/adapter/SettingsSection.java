@@ -25,6 +25,7 @@ import com.liskovsoft.smartyoutubetv2.common.utils.AppDialogUtil;
 import com.liskovsoft.smartyoutubetv2.common.utils.SimpleEditDialog;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.smartyoutubetv2.tv.R;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiTheme;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.UiScale;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.download.DownloadAction;
@@ -153,10 +154,34 @@ public class SettingsSection implements MobileSection {
 
     private List<SettingsItem> phoneItems() {
         List<SettingsItem> items = new ArrayList<>();
+        items.add(new SettingsItem(mContext.getString(R.string.kami_set_theme), this::showThemeDialog));
         items.add(new SettingsItem(mContext.getString(R.string.kami_set_interface), this::showScaleDialog));
         items.add(new SettingsItem(mContext.getString(R.string.kami_set_pip), this::showBackgroundDialog));
         items.add(new SettingsItem(mContext.getString(R.string.kami_set_downloads), () -> DownloadAction.showSettings(mContext)));
         return items;
+    }
+
+    /**
+     * Appearance (system, light, dark) and palette. The screens are rebuilt with the new theme when they come back.
+     */
+    private void showThemeDialog() {
+        AppDialogPresenter dialog = AppDialogPresenter.instance(mContext);
+        int mode = KamiTheme.getMode(mContext);
+        int palette = KamiTheme.getPalette(mContext);
+        List<OptionItem> modes = new ArrayList<>();
+        List<OptionItem> palettes = new ArrayList<>();
+
+        for (int choice : KamiTheme.MODES) {
+            modes.add(UiOptionItem.from(KamiTheme.modeName(mContext, choice), item -> KamiTheme.setMode(mContext, choice), choice == mode));
+        }
+
+        for (int choice : KamiTheme.PALETTES) {
+            palettes.add(UiOptionItem.from(KamiTheme.paletteName(mContext, choice), item -> KamiTheme.setPalette(mContext, choice), choice == palette));
+        }
+
+        dialog.appendRadioCategory(mContext.getString(R.string.kami_theme_mode), modes);
+        dialog.appendRadioCategory(mContext.getString(R.string.kami_theme_palette), palettes);
+        dialog.showDialog(mContext.getString(R.string.kami_set_theme));
     }
 
     private void showScaleDialog() {

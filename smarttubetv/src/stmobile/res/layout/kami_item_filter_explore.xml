@@ -9,4 +9,4 @@
     android:padding="7dp"
     android:scaleType="fitCenter"
     android:src="@drawable/kami_ic_explore"
-    android:tint="@color/kami_text" />
+    android:tint="?attr/kamiText" />

@@ -50,6 +50,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.adapter.VideoCardAdapter;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.browse.MobileBrowseActivity;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiTheme;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileScreen;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.download.DownloadAction;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
@@ -767,7 +768,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
     @SuppressWarnings("deprecation")
     private void leaveImmersive() {
         Window window = mActivity.getWindow();
-        int ink = color(R.color.kami_ink);
+        int ink = color(R.attr.kamiInk);
 
         for (View view : mFitted) {
             view.setFitsSystemWindows(true);
@@ -827,7 +828,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
     }
 
     private void paintShortsChrome(boolean shorts) {
-        int background = shorts ? Color.BLACK : color(R.color.kami_ink);
+        int background = shorts ? Color.BLACK : color(R.attr.kamiInk);
         mRoot.setBackgroundColor(background);
         setContentBackground(background);
 
@@ -1277,7 +1278,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
             String likeCount = metadata != null ? metadata.getLikeCount() : null;
             like.setText(likeCount != null ? likeCount : mActivity.getString(R.string.kami_like));
             tint(like, liked);
-            ((ImageView) view.findViewById(R.id.kami_w_dislike)).setColorFilter(color(disliked ? R.color.kami_accent : R.color.kami_text));
+            ((ImageView) view.findViewById(R.id.kami_w_dislike)).setColorFilter(color(disliked ? R.attr.kamiAccent : R.attr.kamiText));
 
             // Comments card
             TextView commentsTitle = view.findViewById(R.id.kami_w_comments_title);
@@ -1305,7 +1306,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
             boolean liked = getState(R.id.action_thumbs_up) == PlayerUI.BUTTON_ON;
             boolean disliked = getState(R.id.action_thumbs_down) == PlayerUI.BUTTON_ON;
             boolean subscribed = getState(R.id.action_subscribe) == PlayerUI.BUTTON_ON;
-            int accent = color(R.color.kami_accent);
+            int accent = color(R.attr.kamiAccent);
             String title = metadata != null && metadata.getTitle() != null ? metadata.getTitle() : video != null ? video.getTitle() : null;
             String author = metadata != null && metadata.getAuthor() != null ? metadata.getAuthor() : video != null ? video.getAuthor() : null;
 
@@ -1335,7 +1336,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         }
 
         private void tint(TextView view, boolean active) {
-            TextViewCompat.setCompoundDrawableTintList(view, ColorStateList.valueOf(color(active ? R.color.kami_accent : R.color.kami_text)));
+            TextViewCompat.setCompoundDrawableTintList(view, ColorStateList.valueOf(color(active ? R.attr.kamiAccent : R.attr.kamiText)));
         }
 
         private void setText(View root, int id, CharSequence text) {
@@ -1354,7 +1355,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         }
     }
 
-    private int color(int colorResId) {
-        return ContextCompat.getColor(mActivity, colorResId);
+    private int color(int attr) {
+        return KamiTheme.color(mActivity, attr);
     }
 }

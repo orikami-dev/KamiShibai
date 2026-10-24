@@ -8,5 +8,5 @@
     android:paddingTop="20dp"
     android:paddingEnd="24dp"
     android:paddingBottom="6dp"
-    android:textColor="@color/kami_accent"
+    android:textColor="?attr/kamiAccent"
     android:textSize="14sp" />

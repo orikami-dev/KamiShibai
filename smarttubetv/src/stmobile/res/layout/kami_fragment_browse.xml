@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/kami_ink"
+    android:background="?attr/kamiInk"
     android:orientation="vertical">
 
     <!-- Top bar: logo and name on the left, notifications and search on the right.
@@ -157,7 +157,7 @@
                     android:layout_height="4dp"
                     android:layout_gravity="top"
                     android:indeterminate="true"
-                    android:indeterminateTint="@color/kami_accent"
+                    android:indeterminateTint="?attr/kamiAccent"
                     android:visibility="gone" />
             </FrameLayout>
         </LinearLayout>
@@ -167,7 +167,7 @@
         android:id="@+id/kami_search_host"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/kami_ink"
+        android:background="?attr/kamiInk"
         android:visibility="gone" />
     </FrameLayout>
 

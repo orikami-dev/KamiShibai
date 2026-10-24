@@ -42,6 +42,7 @@ import com.liskovsoft.smartyoutubetv2.tv.mobile.adapter.MobileSection;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.adapter.SettingsSection;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.adapter.VideoCardAdapter;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.Fonts;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiTheme;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
 
 import java.util.ArrayList;
@@ -157,8 +158,8 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
         mChipsView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         mChipsView.setAdapter(mChipsAdapter);
 
-        mRefresh.setColorSchemeResources(R.color.kami_accent);
-        mRefresh.setProgressBackgroundColorSchemeResource(R.color.kami_surface_high);
+        mRefresh.setColorSchemeColors(KamiTheme.color(requireContext(), R.attr.kamiAccent));
+        mRefresh.setProgressBackgroundColorSchemeColor(KamiTheme.color(requireContext(), R.attr.kamiSurfaceHigh));
         mRefresh.setOnRefreshListener(() -> {
             // The spinner stays while the page reloads, see showProgressBar. Safety stop if nothing comes back.
             mHandler.removeCallbacks(mStopRefreshing);

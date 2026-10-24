@@ -12,7 +12,7 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:src="@drawable/kami_ic_error"
-        android:tint="@color/kami_text_secondary"
+        android:tint="?attr/kamiTextSecondary"
         android:importantForAccessibility="no" />
 
     <TextView
@@ -22,7 +22,7 @@
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:maxWidth="420dp"
-        android:textColor="@color/kami_text"
+        android:textColor="?attr/kamiText"
         android:textSize="16sp" />
 
     <Button
@@ -36,6 +36,6 @@
         android:paddingEnd="24dp"
         android:stateListAnimator="@null"
         android:textAllCaps="false"
-        android:textColor="@android:color/white"
+        android:textColor="?attr/kamiOnAccent"
         android:textSize="15sp" />
 </LinearLayout>

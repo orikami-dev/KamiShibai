@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="@color/kami_text"
+                android:textColor="?attr/kamiText"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-medium"
                 android:lineSpacingExtra="1dp" />
@@ -95,7 +95,7 @@
                 android:layout_marginTop="2dp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="@color/kami_text_secondary"
+                android:textColor="?attr/kamiTextSecondary"
                 android:textSize="13.5sp" />
         </LinearLayout>
 
@@ -109,6 +109,6 @@
             android:padding="10dp"
             android:scaleType="fitCenter"
             android:src="@drawable/kami_ic_more_horiz"
-            android:tint="@color/kami_text_secondary" />
+            android:tint="?attr/kamiTextSecondary" />
     </LinearLayout>
 </LinearLayout>

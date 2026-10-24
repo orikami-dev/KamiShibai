@@ -16,6 +16,7 @@ import com.liskovsoft.smartyoutubetv2.tv.ui.common.LeanbackActivity;
  * transparent system bars and no window animation between screens.
  */
 public abstract class MobileActivity extends LeanbackActivity {
+    private int mThemeStamp = -1; // theme the screen was built with
     // Last screen in front, weakly held: the main screen goes back to it when a video opened from it closes
     private static java.lang.ref.WeakReference<android.app.Activity> sLastResumed = new java.lang.ref.WeakReference<>(null);
 
@@ -53,8 +54,8 @@ public abstract class MobileActivity extends LeanbackActivity {
         super.onResume();
         setLastResumed(this);
 
-        if (MobileScreen.needsNewScale(this)) {
-            recreate(); // the scale was changed in the settings
+        if (MobileScreen.needsNewScale(this) || mThemeStamp != KamiTheme.stamp(this)) {
+            recreate(); // the scale or the theme was changed in the settings
             return;
         }
 
@@ -86,6 +87,8 @@ public abstract class MobileActivity extends LeanbackActivity {
     @Override
     protected void initTheme() {
         setTheme(R.style.Kamishibai_Theme);
+        KamiTheme.applyPalette(this);
+        mThemeStamp = KamiTheme.stamp(this);
     }
 
     @Override

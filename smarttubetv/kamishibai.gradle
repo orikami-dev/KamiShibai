@@ -6,7 +6,7 @@ android {
         stmobile {
             applicationId "com.orikami.kamishibai"
             versionNameSuffix "-kamishibai"
-            minSdkVersion 21
+            minSdkVersion 23 // the interface colors are theme attributes (palettes), also used in color state lists
             targetSdkVersion project.properties.compileSdkVersion
             // Library modules only know the TV flavors. F-Droid is the one without the SmartTube self-updater.
             matchingFallbacks = ['stfdroid']

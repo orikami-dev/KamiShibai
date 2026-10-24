@@ -18,7 +18,7 @@
         <clip>
             <shape android:shape="rectangle">
                 <size android:height="3dp" />
-                <solid android:color="@color/kami_accent" />
+                <solid android:color="?attr/kamiAccent" />
             </shape>
         </clip>
     </item>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Night versions of the interface palettes, applied over Kamishibai.Theme (see KamiTheme). Washi is the theme itself. -->
+    <style name="Kamishibai.Palette.Washi" parent="" />
+    <style name="Kamishibai.Palette.Sumi" parent="">
+        <item name="kamiInk">#FF000000</item>
+        <item name="kamiSurface">#FF0E0E0E</item>
+        <item name="kamiSurfaceHigh">#FF1A1A1A</item>
+        <item name="kamiFill">#FF262626</item>
+        <item name="kamiBar">#FF000000</item>
+        <item name="kamiOutline">#FF262626</item>
+        <item name="kamiShimmerA">#FF1A1A1A</item>
+        <item name="kamiShimmerB">#FF222222</item>
+        <item name="kamiAccent">#FFFF5A40</item>
+        <item name="kamiAccentSoft">#33FF5A40</item>
+    </style>
+    <style name="Kamishibai.Palette.Ai" parent="">
+        <item name="kamiAccent">#FF7A9DE8</item>
+        <item name="kamiAccentSoft">#337A9DE8</item>
+    </style>
+    <style name="Kamishibai.Palette.Matcha" parent="">
+        <item name="kamiAccent">#FF8DC26A</item>
+        <item name="kamiAccentSoft">#338DC26A</item>
+    </style>
+    <style name="Kamishibai.Palette.Sakura" parent="">
+        <item name="kamiAccent">#FFF28DAB</item>
+        <item name="kamiAccentSoft">#33F28DAB</item>
+    </style>
+    <style name="Kamishibai.Palette.Kin" parent="">
+        <item name="kamiAccent">#FFE8B931</item>
+        <item name="kamiAccentSoft">#33E8B931</item>
+        <item name="kamiOnAccent">#FF1B1400</item>
+    </style>
+</resources>

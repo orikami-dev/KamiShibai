@@ -79,4 +79,16 @@
     <string name="kami_signin_error">Impossible d\'obtenir un code de connexion : %1$s</string>
     <string name="kami_signin_retry">Réessayer</string>
     <string name="kami_signin_no_browser">Aucun navigateur trouvé</string>
+    <string name="kami_set_theme">Thème</string>
+    <string name="kami_theme_mode">Apparence</string>
+    <string name="kami_theme_palette">Palette</string>
+    <string name="kami_theme_system">Comme le système</string>
+    <string name="kami_theme_light">Clair</string>
+    <string name="kami_theme_dark">Sombre</string>
+    <string name="kami_palette_washi">Washi · papier et vermillon</string>
+    <string name="kami_palette_sumi">Sumi · noir pur (OLED)</string>
+    <string name="kami_palette_ai">Ai · indigo</string>
+    <string name="kami_palette_matcha">Matcha · vert thé</string>
+    <string name="kami_palette_sakura">Sakura · fleur de cerisier</string>
+    <string name="kami_palette_kin">Kin · or</string>
 </resources>

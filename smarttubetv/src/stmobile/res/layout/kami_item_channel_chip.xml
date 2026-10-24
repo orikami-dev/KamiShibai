@@ -42,6 +42,6 @@
         android:ellipsize="end"
         android:gravity="center"
         android:maxLines="1"
-        android:textColor="@color/kami_text"
+        android:textColor="?attr/kamiText"
         android:textSize="12sp" />
 </LinearLayout>

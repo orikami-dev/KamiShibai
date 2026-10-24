@@ -2,21 +2,37 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Inherits the upstream theme so every attribute used by the shared code stays defined -->
     <style name="Kamishibai.Theme.Base" parent="App.Theme.Leanback.Browse">
-        <item name="android:windowBackground">@color/kami_ink</item>
-        <item name="shelfBackground">@color/kami_ink</item>
-        <item name="brandColor">@color/kami_surface</item>
-        <item name="brandAccentColor">@color/kami_accent</item>
-        <item name="android:colorAccent">@color/kami_accent</item>
-        <item name="android:colorPrimary">@color/kami_surface</item>
-        <item name="android:colorPrimaryDark">@color/kami_ink</item>
-        <item name="android:colorControlActivated">@color/kami_accent</item>
-        <item name="android:colorControlHighlight">@color/kami_highlight</item>
+        <!-- Washi palette (the default): day and night come from kami_colors -->
+        <item name="kamiInk">@color/kami_ink</item>
+        <item name="kamiSurface">@color/kami_surface</item>
+        <item name="kamiSurfaceHigh">@color/kami_surface_high</item>
+        <item name="kamiFill">@color/kami_fill</item>
+        <item name="kamiBar">@color/kami_bar</item>
+        <item name="kamiHighlight">@color/kami_highlight</item>
+        <item name="kamiOutline">@color/kami_outline</item>
+        <item name="kamiAccent">@color/kami_accent</item>
+        <item name="kamiAccentSoft">@color/kami_accent_soft</item>
+        <item name="kamiText">@color/kami_text</item>
+        <item name="kamiTextSecondary">@color/kami_text_secondary</item>
+        <item name="kamiScrim">@color/kami_scrim</item>
+        <item name="kamiShimmerA">@color/kami_shimmer_a</item>
+        <item name="kamiShimmerB">@color/kami_shimmer_b</item>
+        <item name="kamiOnAccent">@android:color/white</item>
+        <item name="android:windowBackground">?attr/kamiInk</item>
+        <item name="shelfBackground">?attr/kamiInk</item>
+        <item name="brandColor">?attr/kamiSurface</item>
+        <item name="brandAccentColor">?attr/kamiAccent</item>
+        <item name="android:colorAccent">?attr/kamiAccent</item>
+        <item name="android:colorPrimary">?attr/kamiSurface</item>
+        <item name="android:colorPrimaryDark">?attr/kamiInk</item>
+        <item name="android:colorControlActivated">?attr/kamiAccent</item>
+        <item name="android:colorControlHighlight">?attr/kamiHighlight</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowAnimationStyle">@style/Kamishibai.NoAnimation</item>
-        <item name="android:textColorPrimary">@color/kami_text</item>
-        <item name="android:textColorSecondary">@color/kami_text_secondary</item>
-        <item name="android:textColorHint">@color/kami_text_secondary</item>
+        <item name="android:textColorPrimary">?attr/kamiText</item>
+        <item name="android:textColorSecondary">?attr/kamiTextSecondary</item>
+        <item name="android:textColorHint">?attr/kamiTextSecondary</item>
         <item name="android:windowContentTransitions">false</item>
         <item name="android:windowEnterTransition">@null</item>
         <item name="android:windowExitTransition">@null</item>
@@ -55,7 +71,23 @@
 
     <!-- Watch page: the upstream player theme (its attributes are needed by the player), without animations -->
     <style name="Kamishibai.Theme.Player" parent="App.Theme.Leanback.Player">
-        <item name="android:windowBackground">@color/kami_ink</item>
+        <!-- Washi palette (the default): day and night come from kami_colors -->
+        <item name="kamiInk">@color/kami_ink</item>
+        <item name="kamiSurface">@color/kami_surface</item>
+        <item name="kamiSurfaceHigh">@color/kami_surface_high</item>
+        <item name="kamiFill">@color/kami_fill</item>
+        <item name="kamiBar">@color/kami_bar</item>
+        <item name="kamiHighlight">@color/kami_highlight</item>
+        <item name="kamiOutline">@color/kami_outline</item>
+        <item name="kamiAccent">@color/kami_accent</item>
+        <item name="kamiAccentSoft">@color/kami_accent_soft</item>
+        <item name="kamiText">@color/kami_text</item>
+        <item name="kamiTextSecondary">@color/kami_text_secondary</item>
+        <item name="kamiScrim">@color/kami_scrim</item>
+        <item name="kamiShimmerA">@color/kami_shimmer_a</item>
+        <item name="kamiShimmerB">@color/kami_shimmer_b</item>
+        <item name="kamiOnAccent">@android:color/white</item>
+        <item name="android:windowBackground">?attr/kamiInk</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowAnimationStyle">@style/Kamishibai.NoAnimation</item>
@@ -75,11 +107,11 @@
         <item name="android:padding">12dp</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:background">@drawable/kami_ripple_round</item>
-        <item name="android:tint">@color/kami_text</item>
+        <item name="android:tint">?attr/kamiText</item>
     </style>
 
     <style name="Kamishibai.Title" parent="">
-        <item name="android:textColor">@color/kami_text</item>
+        <item name="android:textColor">?attr/kamiText</item>
         <item name="android:textSize">24sp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
@@ -95,7 +127,7 @@
 
     <!-- App name in the top bar: Oswald Medium (font set from code, see Fonts) -->
     <style name="Kamishibai.Brand" parent="">
-        <item name="android:textColor">@color/kami_text</item>
+        <item name="android:textColor">?attr/kamiText</item>
         <item name="android:textSize">26sp</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:maxLines">1</item>
@@ -103,7 +135,7 @@
     </style>
 
     <style name="Kamishibai.RowTitle" parent="">
-        <item name="android:textColor">@color/kami_text</item>
+        <item name="android:textColor">?attr/kamiText</item>
         <item name="android:textSize">19sp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
@@ -186,7 +218,7 @@
         <item name="android:maxLines">1</item>
         <item name="android:paddingStart">14dp</item>
         <item name="android:paddingEnd">14dp</item>
-        <item name="android:textColor">@color/kami_text</item>
+        <item name="android:textColor">?attr/kamiText</item>
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
@@ -197,6 +229,6 @@
         <item name="android:padding">9dp</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:background">@drawable/kami_ripple_round</item>
-        <item name="android:tint">@color/kami_text_secondary</item>
+        <item name="android:tint">?attr/kamiTextSecondary</item>
     </style>
 </resources>

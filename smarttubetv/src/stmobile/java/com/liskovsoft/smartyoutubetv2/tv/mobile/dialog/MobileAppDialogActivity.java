@@ -125,7 +125,7 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
 
         if (!isSheet) {
             // The window is see-through for the sheet: a page paints its own background, under the system bars too
-            getWindow().setBackgroundDrawableResource(R.color.kami_ink);
+            getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiTheme.color(this, R.attr.kamiInk)));
             MobileScreen.edgeToEdge(this, true);
             overridePendingTransition(R.anim.kami_fade_in, R.anim.kami_stay);
         }

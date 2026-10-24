@@ -20,6 +20,7 @@ import com.liskovsoft.sharedutils.helpers.Helpers;
 import com.liskovsoft.sharedutils.helpers.MessageHelpers;
 import com.liskovsoft.sharedutils.rx.RxHelper;
 import com.liskovsoft.smartyoutubetv2.tv.R;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiTheme;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -367,8 +368,8 @@ public class CommentsPanel {
             loadAvatar(mAvatar, item.getAuthorPhoto());
 
             int vote = getVote(item);
-            int accent = ContextCompat.getColor(context, R.color.kami_accent);
-            int secondary = ContextCompat.getColor(context, R.color.kami_text_secondary);
+            int accent = KamiTheme.color(context, R.attr.kamiAccent);
+            int secondary = KamiTheme.color(context, R.attr.kamiTextSecondary);
             mLike.setColorFilter(vote == 1 ? accent : secondary);
             mDislike.setColorFilter(vote == -1 ? accent : secondary);
             mLikeCount.setText(getLikeCount(item));
@@ -384,7 +385,7 @@ public class CommentsPanel {
                 mReplies.setOnClickListener(v -> openReplies(item));
             }
 
-            itemView.setBackgroundColor(isRepliedComment ? ContextCompat.getColor(context, R.color.kami_surface_high) : 0);
+            itemView.setBackgroundColor(isRepliedComment ? KamiTheme.color(context, R.attr.kamiSurfaceHigh) : 0);
         }
     }
 

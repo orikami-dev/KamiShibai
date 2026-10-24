@@ -35,7 +35,7 @@ public final class MobileScreen {
 
         Configuration system = base.getResources().getConfiguration();
 
-        return base.createConfigurationContext(UiScale.scale(system, UiScale.forConfiguration(base, system)));
+        return base.createConfigurationContext(KamiTheme.applyMode(base, UiScale.scale(system, UiScale.forConfiguration(base, system))));
     }
 
     /**
@@ -82,7 +82,7 @@ public final class MobileScreen {
         View content = window.findViewById(android.R.id.content);
 
         if (content != null) {
-            content.setBackgroundResource(R.color.kami_ink);
+            content.setBackgroundColor(KamiTheme.color(activity, R.attr.kamiInk));
             padForBars(content, true);
         }
     }

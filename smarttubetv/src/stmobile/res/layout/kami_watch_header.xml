@@ -24,7 +24,7 @@
             android:ellipsize="end"
             android:lineSpacingExtra="2dp"
             android:maxLines="2"
-            android:textColor="@color/kami_text"
+            android:textColor="?attr/kamiText"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -35,7 +35,7 @@
             android:layout_marginTop="5dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/kami_text_secondary"
+            android:textColor="?attr/kamiTextSecondary"
             android:textSize="13sp" />
 
         <TextView
@@ -45,8 +45,8 @@
             android:layout_marginTop="10dp"
             android:autoLink="web"
             android:lineSpacingExtra="2dp"
-            android:textColor="@color/kami_text"
-            android:textColorLink="@color/kami_accent"
+            android:textColor="?attr/kamiText"
+            android:textColorLink="?attr/kamiAccent"
             android:textIsSelectable="true"
             android:textSize="14sp"
             android:visibility="gone" />
@@ -86,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/kami_text"
+                android:textColor="?attr/kamiText"
                 android:textSize="15sp"
                 android:fontFamily="sans-serif-medium" />
 
@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/kami_text_secondary"
+                android:textColor="?attr/kamiTextSecondary"
                 android:textSize="12.5sp" />
         </LinearLayout>
 
@@ -148,7 +148,7 @@
                     android:layout_width="1dp"
                     android:layout_height="22dp"
                     android:layout_gravity="center_vertical"
-                    android:background="@color/kami_fill" />
+                    android:background="?attr/kamiFill" />
 
                 <ImageButton
                     android:id="@+id/kami_w_dislike"
@@ -162,7 +162,7 @@
                     android:paddingBottom="6dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/kami_ic_thumb_down"
-                    android:tint="@color/kami_text" />
+                    android:tint="?attr/kamiText" />
             </LinearLayout>
 
             <TextView
@@ -228,7 +228,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/kami_comments"
-            android:textColor="@color/kami_text"
+            android:textColor="?attr/kamiText"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -259,7 +259,7 @@
                 android:layout_marginStart="10dp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="@color/kami_text"
+                android:textColor="?attr/kamiText"
                 android:textSize="13.5sp" />
         </LinearLayout>
     </LinearLayout>

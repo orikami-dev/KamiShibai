@@ -91,7 +91,7 @@ public class NavAdapter extends RecyclerView.Adapter<NavAdapter.Holder> {
                         .into(icon);
             }
         } else {
-            icon.setImageTintList(context.getResources().getColorStateList(R.color.kami_nav_content));
+            icon.setImageTintList(androidx.core.content.ContextCompat.getColorStateList(context, R.color.kami_nav_content));
             icon.setImageResource(iconFor(section.getId()));
         }
     }

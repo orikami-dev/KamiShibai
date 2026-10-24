@@ -34,7 +34,7 @@
             android:id="@+id/kami_row_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/kami_text"
+            android:textColor="?attr/kamiText"
             android:textSize="16sp" />
 
         <TextView
@@ -42,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:textColor="@color/kami_text_secondary"
+            android:textColor="?attr/kamiTextSecondary"
             android:textSize="14sp"
             android:visibility="gone" />
     </LinearLayout>
@@ -54,7 +54,7 @@
         android:layout_marginStart="12dp"
         android:importantForAccessibility="no"
         android:src="@drawable/kami_ic_chevron_right"
-        android:tint="@color/kami_text_secondary"
+        android:tint="?attr/kamiTextSecondary"
         android:visibility="gone" />
 
     <Switch

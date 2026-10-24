@@ -4,7 +4,7 @@
     android:id="@+id/kami_search_bar"
     android:layout_width="match_parent"
     android:layout_height="56dp"
-    android:background="@color/kami_ink"
+    android:background="?attr/kamiInk"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingStart="4dp"
@@ -36,8 +36,8 @@
             android:imeOptions="actionSearch|flagNoExtractUi"
             android:inputType="text"
             android:maxLines="1"
-            android:textColor="@color/kami_text"
-            android:textColorHint="@color/kami_text_secondary"
+            android:textColor="?attr/kamiText"
+            android:textColorHint="?attr/kamiTextSecondary"
             android:textCursorDrawable="@null"
             android:textSize="16sp" />
 

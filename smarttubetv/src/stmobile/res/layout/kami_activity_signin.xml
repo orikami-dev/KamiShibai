@@ -3,7 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/kami_ink"
+    android:background="?attr/kamiInk"
     android:orientation="vertical">
 
     <LinearLayout
@@ -28,7 +28,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@string/kami_signin_title"
-            android:textColor="@color/kami_text"
+            android:textColor="?attr/kamiText"
             android:textSize="22sp" />
     </LinearLayout>
 
@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="3dp"
                 android:text="@string/kami_signin_intro"
-                android:textColor="@color/kami_text_secondary"
+                android:textColor="?attr/kamiTextSecondary"
                 android:textSize="15sp" />
 
             <!-- The code -->
@@ -72,7 +72,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="monospace"
                     android:letterSpacing="0.08"
-                    android:textColor="@color/kami_text"
+                    android:textColor="?attr/kamiText"
                     android:textIsSelectable="true"
                     android:textSize="32sp"
                     android:textStyle="bold" />
@@ -84,7 +84,7 @@
                     android:layout_height="4dp"
                     android:layout_marginTop="12dp"
                     android:indeterminate="true"
-                    android:indeterminateTint="@color/kami_accent" />
+                    android:indeterminateTint="?attr/kamiAccent" />
 
                 <TextView
                     android:id="@+id/kami_signin_status"
@@ -93,7 +93,7 @@
                     android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:text="@string/kami_signin_loading"
-                    android:textColor="@color/kami_text_secondary"
+                    android:textColor="?attr/kamiTextSecondary"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -107,7 +107,7 @@
                 android:stateListAnimator="@null"
                 android:text="@string/kami_signin_open"
                 android:textAllCaps="false"
-                android:textColor="@android:color/white"
+                android:textColor="?attr/kamiOnAccent"
                 android:textSize="16sp" />
 
             <Button
@@ -120,7 +120,7 @@
                 android:stateListAnimator="@null"
                 android:text="@string/kami_signin_copy"
                 android:textAllCaps="false"
-                android:textColor="@color/kami_text"
+                android:textColor="?attr/kamiText"
                 android:textSize="16sp" />
 
             <TextView
@@ -129,7 +129,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:lineSpacingExtra="6dp"
-                android:textColor="@color/kami_text"
+                android:textColor="?attr/kamiText"
                 android:textSize="15sp" />
 
             <!-- Another device: the address and a QR code -->
@@ -139,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
                 android:lineSpacingExtra="3dp"
-                android:textColor="@color/kami_text_secondary"
+                android:textColor="?attr/kamiTextSecondary"
                 android:textSize="14sp" />
 
             <ImageView

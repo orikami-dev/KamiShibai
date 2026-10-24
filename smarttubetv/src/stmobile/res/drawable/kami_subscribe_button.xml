@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- "Subscribe" is a strong pill, "Subscribed" a quiet one -->
-<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="@color/kami_highlight">
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="?attr/kamiHighlight">
     <item>
         <selector>
             <item android:state_selected="true">
                 <shape android:shape="rectangle">
-                    <solid android:color="@color/kami_surface_high" />
+                    <solid android:color="?attr/kamiSurfaceHigh" />
                     <corners android:radius="18dp" />
                 </shape>
             </item>
             <item>
                 <shape android:shape="rectangle">
-                    <solid android:color="@color/kami_text" />
+                    <solid android:color="?attr/kamiText" />
                     <corners android:radius="18dp" />
                 </shape>
             </item>

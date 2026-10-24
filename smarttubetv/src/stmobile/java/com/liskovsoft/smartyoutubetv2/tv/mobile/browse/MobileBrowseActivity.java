@@ -26,6 +26,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.views.ViewManager;
 import com.liskovsoft.smartyoutubetv2.common.prefs.GeneralData;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.smartyoutubetv2.tv.R;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiTheme;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileScreen;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.watch.MobilePlaybackFragment;
@@ -75,6 +76,7 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
     // The screen the video was opened from (a channel...), shown again when the video closes
     private Class<? extends android.app.Activity> mReturnTo;
     private boolean mClosingApp;
+    private int mThemeStamp = -1; // theme the screen was built with
     private long mClosedAtMs;
     private String mClosedVideoId;
 
@@ -120,6 +122,8 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
     @Override
     protected void initTheme() {
         setTheme(R.style.Kamishibai_Theme);
+        KamiTheme.applyPalette(this);
+        mThemeStamp = KamiTheme.stamp(this);
     }
 
     @Override
@@ -138,7 +142,7 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
             return;
         }
 
-        content.setBackgroundResource(R.color.kami_ink);
+        content.setBackgroundColor(KamiTheme.color(this, R.attr.kamiInk));
         ViewCompat.setOnApplyWindowInsetsListener(content, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
 
@@ -174,8 +178,8 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
     protected void onResume() {
         super.onResume();
 
-        if (MobileScreen.needsNewScale(this)) {
-            recreate(); // the scale was changed in the settings
+        if (MobileScreen.needsNewScale(this) || mThemeStamp != KamiTheme.stamp(this)) {
+            recreate(); // the scale or the theme was changed in the settings
             return;
         }
 

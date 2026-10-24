@@ -10,7 +10,7 @@
         <selector>
             <item android:state_activated="true">
                 <shape android:shape="rectangle">
-                    <solid android:color="@color/kami_accent_soft" />
+                    <solid android:color="?attr/kamiAccentSoft" />
                     <corners android:radius="20dp" />
                 </shape>
             </item>

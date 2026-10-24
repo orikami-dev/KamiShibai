@@ -4,7 +4,7 @@
     android:id="@+id/kami_dialog_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/kami_scrim">
+    android:background="?attr/kamiScrim">
 
     <LinearLayout
         android:id="@+id/kami_dialog_sheet"
@@ -47,7 +47,7 @@
                 android:layout_marginStart="12dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/kami_text"
+                android:textColor="?attr/kamiText"
                 android:textSize="19sp"
                 android:textStyle="bold" />
 
@@ -61,7 +61,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/kami_surface_high" />
+            android:background="?attr/kamiSurfaceHigh" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/kami_dialog_list"
