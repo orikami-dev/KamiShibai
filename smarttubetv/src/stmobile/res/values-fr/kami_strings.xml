@@ -100,4 +100,16 @@
     <string name="kami_mini_open">Ouvrir le lecteur</string>
     <string name="kami_mini_play">Lecture ou pause</string>
     <string name="kami_mini_close">Fermer le lecteur</string>
+    <string name="kami_set_update">Rechercher une mise à jour</string>
+    <string name="kami_update_title">Kamishibai %1$s est disponible</string>
+    <string name="kami_update_notes">Nouveautés</string>
+    <string name="kami_update_install">Télécharger et installer</string>
+    <string name="kami_update_downloading">Téléchargement de Kamishibai %1$s…</string>
+    <string name="kami_update_none">Kamishibai %1$s est à jour</string>
+    <string name="kami_update_failed">Impossible de vérifier les mises à jour</string>
+    <string name="kami_set_support">Financer le projet</string>
+    <string name="kami_support_orikami">Orikami (Kamishibai)</string>
+    <string name="kami_support_kofi">Ko-fi</string>
+    <string name="kami_support_soon">Lien bientôt disponible</string>
+    <string name="kami_support_smarttube">yuliskov (SmartTube, l\'app d\'origine)</string>
 </resources>

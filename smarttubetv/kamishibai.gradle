@@ -5,10 +5,10 @@ android {
     productFlavors {
         stmobile {
             applicationId "com.orikami.kamishibai"
-            // Our own build number, not the SmartTube one (32.68 at the time of v13).
-            // versionCode = 100000 + version * 100 + fix: always above the SmartTube codes, so updates install over
-            versionName "14.0"
-            versionCode 101400
+            // Our own version, not the SmartTube one. Public releases since 1.0 (test builds were 13.0 and 14.0).
+            // versionCode = 200000 + major * 1000 + minor * 10 + fix: above the test builds (1013xx, 1014xx) and SmartTube
+            versionName "1.0"
+            versionCode 201000
             minSdkVersion 23 // the interface colors are theme attributes (palettes), also used in color state lists
             targetSdkVersion project.properties.compileSdkVersion
             // Library modules only know the TV flavors. F-Droid is the one without the SmartTube self-updater.
@@ -30,4 +30,7 @@ android {
 
 dependencies {
     stmobileImplementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    // Hinge and posture of foldables (Tabletop)
+    stmobileImplementation 'androidx.window:window:1.1.0'
+    stmobileImplementation 'androidx.window:window-java:1.1.0'
 }

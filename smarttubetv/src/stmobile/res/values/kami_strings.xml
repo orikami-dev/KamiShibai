@@ -103,4 +103,18 @@
     <string name="kami_mini_open">Open the player</string>
     <string name="kami_mini_play">Play or pause</string>
     <string name="kami_mini_close">Close the player</string>
+    <string name="kami_set_update">Check for updates</string>
+    <string name="kami_update_title">Kamishibai %1$s is available</string>
+    <string name="kami_update_notes">What\'s new</string>
+    <string name="kami_update_install">Download and install</string>
+    <string name="kami_update_downloading">Downloading Kamishibai %1$s…</string>
+    <string name="kami_update_none">Kamishibai %1$s is up to date</string>
+    <string name="kami_update_failed">Couldn\'t check for updates</string>
+    <string name="kami_set_support">Support the project</string>
+    <string name="kami_support_orikami">Orikami (Kamishibai)</string>
+    <string name="kami_support_kofi">Ko-fi</string>
+    <string name="kami_support_soon">Link coming soon</string>
+    <string name="kami_support_smarttube">yuliskov (SmartTube, the original app)</string>
+    <!-- Ko-fi page of Orikami, empty until it exists -->
+    <string name="kami_kofi_url" translatable="false"></string>
 </resources>

@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.liskovsoft.sharedutils.helpers.Helpers;
+import com.liskovsoft.sharedutils.helpers.MessageHelpers;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.SettingsGroup;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.SettingsItem;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
@@ -25,12 +27,14 @@ import com.liskovsoft.smartyoutubetv2.common.utils.AppDialogUtil;
 import com.liskovsoft.smartyoutubetv2.common.utils.SimpleEditDialog;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.smartyoutubetv2.tv.R;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiUpdate;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.UiScale;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.download.DownloadAction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Settings tab: one list grouped under titles, like the Android settings, centered on wide screens.
@@ -95,6 +99,9 @@ public class SettingsSection implements MobileSection {
             // After the player and the subtitles
             items.add(new SettingsItem(mContext.getString(R.string.kami_set_pip), this::showBackgroundDialog));
             items.add(new SettingsItem(mContext.getString(R.string.kami_set_downloads), () -> DownloadAction.showSettings(mContext)));
+            // In About, with its icon
+            items.add(new SettingsItem(mContext.getString(R.string.kami_set_update), () -> KamiUpdate.check(mContext, true), R.drawable.settings_about));
+            items.add(new SettingsItem(mContext.getString(R.string.kami_set_support), this::showSupportDialog, R.drawable.settings_about));
 
             for (int g = 0; g < GROUP_TITLES.length; g++) {
                 boolean titled = false;
@@ -188,6 +195,35 @@ public class SettingsSection implements MobileSection {
         OptionCategory category = AppDialogUtil.createBackgroundPlaybackCategory(mContext, PlayerData.instance(mContext), GeneralData.instance(mContext));
         dialog.appendCategory(category);
         dialog.showDialog(mContext.getString(R.string.kami_set_pip));
+    }
+
+    /**
+     * Fund the project: Orikami (Kamishibai) first, then the official links of yuliskov (SmartTube).
+     */
+    private void showSupportDialog() {
+        AppDialogPresenter dialog = AppDialogPresenter.instance(mContext);
+        String kofi = mContext.getString(R.string.kami_kofi_url);
+        List<OptionItem> orikami = new ArrayList<>();
+        orikami.add(UiOptionItem.from(mContext.getString(R.string.kami_support_kofi), kofi.isEmpty() ? mContext.getString(R.string.kami_support_soon) : null, option -> {
+            if (kofi.isEmpty()) {
+                MessageHelpers.showMessage(mContext, R.string.kami_support_soon);
+            } else {
+                Utils.openLink(mContext, kofi);
+            }
+        }));
+        dialog.appendStringsCategory(mContext.getString(R.string.kami_support_orikami), orikami);
+
+        List<OptionItem> upstream = new ArrayList<>();
+
+        for (Map.Entry<String, String> entry : Helpers.getMap(mContext, R.array.donations).entrySet()) {
+            upstream.add(UiOptionItem.from(entry.getKey(), option -> Utils.openLink(mContext, Utils.toQrCodeLink(entry.getValue()))));
+        }
+
+        if (!upstream.isEmpty()) {
+            dialog.appendStringsCategory(mContext.getString(R.string.kami_support_smarttube), upstream);
+        }
+
+        dialog.showDialog(mContext.getString(R.string.kami_set_support));
     }
 
     /**
