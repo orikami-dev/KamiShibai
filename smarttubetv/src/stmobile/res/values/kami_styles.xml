@@ -43,6 +43,14 @@
 
     <style name="Kamishibai.Theme" parent="Kamishibai.Theme.Base" />
 
+    <!-- What Android paints before our first frame, set in the manifest (the code then sets Kamishibai.Theme and
+         the palette): the page colour and nothing else, no zoom between the start screen and Home.
+         Android 12+ splash: same colour, no icon (values-v31), so no logo flashes at each opening -->
+    <style name="Kamishibai.Theme.Launch" parent="Kamishibai.Theme">
+        <item name="android:windowBackground">@color/kami_ink</item>
+        <item name="android:windowAnimationStyle">@style/Kamishibai.NoAnimation</item>
+    </style>
+
     <!-- Applied over the upstream theme: it turns the status and navigation bar translucent, which adds a visible tint -->
     <style name="Kamishibai.Bars" parent="">
         <item name="android:windowTranslucentStatus">false</item>

@@ -42,7 +42,8 @@
             android:supportsPictureInPicture="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
             android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="unspecified" />
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Launch" />
 
         <activity
             android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.search.MobileSearchActivity"
@@ -50,21 +51,24 @@
             android:resizeableActivity="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
             android:windowSoftInputMode="adjustResize|stateVisible"
-            android:screenOrientation="unspecified" />
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Launch" />
 
         <activity
             android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.channel.MobileChannelActivity"
             android:launchMode="singleInstance"
             android:resizeableActivity="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
-            android:screenOrientation="unspecified" />
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Launch" />
 
         <activity
             android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.channeluploads.MobileChannelUploadsActivity"
             android:launchMode="singleInstance"
             android:resizeableActivity="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
-            android:screenOrientation="unspecified" />
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Launch" />
 
         <!-- Google account sign in, phone layout. Stays alive while the browser is open, the presenter keeps polling. -->
         <activity
@@ -72,7 +76,8 @@
             android:launchMode="singleInstance"
             android:resizeableActivity="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
-            android:screenOrientation="unspecified" />
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Launch" />
 
         <!-- Settings (full screen pages) and menus (bottom sheet), same flags as the upstream dialog -->
         <activity
@@ -87,7 +92,9 @@
             android:theme="@style/Kamishibai.Theme.Dialog" />
 
         <!-- App icon in the colors of the palette (KamiIcon): the launcher entry moves from SplashActivity to one alias per palette -->
-        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity"
+            android:theme="@style/Kamishibai.Theme.Launch">
             <intent-filter tools:node="remove">
                 <action android:name="android.intent.action.MAIN" />
 
