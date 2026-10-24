@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Inherits the upstream theme so every attribute used by the shared code stays defined -->
+    <style name="Kamishibai.Theme.Base" parent="App.Theme.Leanback.Browse">
+        <!-- Washi palette (the default): day and night come from kami_colors -->
+        <item name="kamiInk">@color/kami_ink</item>
+        <item name="kamiSurface">@color/kami_surface</item>
+        <item name="kamiSurfaceHigh">@color/kami_surface_high</item>
+        <item name="kamiFill">@color/kami_fill</item>
+        <item name="kamiBar">@color/kami_bar</item>
+        <item name="kamiHighlight">@color/kami_highlight</item>
+        <item name="kamiOutline">@color/kami_outline</item>
+        <item name="kamiAccent">@color/kami_accent</item>
+        <item name="kamiAccentSoft">@color/kami_accent_soft</item>
+        <item name="kamiText">@color/kami_text</item>
+        <item name="kamiTextSecondary">@color/kami_text_secondary</item>
+        <item name="kamiScrim">@color/kami_scrim</item>
+        <item name="kamiShimmerA">@color/kami_shimmer_a</item>
+        <item name="kamiShimmerB">@color/kami_shimmer_b</item>
+        <item name="kamiOnAccent">@android:color/white</item>
+        <item name="kamiLogo">@drawable/kami_logo</item>
+        <item name="android:windowBackground">?attr/kamiInk</item>
+        <item name="shelfBackground">?attr/kamiInk</item>
+        <item name="brandColor">?attr/kamiSurface</item>
+        <item name="brandAccentColor">?attr/kamiAccent</item>
+        <item name="android:colorAccent">?attr/kamiAccent</item>
+        <item name="android:colorPrimary">?attr/kamiSurface</item>
+        <item name="android:colorPrimaryDark">?attr/kamiInk</item>
+        <item name="android:colorControlActivated">?attr/kamiAccent</item>
+        <item name="android:colorControlHighlight">?attr/kamiHighlight</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@style/Kamishibai.NoAnimation</item>
+        <item name="android:textColorPrimary">?attr/kamiText</item>
+        <item name="android:textColorSecondary">?attr/kamiTextSecondary</item>
+        <item name="android:textColorHint">?attr/kamiTextSecondary</item>
+        <item name="android:windowContentTransitions">false</item>
+        <item name="android:windowEnterTransition">@null</item>
+        <item name="android:windowExitTransition">@null</item>
+        <item name="android:windowSharedElementEnterTransition">@null</item>
+        <item name="android:windowSharedElementExitTransition">@null</item>
+    </style>
+
+    <style name="Kamishibai.Theme" parent="Kamishibai.Theme.Base" />
+
+    <!-- What Android paints before our first frame, set in the manifest (the code then sets Kamishibai.Theme and
+         the palette): the page colour and nothing else, no zoom between the start screen and Home.
+         Android 12+ splash: same colour, no icon (values-v31), so no logo flashes at each opening -->
+    <style name="Kamishibai.Theme.Launch" parent="Kamishibai.Theme">
+        <item name="android:windowBackground">@color/kami_ink</item>
+        <item name="android:windowAnimationStyle">@style/Kamishibai.NoAnimation</item>
+    </style>
+
+    <!-- Applied over the upstream theme: it turns the status and navigation bar translucent, which adds a visible tint -->
+    <style name="Kamishibai.Bars" parent="">
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <!-- The upstream theme pads the window under the bars, which leaves the window background (black) visible there.
+             Our screens draw under the bars and pad themselves, see MobileScreen.edgeToEdge -->
+        <item name="android:fitsSystemWindows">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <!-- Screens swap instantly: no slide, no zoom, no task animation -->
+    <style name="Kamishibai.NoAnimation" parent="">
+        <item name="android:activityOpenEnterAnimation">@null</item>
+        <item name="android:activityOpenExitAnimation">@null</item>
+        <item name="android:activityCloseEnterAnimation">@null</item>
+        <item name="android:activityCloseExitAnimation">@null</item>
+        <item name="android:taskOpenEnterAnimation">@null</item>
+        <item name="android:taskOpenExitAnimation">@null</item>
+        <item name="android:taskCloseEnterAnimation">@null</item>
+        <item name="android:taskCloseExitAnimation">@null</item>
+        <item name="android:taskToFrontEnterAnimation">@null</item>
+        <item name="android:taskToFrontExitAnimation">@null</item>
+        <item name="android:taskToBackEnterAnimation">@null</item>
+        <item name="android:taskToBackExitAnimation">@null</item>
+    </style>
+
+    <!-- Watch page: the upstream player theme (its attributes are needed by the player), without animations -->
+    <style name="Kamishibai.Theme.Player" parent="App.Theme.Leanback.Player">
+        <!-- Washi palette (the default): day and night come from kami_colors -->
+        <item name="kamiInk">@color/kami_ink</item>
+        <item name="kamiSurface">@color/kami_surface</item>
+        <item name="kamiSurfaceHigh">@color/kami_surface_high</item>
+        <item name="kamiFill">@color/kami_fill</item>
+        <item name="kamiBar">@color/kami_bar</item>
+        <item name="kamiHighlight">@color/kami_highlight</item>
+        <item name="kamiOutline">@color/kami_outline</item>
+        <item name="kamiAccent">@color/kami_accent</item>
+        <item name="kamiAccentSoft">@color/kami_accent_soft</item>
+        <item name="kamiText">@color/kami_text</item>
+        <item name="kamiTextSecondary">@color/kami_text_secondary</item>
+        <item name="kamiScrim">@color/kami_scrim</item>
+        <item name="kamiShimmerA">@color/kami_shimmer_a</item>
+        <item name="kamiShimmerB">@color/kami_shimmer_b</item>
+        <item name="kamiOnAccent">@android:color/white</item>
+        <item name="kamiLogo">@drawable/kami_logo</item>
+        <item name="android:windowBackground">?attr/kamiInk</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@style/Kamishibai.NoAnimation</item>
+    </style>
+
+    <!-- Menus and settings: a sheet over the previous screen -->
+    <style name="Kamishibai.Theme.Dialog" parent="Kamishibai.Theme.Base">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@style/Kamishibai.NoAnimation</item>
+        <item name="android:windowShowWallpaper">false</item>
+    </style>
+
+    <style name="Kamishibai.IconButton" parent="">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">@drawable/kami_ripple_round</item>
+        <item name="android:tint">?attr/kamiText</item>
+    </style>
+
+    <style name="Kamishibai.Title" parent="">
+        <item name="android:textColor">?attr/kamiText</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <!-- Pages with a back arrow: channel names can be long -->
+    <style name="Kamishibai.Title.Page">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <!-- App name in the top bar: Oswald Medium (font set from code, see Fonts) -->
+    <style name="Kamishibai.Brand" parent="">
+        <item name="android:textColor">?attr/kamiText</item>
+        <item name="android:textSize">26sp</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Kamishibai.RowTitle" parent="">
+        <item name="android:textColor">?attr/kamiText</item>
+        <item name="android:textSize">19sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <!-- Watch page -->
+    <!-- Player buttons share one grid: every icon is 24dp (bars, pill), the transport row is 28dp and 36dp -->
+    <style name="Kamishibai.OverlayButton" parent="">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">@drawable/kami_ripple_overlay</item>
+        <item name="android:tint">@android:color/white</item>
+    </style>
+
+    <style name="Kamishibai.OverlaySmallButton" parent="">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">@drawable/kami_ripple_overlay</item>
+        <item name="android:tint">@android:color/white</item>
+    </style>
+
+    <!-- Previous and next: same round as play, smaller -->
+    <style name="Kamishibai.TransportButton" parent="">
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">@drawable/kami_overlay_round</item>
+        <item name="android:tint">@android:color/white</item>
+    </style>
+
+    <style name="Kamishibai.TransportButton.Main">
+        <item name="android:layout_width">72dp</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="android:padding">18dp</item>
+    </style>
+
+    <style name="Kamishibai.OverlayPill" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">28dp</item>
+        <item name="android:background">@drawable/kami_overlay_pill</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">12.5sp</item>
+    </style>
+
+    <style name="Kamishibai.ShortsAction" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:background">@drawable/kami_ripple_overlay</item>
+        <item name="android:drawablePadding">2dp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:shadowColor">#99000000</item>
+        <item name="android:shadowRadius">3</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">12.5sp</item>
+    </style>
+
+    <style name="Kamishibai.ActionChip" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/kami_action_chip</item>
+        <item name="android:drawablePadding">7dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:textColor">?attr/kamiText</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="Kamishibai.CommentButton" parent="">
+        <item name="android:layout_width">36dp</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:padding">9dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">@drawable/kami_ripple_round</item>
+        <item name="android:tint">?attr/kamiTextSecondary</item>
+    </style>
+</resources>

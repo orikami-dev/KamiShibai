@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Themed icon (Android 13+): the folded play sign, the fold left as a thin gap -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:pivotX="62" android:pivotY="54" android:scaleX="0.56" android:scaleY="0.56" android:translateX="-5">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M47.76,26.8L94,54L26,94L26,40Z" />
+        <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="3" android:strokeLineJoin="round" android:pathData="M38,6L106,46L38,86" />
+    </group>
+</vector>

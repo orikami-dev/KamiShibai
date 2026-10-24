@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.liskovsoft.smartyoutubetv2.tv">
+
+    <!-- Kamishibai runs on phones, tablets and foldables, not only on TV boxes -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false"
+        tools:node="replace" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false"
+        tools:node="replace" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- Downloads land in Movies/Kamishibai and Music/Kamishibai: before Android 10 that needs the storage permission -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <!-- Sign in: find the browser app, so the activation page doesn't open in the YouTube app -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
+    <application
+        android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.KamishibaiApplication"
+        android:label="@string/app_name"
+        android:resizeableActivity="true"
+        tools:replace="android:name,android:label">
+
+        <!-- Every screen follows fold/unfold, rotation and window resize without being recreated -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.browse.MobileBrowseActivity"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:supportsPictureInPicture="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Launch" />
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.search.MobileSearchActivity"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:windowSoftInputMode="adjustResize|stateVisible"
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Launch" />
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.channel.MobileChannelActivity"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Launch" />
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.channeluploads.MobileChannelUploadsActivity"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Launch" />
+
+        <!-- Google account sign in, phone layout. Stays alive while the browser is open, the presenter keeps polling. -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.signin.MobileSignInActivity"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Launch" />
+
+        <!-- Settings (full screen pages) and menus (bottom sheet), same flags as the upstream dialog -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.dialog.MobileAppDialogActivity"
+            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Dialog" />
+
+        <!-- App icon in the colors of the palette (KamiIcon): the launcher entry moves from SplashActivity to one alias per palette -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity"
+            android:theme="@style/Kamishibai.Theme.Launch">
+            <intent-filter tools:node="remove">
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity-alias
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.IconWashi"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/app_icon"
+            android:label="@string/app_name"
+            android:targetActivity="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.IconSumi"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/kami_icon_sumi"
+            android:label="@string/app_name"
+            android:targetActivity="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.IconAi"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/kami_icon_ai"
+            android:label="@string/app_name"
+            android:targetActivity="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.IconMatcha"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/kami_icon_matcha"
+            android:label="@string/app_name"
+            android:targetActivity="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.IconSakura"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/kami_icon_sakura"
+            android:label="@string/app_name"
+            android:targetActivity="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.IconKin"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/kami_icon_kin"
+            android:label="@string/app_name"
+            android:targetActivity="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- The watch page is a panel of the main screen since v9 (MobileBrowseActivity) -->
+
+        <!-- Video downloads, one at a time, with a progress notification -->
+        <service
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.download.DownloadService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+    </application>
+</manifest>

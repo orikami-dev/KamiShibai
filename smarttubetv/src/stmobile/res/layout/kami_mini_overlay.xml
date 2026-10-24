@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mini player: the video shrinks to a card at the bottom right of Home (PiP button of the player).
+     A tap opens the player again; play/pause and close stay on the card. Shown by WatchPanel. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/kami_mini"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/kami_ripple_overlay"
+    android:clickable="true"
+    android:contentDescription="@string/kami_mini_open"
+    android:focusable="true"
+    android:visibility="gone">
+
+    <ImageButton
+        android:id="@+id/kami_mini_play"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="9dp"
+        android:background="@drawable/kami_overlay_round"
+        android:contentDescription="@string/kami_mini_play"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/kami_ic_pause"
+        android:tint="@android:color/white" />
+
+    <ImageButton
+        android:id="@+id/kami_mini_close"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="6dp"
+        android:background="@drawable/kami_overlay_round"
+        android:contentDescription="@string/kami_mini_close"
+        android:padding="9dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/kami_ic_close"
+        android:tint="@android:color/white" />
+
+    <ProgressBar
+        android:id="@+id/kami_mini_line"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_gravity="bottom"
+        android:max="1000"
+        android:progressDrawable="@drawable/kami_seek_progress" />
+</FrameLayout>

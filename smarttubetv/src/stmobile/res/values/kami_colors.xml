@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Day: the first Kamishibai palette, washi paper and vermilion (back by request, after the Origami Torii one) -->
+    <color name="kami_ink">#FFFAF7F2</color>
+    <color name="kami_surface">#FFFFFFFF</color>
+    <color name="kami_surface_high">#FFEFEAE2</color>
+    <color name="kami_fill">#FFE4DED4</color>
+    <color name="kami_bar">#FFFFFFFF</color>
+    <color name="kami_highlight">#14000000</color>
+    <color name="kami_outline">#FFDDD6CB</color>
+    <color name="kami_accent">#FFE23B22</color>
+    <color name="kami_accent_soft">#1FE23B22</color>
+    <color name="kami_text">#FF1B1A19</color>
+    <color name="kami_text_secondary">#FF6E6A64</color>
+    <color name="kami_scrim">#66000000</color>
+    <color name="kami_badge">#CC000000</color>
+    <color name="kami_live">#FFD32F2F</color>
+    <color name="kami_shimmer_a">#FFEFEAE2</color>
+    <color name="kami_shimmer_b">#FFF7F3EC</color>
+</resources>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colors of the palettes (kami_themes.xml). They must be color resources, not literal values: the shared code reads
+         some theme attributes as resource ids (Helpers.getThemeAttr), and a literal value has none. -->
+    <color name="kami_pal_day_sumi_ink">#FFF4F4F5</color>
+    <color name="kami_pal_day_sumi_surface">#FFFFFFFF</color>
+    <color name="kami_pal_day_sumi_surface_high">#FFE9E9EC</color>
+    <color name="kami_pal_day_sumi_fill">#FFDCDCE0</color>
+    <color name="kami_pal_day_sumi_bar">#FFFFFFFF</color>
+    <color name="kami_pal_day_sumi_outline">#FFD4D4D8</color>
+    <color name="kami_pal_day_sumi_text">#FF111113</color>
+    <color name="kami_pal_day_sumi_text_secondary">#FF66666C</color>
+    <color name="kami_pal_day_sumi_shimmer_a">#FFE9E9EC</color>
+    <color name="kami_pal_day_sumi_shimmer_b">#FFF2F2F4</color>
+    <color name="kami_pal_day_sumi_accent">#FF6A4BC4</color>
+    <color name="kami_pal_day_sumi_accent_soft">#1F6A4BC4</color>
+    <color name="kami_pal_day_ai_accent">#FF2B57A6</color>
+    <color name="kami_pal_day_ai_accent_soft">#1F2B57A6</color>
+    <color name="kami_pal_day_matcha_accent">#FF4E7F2E</color>
+    <color name="kami_pal_day_matcha_accent_soft">#1F4E7F2E</color>
+    <color name="kami_pal_day_sakura_accent">#FFC8486F</color>
+    <color name="kami_pal_day_sakura_accent_soft">#1FC8486F</color>
+    <color name="kami_pal_day_kin_accent">#FFA87C00</color>
+    <color name="kami_pal_day_kin_accent_soft">#24A87C00</color>
+    <color name="kami_pal_night_sumi_ink">#FF000000</color>
+    <color name="kami_pal_night_sumi_surface">#FF0E0E0E</color>
+    <color name="kami_pal_night_sumi_surface_high">#FF1A1A1A</color>
+    <color name="kami_pal_night_sumi_fill">#FF262626</color>
+    <color name="kami_pal_night_sumi_bar">#FF000000</color>
+    <color name="kami_pal_night_sumi_outline">#FF262626</color>
+    <color name="kami_pal_night_sumi_shimmer_a">#FF1A1A1A</color>
+    <color name="kami_pal_night_sumi_shimmer_b">#FF222222</color>
+    <color name="kami_pal_night_sumi_accent">#FFA993F5</color>
+    <color name="kami_pal_night_sumi_accent_soft">#33A993F5</color>
+    <color name="kami_pal_night_ai_accent">#FF7A9DE8</color>
+    <color name="kami_pal_night_ai_accent_soft">#337A9DE8</color>
+    <color name="kami_pal_night_matcha_accent">#FF8DC26A</color>
+    <color name="kami_pal_night_matcha_accent_soft">#338DC26A</color>
+    <color name="kami_pal_night_sakura_accent">#FFF28DAB</color>
+    <color name="kami_pal_night_sakura_accent_soft">#33F28DAB</color>
+    <color name="kami_pal_night_kin_accent">#FFE8B931</color>
+    <color name="kami_pal_night_kin_accent_soft">#33E8B931</color>
+    <color name="kami_pal_night_kin_on_accent">#FF1B1400</color>
+</resources>

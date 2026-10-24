@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A menu grown out of the button that opened it, kept inside that button's block (the video, the page under it) -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/kami_dialog_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/kami_dialog_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:background="@drawable/kami_menu_card"
+        android:clickable="true"
+        android:elevation="8dp"
+        android:focusable="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/kami_dialog_header"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp">
+
+            <ImageButton
+                android:id="@+id/kami_dialog_back"
+                style="@style/Kamishibai.IconButton"
+                android:contentDescription="@string/kami_back"
+                android:src="@drawable/kami_ic_back"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/kami_dialog_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?attr/kamiText"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/kami_dialog_close"
+                style="@style/Kamishibai.IconButton"
+                android:contentDescription="@string/kami_close"
+                android:src="@drawable/kami_ic_close" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/kami_dialog_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:overScrollMode="ifContentScrolls"
+            android:paddingStart="7dp"
+            android:paddingEnd="7dp"
+            android:paddingBottom="7dp"
+            android:scrollbars="vertical" />
+    </LinearLayout>
+</FrameLayout>

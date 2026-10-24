@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="@drawable/kami_ripple_round"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingEnd="4dp">
+
+    <ImageView
+        android:id="@+id/kami_suggestion_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:tint="?attr/kamiTextSecondary"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/kami_suggestion_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="?attr/kamiText"
+        android:textSize="16sp" />
+
+    <ImageButton
+        android:id="@+id/kami_suggestion_fill"
+        style="@style/Kamishibai.IconButton"
+        android:contentDescription="@string/kami_fill_suggestion"
+        android:src="@drawable/kami_ic_north_west"
+        android:tint="?attr/kamiTextSecondary" />
+</LinearLayout>

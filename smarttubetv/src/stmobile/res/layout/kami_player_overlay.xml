@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Touch controls drawn over the video. Shown and hidden together with the upstream controls state. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/kami_overlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Thin progress line while the controls are hidden -->
+    <ProgressBar
+        android:id="@+id/kami_ov_line"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_gravity="bottom"
+        android:max="1000"
+        android:progressDrawable="@drawable/kami_seek_progress" />
+
+    <FrameLayout
+        android:id="@+id/kami_ov_controls"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/kami_overlay_scrim"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/kami_ov_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="4dp">
+
+            <ImageButton
+                android:id="@+id/kami_ov_collapse"
+                style="@style/Kamishibai.OverlayButton"
+                android:contentDescription="@string/kami_minimize"
+                android:src="@drawable/kami_ic_chevron_down" />
+
+            <TextView
+                android:id="@+id/kami_ov_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@android:color/white"
+                android:textSize="17sp"
+                android:fontFamily="sans-serif-medium"
+                android:visibility="invisible" />
+
+            <ImageButton
+                android:id="@+id/kami_ov_pip"
+                style="@style/Kamishibai.OverlayButton"
+                android:contentDescription="@string/kami_pip"
+                android:src="@drawable/kami_ic_pip" />
+
+            <ImageButton
+                android:id="@+id/kami_ov_subtitles"
+                style="@style/Kamishibai.OverlayButton"
+                android:contentDescription="@string/kami_subtitles"
+                android:src="@drawable/kami_ic_subtitles" />
+
+            <ImageButton
+                android:id="@+id/kami_ov_quality"
+                style="@style/Kamishibai.OverlayButton"
+                android:contentDescription="@string/kami_quality"
+                android:src="@drawable/kami_ic_quality" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/kami_ov_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/kami_ov_previous"
+                style="@style/Kamishibai.TransportButton"
+                android:contentDescription="@string/kami_previous"
+                android:src="@drawable/kami_ic_skip_previous" />
+
+            <ImageButton
+                android:id="@+id/kami_ov_play"
+                style="@style/Kamishibai.TransportButton.Main"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:contentDescription="@string/kami_play_pause"
+                android:src="@drawable/kami_ic_pause" />
+
+            <ImageButton
+                android:id="@+id/kami_ov_next"
+                style="@style/Kamishibai.TransportButton"
+                android:contentDescription="@string/kami_next"
+                android:src="@drawable/kami_ic_skip_next" />
+        </LinearLayout>
+
+        <!-- Fullscreen only: actions and "more videos" -->
+        <LinearLayout
+            android:id="@+id/kami_ov_full_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_gravity="bottom|start"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="60dp"
+            android:background="@drawable/kami_overlay_pill"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:visibility="gone">
+
+            <ImageButton
+                android:id="@+id/kami_ov_like"
+                style="@style/Kamishibai.OverlaySmallButton"
+                android:contentDescription="@string/kami_like"
+                android:src="@drawable/kami_ic_thumb_up" />
+
+            <TextView
+                android:id="@+id/kami_ov_like_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:textColor="@android:color/white"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/kami_ov_dislike"
+                style="@style/Kamishibai.OverlaySmallButton"
+                android:contentDescription="@string/kami_dislike"
+                android:src="@drawable/kami_ic_thumb_down" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="22dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:background="#59FFFFFF" />
+
+            <ImageButton
+                android:id="@+id/kami_ov_comments"
+                style="@style/Kamishibai.OverlaySmallButton"
+                android:contentDescription="@string/kami_comments"
+                android:src="@drawable/kami_ic_comment" />
+
+            <ImageButton
+                android:id="@+id/kami_ov_save"
+                style="@style/Kamishibai.OverlaySmallButton"
+                android:contentDescription="@string/kami_save"
+                android:src="@drawable/kami_ic_playlist_add" />
+
+            <ImageButton
+                android:id="@+id/kami_ov_share"
+                style="@style/Kamishibai.OverlaySmallButton"
+                android:contentDescription="@string/kami_share"
+                android:src="@drawable/kami_ic_share" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/kami_ov_more_videos"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="60dp"
+            android:background="@drawable/kami_overlay_pill"
+            android:gravity="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/kami_more_videos"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="12dp">
+
+            <TextView
+                android:id="@+id/kami_ov_time"
+                style="@style/Kamishibai.OverlayPill" />
+
+            <TextView
+                android:id="@+id/kami_ov_chapter"
+                style="@style/Kamishibai.OverlayPill"
+                android:layout_marginStart="8dp"
+                android:drawableEnd="@drawable/kami_ic_chevron_right"
+                android:maxWidth="200dp"
+                android:visibility="gone" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/kami_ov_fullscreen"
+                style="@style/Kamishibai.OverlayButton"
+                android:contentDescription="@string/kami_fullscreen"
+                android:src="@drawable/kami_ic_fullscreen" />
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/kami_ov_seek"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="-10dp"
+            android:max="1000"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:progressDrawable="@drawable/kami_seek_progress"
+            android:splitTrack="false"
+            android:thumb="@drawable/kami_seek_thumb"
+            android:thumbOffset="6dp" />
+    </FrameLayout>
+</FrameLayout>

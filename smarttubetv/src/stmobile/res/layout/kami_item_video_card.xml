@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/kami_ripple_card"
+    android:orientation="vertical"
+    android:padding="6dp"
+    android:stateListAnimator="@animator/kami_press">
+
+    <com.liskovsoft.smartyoutubetv2.tv.mobile.widget.AspectFrameLayout
+        android:id="@+id/kami_thumb_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/kami_thumb_frame"
+        android:outlineProvider="background"
+        android:clipToOutline="true"
+        app:kamiRatio="1.7778">
+
+        <ImageView
+            android:id="@+id/kami_thumb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:id="@+id/kami_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="8dp"
+            android:background="@drawable/kami_badge"
+            android:paddingStart="5dp"
+            android:paddingTop="1dp"
+            android:paddingEnd="5dp"
+            android:paddingBottom="1dp"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-medium" />
+
+        <ProgressBar
+            android:id="@+id/kami_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_gravity="bottom"
+            android:max="100"
+            android:progressDrawable="@drawable/kami_watched_progress"
+            android:visibility="gone" />
+    </com.liskovsoft.smartyoutubetv2.tv.mobile.widget.AspectFrameLayout>
+
+    <LinearLayout
+        android:id="@+id/kami_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingTop="10dp">
+
+        <!-- Channel initial on a tinted disc (the feeds don't carry channel pictures) -->
+        <TextView
+            android:id="@+id/kami_avatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            android:gravity="center"
+            android:importantForAccessibility="no"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/kami_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="?attr/kamiText"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-medium"
+                android:lineSpacingExtra="1dp" />
+
+            <TextView
+                android:id="@+id/kami_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="?attr/kamiTextSecondary"
+                android:textSize="13.5sp" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/kami_more"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="-6dp"
+            android:background="@drawable/kami_ripple_round"
+            android:contentDescription="@string/kami_more_actions"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/kami_ic_more_horiz"
+            android:tint="?attr/kamiTextSecondary" />
+    </LinearLayout>
+</LinearLayout>

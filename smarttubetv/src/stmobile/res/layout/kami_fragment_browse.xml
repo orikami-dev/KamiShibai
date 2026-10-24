@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/kamiInk"
+    android:orientation="vertical">
+
+    <!-- Top bar: logo and name on the left, notifications and search on the right.
+         The search field opens over it, growing from the search button. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp">
+
+    <LinearLayout
+        android:id="@+id/kami_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="4dp">
+
+        <LinearLayout
+            android:id="@+id/kami_brand_group"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/kami_ripple_round"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="6dp">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:importantForAccessibility="no"
+                android:src="?attr/kamiLogo" />
+
+            <TextView
+                android:id="@+id/kami_brand"
+                style="@style/Kamishibai.Brand"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/kami_brand" />
+        </LinearLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/kami_action_notifications"
+            style="@style/Kamishibai.IconButton"
+            android:contentDescription="@string/kami_notifications"
+            android:src="@drawable/kami_ic_bell"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/kami_action_search"
+            style="@style/Kamishibai.IconButton"
+            android:contentDescription="@string/kami_search"
+            android:src="@drawable/kami_ic_search" />
+    </LinearLayout>
+
+    <include
+        layout="@layout/kami_search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- Content, with the search page over it while a search is on -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <!-- Drawer (real tablets only) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/kami_nav_rail"
+            android:layout_width="240dp"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:background="@drawable/kami_nav_rail_bg"
+            android:paddingTop="12dp"
+            android:paddingBottom="16dp"
+            android:scrollbars="none"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Home topic filters, with the "Explore" button first -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/kami_chips"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:paddingStart="12dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="10dp"
+                android:scrollbars="none"
+                android:visibility="gone" />
+
+            <!-- Name of the page when it isn't Home -->
+            <TextView
+                android:id="@+id/kami_page_title"
+                style="@style/Kamishibai.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                android:visibility="gone" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                    android:id="@+id/kami_refresh"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/kami_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="16dp"
+                        android:scrollbarStyle="outsideOverlay"
+                        android:scrollbars="vertical" />
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+                <include layout="@layout/kami_view_error" />
+
+                <ProgressBar
+                    android:id="@+id/kami_progress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:layout_gravity="top"
+                    android:indeterminate="true"
+                    android:indeterminateTint="?attr/kamiAccent"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/kami_search_host"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/kamiInk"
+        android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- Bottom bar: Home, Shorts, Subscriptions, You. Centered on wide screens. -->
+    <FrameLayout
+        android:id="@+id/kami_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/kami_bottom_bar_bg">
+
+        <LinearLayout
+            android:id="@+id/kami_nav_bar"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" />
+    </FrameLayout>
+</LinearLayout>

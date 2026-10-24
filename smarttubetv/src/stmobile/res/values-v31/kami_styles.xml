@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+ start screen: the page colour only, no app icon in the middle -->
+    <style name="Kamishibai.Theme.Launch" parent="Kamishibai.Theme">
+        <item name="android:windowBackground">@color/kami_ink</item>
+        <item name="android:windowAnimationStyle">@style/Kamishibai.NoAnimation</item>
+        <item name="android:windowSplashScreenBackground">@color/kami_ink</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/kami_splash_none</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+        <item name="android:windowSplashScreenAnimationDuration">0</item>
+    </style>
+</resources>

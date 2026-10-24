@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingStart="14dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="14dp"
+    android:paddingBottom="6dp">
+
+    <ImageView
+        android:id="@+id/kami_cm_avatar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/kami_round_frame"
+        android:clipToOutline="true"
+        android:importantForAccessibility="no"
+        android:outlineProvider="background"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="12dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/kami_cm_author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="?attr/kamiTextSecondary"
+            android:textSize="12.5sp" />
+
+        <TextView
+            android:id="@+id/kami_cm_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:autoLink="web"
+            android:lineSpacingExtra="2dp"
+            android:textColor="?attr/kamiText"
+            android:textColorLink="?attr/kamiAccent"
+            android:textSize="14.5sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginStart="-8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/kami_cm_like"
+                style="@style/Kamishibai.CommentButton"
+                android:contentDescription="@string/kami_like"
+                android:src="@drawable/kami_ic_thumb_up" />
+
+            <TextView
+                android:id="@+id/kami_cm_like_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="24dp"
+                android:textColor="?attr/kamiTextSecondary"
+                android:textSize="12.5sp" />
+
+            <ImageButton
+                android:id="@+id/kami_cm_dislike"
+                style="@style/Kamishibai.CommentButton"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/kami_dislike"
+                android:src="@drawable/kami_ic_thumb_down" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/kami_cm_replies"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginStart="-8dp"
+            android:background="@drawable/kami_ripple_card"
+            android:drawableEnd="@drawable/kami_ic_chevron_right"
+            android:drawablePadding="2dp"
+            android:gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="?attr/kamiAccent"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:visibility="gone" />
+    </LinearLayout>
+</LinearLayout>

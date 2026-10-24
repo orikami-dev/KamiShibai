@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sign in to a Google account on a phone: the code to confirm, a button that opens the activation page in the browser -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/kamiInk"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <ImageButton
+            android:id="@+id/kami_back"
+            style="@style/Kamishibai.IconButton"
+            android:contentDescription="@string/kami_back"
+            android:src="@drawable/kami_ic_back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/kami_signin_title"
+            android:textColor="?attr/kamiText"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/kami_signin_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingStart="24dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="32dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="3dp"
+                android:text="@string/kami_signin_intro"
+                android:textColor="?attr/kamiTextSecondary"
+                android:textSize="15sp" />
+
+            <!-- The code -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/kami_code_frame"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/kami_signin_code"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:letterSpacing="0.08"
+                    android:textColor="?attr/kamiText"
+                    android:textIsSelectable="true"
+                    android:textSize="32sp"
+                    android:textStyle="bold" />
+
+                <ProgressBar
+                    android:id="@+id/kami_signin_progress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="12dp"
+                    android:indeterminate="true"
+                    android:indeterminateTint="?attr/kamiAccent" />
+
+                <TextView
+                    android:id="@+id/kami_signin_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/kami_signin_loading"
+                    android:textColor="?attr/kamiTextSecondary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/kami_signin_open"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/kami_button"
+                android:enabled="false"
+                android:stateListAnimator="@null"
+                android:text="@string/kami_signin_open"
+                android:textAllCaps="false"
+                android:textColor="?attr/kamiOnAccent"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/kami_signin_copy"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/kami_button_tonal"
+                android:enabled="false"
+                android:stateListAnimator="@null"
+                android:text="@string/kami_signin_copy"
+                android:textAllCaps="false"
+                android:textColor="?attr/kamiText"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/kami_signin_steps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:lineSpacingExtra="6dp"
+                android:textColor="?attr/kamiText"
+                android:textSize="15sp" />
+
+            <!-- Another device: the address and a QR code -->
+            <TextView
+                android:id="@+id/kami_signin_other"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:lineSpacingExtra="3dp"
+                android:textColor="?attr/kamiTextSecondary"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/kami_signin_qr"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:background="@android:color/white"
+                android:contentDescription="@string/kami_signin_qr"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

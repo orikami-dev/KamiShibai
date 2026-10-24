@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The main screen of Kamishibai. Replaces the upstream player layout, because the main activity extends
+     the upstream player activity: Home below, the watch panel over it (kami_watch_page) while a video is shown. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/kamiInk">
+
+    <fragment
+        android:id="@+id/kami_browse_fragment"
+        android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.browse.MobileBrowseFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <include layout="@layout/kami_watch_page" />
+</FrameLayout>

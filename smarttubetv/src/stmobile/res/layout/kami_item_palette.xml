@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One palette of the theme picker: a small Kamishibai screen painted with it, its name and what it looks like.
+     The colors are set in code from the palette (ThemePicker). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="108dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="4dp"
+    android:background="@drawable/kami_ripple_card"
+    android:orientation="vertical"
+    android:padding="4dp">
+
+    <FrameLayout
+        android:id="@+id/kami_pal_frame"
+        android:layout_width="match_parent"
+        android:layout_height="148dp"
+        android:padding="3dp">
+
+        <LinearLayout
+            android:id="@+id/kami_pal_screen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="7dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="7dp">
+
+                <ImageView
+                    android:id="@+id/kami_pal_logo"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:importantForAccessibility="no" />
+
+                <View
+                    android:id="@+id/kami_pal_brand"
+                    android:layout_width="30dp"
+                    android:layout_height="5dp"
+                    android:layout_marginStart="4dp" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/kami_pal_thumb"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="7dp" />
+
+            <View
+                android:id="@+id/kami_pal_line1"
+                android:layout_width="56dp"
+                android:layout_height="5dp"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="6dp" />
+
+            <View
+                android:id="@+id/kami_pal_line2"
+                android:layout_width="36dp"
+                android:layout_height="5dp"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="4dp" />
+
+            <View
+                android:id="@+id/kami_pal_button"
+                android:layout_width="44dp"
+                android:layout_height="12dp"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="8dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:id="@+id/kami_pal_bar"
+                android:layout_width="match_parent"
+                android:layout_height="16dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/kami_pal_tab_on"
+                    android:layout_width="10dp"
+                    android:layout_height="4dp" />
+
+                <View
+                    android:id="@+id/kami_pal_tab_a"
+                    android:layout_width="6dp"
+                    android:layout_height="4dp"
+                    android:layout_marginStart="10dp" />
+
+                <View
+                    android:id="@+id/kami_pal_tab_b"
+                    android:layout_width="6dp"
+                    android:layout_height="4dp"
+                    android:layout_marginStart="10dp" />
+
+                <View
+                    android:id="@+id/kami_pal_tab_c"
+                    android:layout_width="6dp"
+                    android:layout_height="4dp"
+                    android:layout_marginStart="10dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/kami_pal_check"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="6dp"
+            android:importantForAccessibility="no"
+            android:padding="3dp"
+            android:src="@drawable/kami_ic_check" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/kami_pal_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center_horizontal"
+        android:maxLines="1"
+        android:textColor="?attr/kamiText"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/kami_pal_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:maxLines="2"
+        android:minLines="2"
+        android:textColor="?attr/kamiTextSecondary"
+        android:textSize="11sp" />
+</LinearLayout>

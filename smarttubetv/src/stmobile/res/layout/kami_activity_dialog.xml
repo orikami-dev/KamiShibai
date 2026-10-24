@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Menus and settings of the app: a bottom sheet over the screen, centered and narrower on wide screens -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/kami_dialog_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/kamiScrim">
+
+    <LinearLayout
+        android:id="@+id/kami_dialog_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@drawable/kami_sheet_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="36dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/kami_sheet_handle" />
+
+        <LinearLayout
+            android:id="@+id/kami_dialog_header"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
+
+            <ImageButton
+                android:id="@+id/kami_dialog_back"
+                style="@style/Kamishibai.IconButton"
+                android:contentDescription="@string/kami_back"
+                android:src="@drawable/kami_ic_back"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/kami_dialog_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?attr/kamiText"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/kami_dialog_close"
+                style="@style/Kamishibai.IconButton"
+                android:contentDescription="@string/kami_close"
+                android:src="@drawable/kami_ic_close" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/kamiSurfaceHigh" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/kami_dialog_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:overScrollMode="ifContentScrolls"
+            android:paddingTop="4dp"
+            android:paddingBottom="12dp"
+            android:scrollbars="vertical" />
+    </LinearLayout>
+</FrameLayout>

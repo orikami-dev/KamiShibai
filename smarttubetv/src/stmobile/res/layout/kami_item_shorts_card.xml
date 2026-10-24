@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/kami_ripple_card"
+    android:padding="4dp"
+    android:stateListAnimator="@animator/kami_press">
+
+    <com.liskovsoft.smartyoutubetv2.tv.mobile.widget.AspectFrameLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/kami_thumb_frame"
+        android:outlineProvider="background"
+        android:clipToOutline="true"
+        app:kamiRatio="0.5625">
+
+        <ImageView
+            android:id="@+id/kami_thumb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:importantForAccessibility="no" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/kami_shade_bottom" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/kami_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:shadowColor="#99000000"
+                android:shadowRadius="4"
+                android:textColor="@android:color/white"
+                android:textSize="14.5sp"
+                android:fontFamily="sans-serif-medium" />
+
+            <TextView
+                android:id="@+id/kami_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:shadowColor="#99000000"
+                android:shadowRadius="4"
+                android:textColor="#E6FFFFFF"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/kami_more"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="top|end"
+            android:background="@drawable/kami_ripple_overlay"
+            android:contentDescription="@string/kami_more_actions"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/kami_ic_more_horiz"
+            android:tint="@android:color/white" />
+
+        <ProgressBar
+            android:id="@+id/kami_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_gravity="bottom"
+            android:max="100"
+            android:progressDrawable="@drawable/kami_watched_progress"
+            android:visibility="gone" />
+    </com.liskovsoft.smartyoutubetv2.tv.mobile.widget.AspectFrameLayout>
+</FrameLayout>

@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Infos under the video: title, channel, actions, then the comments card (a button opening the comments panel) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="12dp"
+    android:paddingBottom="6dp">
+
+    <LinearLayout
+        android:id="@+id/kami_w_title_block"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/kami_ripple_card"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:id="@+id/kami_w_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lineSpacingExtra="2dp"
+            android:maxLines="2"
+            android:textColor="?attr/kamiText"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/kami_w_meta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="?attr/kamiTextSecondary"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/kami_w_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:autoLink="web"
+            android:lineSpacingExtra="2dp"
+            android:textColor="?attr/kamiText"
+            android:textColorLink="?attr/kamiAccent"
+            android:textIsSelectable="true"
+            android:textSize="14sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/kami_w_channel"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/kami_ripple_card"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
+
+        <ImageView
+            android:id="@+id/kami_w_avatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/kami_round_frame"
+            android:clipToOutline="true"
+            android:importantForAccessibility="no"
+            android:outlineProvider="background"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/kami_w_author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?attr/kamiText"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-medium" />
+
+            <TextView
+                android:id="@+id/kami_w_subscribers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?attr/kamiTextSecondary"
+                android:textSize="12.5sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/kami_w_subscribe"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:background="@drawable/kami_subscribe_button"
+            android:gravity="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/kami_subscribe"
+            android:textColor="@color/kami_subscribe_text"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium" />
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingStart="12dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="12dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/kami_action_chip"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/kami_w_like"
+                    style="@style/Kamishibai.ActionChip"
+                    android:background="@drawable/kami_action_half"
+                    android:contentDescription="@string/kami_like"
+                    android:drawableStart="@drawable/kami_ic_thumb_up"
+                    android:paddingEnd="10dp" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="?attr/kamiFill" />
+
+                <ImageButton
+                    android:id="@+id/kami_w_dislike"
+                    android:layout_width="46dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/kami_action_half"
+                    android:contentDescription="@string/kami_dislike"
+                    android:paddingStart="10dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/kami_ic_thumb_down"
+                    android:tint="?attr/kamiText" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/kami_w_share"
+                style="@style/Kamishibai.ActionChip"
+                android:layout_marginStart="8dp"
+                android:drawableStart="@drawable/kami_ic_share"
+                android:text="@string/kami_share" />
+
+            <TextView
+                android:id="@+id/kami_w_save"
+                style="@style/Kamishibai.ActionChip"
+                android:layout_marginStart="8dp"
+                android:drawableStart="@drawable/kami_ic_playlist_add"
+                android:text="@string/kami_save" />
+
+            <TextView
+                android:id="@+id/kami_w_quality"
+                style="@style/Kamishibai.ActionChip"
+                android:layout_marginStart="8dp"
+                android:drawableStart="@drawable/kami_ic_quality"
+                android:text="@string/kami_quality" />
+
+            <TextView
+                android:id="@+id/kami_w_download"
+                style="@style/Kamishibai.ActionChip"
+                android:layout_marginStart="8dp"
+                android:drawableStart="@drawable/kami_ic_download"
+                android:text="@string/kami_download" />
+
+            <TextView
+                android:id="@+id/kami_w_pip"
+                style="@style/Kamishibai.ActionChip"
+                android:layout_marginStart="8dp"
+                android:drawableStart="@drawable/kami_ic_pip"
+                android:text="@string/kami_pip" />
+
+            <TextView
+                android:id="@+id/kami_w_more"
+                style="@style/Kamishibai.ActionChip"
+                android:layout_marginStart="8dp"
+                android:drawableStart="@drawable/kami_ic_more_horiz"
+                android:text="@string/kami_more" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:id="@+id/kami_w_comments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/kami_card_button"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:id="@+id/kami_w_comments_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/kami_comments"
+            android:textColor="?attr/kamiText"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/kami_w_top_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/kami_w_top_avatar"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:background="@drawable/kami_round_frame"
+                android:clipToOutline="true"
+                android:importantForAccessibility="no"
+                android:outlineProvider="background"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/kami_w_top_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="?attr/kamiText"
+                android:textSize="13.5sp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

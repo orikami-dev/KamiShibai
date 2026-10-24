@@ -1,0 +1,31 @@
+name: Kamishibai - build APK
+
+on:
+  push:
+    branches: [ "kamishibai", "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Build
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon :smarttubetv:assembleStmobileDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Kamishibai-debug
+          path: smarttubetv/build/outputs/apk/stmobile/debug/*.apk
+          if-no-files-found: error

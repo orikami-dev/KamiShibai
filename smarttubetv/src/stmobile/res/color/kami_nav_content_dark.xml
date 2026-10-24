@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tabs over a short: white, the selected one in vermilion -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="#FFFF5A40" android:state_selected="true" />
+    <item android:color="#FFFFFFFF" />
+</selector>

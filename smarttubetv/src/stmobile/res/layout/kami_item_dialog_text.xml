@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/kami_row_title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:autoLink="web"
+    android:lineSpacingExtra="3dp"
+    android:padding="20dp"
+    android:textColor="?attr/kamiText"
+    android:textColorLink="?attr/kamiAccent"
+    android:textIsSelectable="true"
+    android:textSize="15sp" />

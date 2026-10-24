@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/kamiInk"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <ImageButton
+            android:id="@+id/kami_back"
+            style="@style/Kamishibai.IconButton"
+            android:contentDescription="@string/kami_back"
+            android:src="@drawable/kami_ic_back" />
+
+        <TextView
+            android:id="@+id/kami_title"
+            style="@style/Kamishibai.Title.Page"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/kami_action"
+            style="@style/Kamishibai.IconButton"
+            android:contentDescription="@string/kami_search_channel"
+            android:src="@drawable/kami_ic_search"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/kami_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="16dp"
+            android:scrollbars="vertical" />
+
+        <ProgressBar
+            android:id="@+id/kami_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_gravity="top"
+            android:indeterminate="true"
+            android:indeterminateTint="?attr/kamiAccent"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>

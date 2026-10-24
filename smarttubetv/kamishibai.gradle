@@ -1,0 +1,36 @@
+// Kamishibai: the phone, tablet and foldable edition of SmartTube.
+// Everything specific to it lives in this file and in src/stmobile, so upstream changes merge without conflicts.
+
+android {
+    productFlavors {
+        stmobile {
+            applicationId "com.orikami.kamishibai"
+            // Our own version, not the SmartTube one. Public releases since 1.0 (test builds were 13.0 and 14.0).
+            // versionCode = 200000 + major * 1000 + minor * 10 + fix: above the test builds (1013xx, 1014xx) and SmartTube
+            versionName "1.0"
+            versionCode 201000
+            minSdkVersion 23 // the interface colors are theme attributes (palettes), also used in color state lists
+            targetSdkVersion project.properties.compileSdkVersion
+            // Library modules only know the TV flavors. F-Droid is the one without the SmartTube self-updater.
+            matchingFallbacks = ['stfdroid']
+        }
+    }
+
+    applicationVariants.all { variant ->
+        if (variant.productFlavors[-1].name != 'stmobile') {
+            return
+        }
+
+        variant.outputs.all { output ->
+            def arch = output.getFilter("ABI") ?: "universal"
+            output.outputFileName = new File(sprintf("Kamishibai_%s_%s.apk", [variant.versionName, arch]))
+        }
+    }
+}
+
+dependencies {
+    stmobileImplementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    // Hinge and posture of foldables (Tabletop)
+    stmobileImplementation 'androidx.window:window:1.1.0'
+    stmobileImplementation 'androidx.window:window-java:1.1.0'
+}
