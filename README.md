@@ -6,7 +6,10 @@
 <p align="center"><b>Déroule. Regarde.</b><br>par ORIKAMI</p>
 
 <p align="center">
-  🚧 <b>La version 1.0 arrive bientôt.</b><br>
+  <a href="https://github.com/orikami-dev/kamishibai/releases/latest">⬇️ <b>Télécharger la dernière version</b></a>
+  ·
+  <a href="https://github.com/orikami-dev/kamishibai/releases">📦 Toutes les versions</a>
+  ·
   <a href="CHANGELOG.md">📝 Journal des versions</a>
 </p>
 
@@ -56,7 +59,7 @@ Chaque palette colore l'interface, le logo et l'icône de l'app.
 
 | Version | Ce qu'elle a apporté |
 |---|---|
-| 1.0 *(bientôt)* | Première version publique : un seul écran avec mini-lecteur, Shorts, six palettes, pliants à moitié ouverts, mises à jour intégrées. |
+| [1.0](https://github.com/orikami-dev/kamishibai/releases/tag/v1.0) | Première version publique : un seul écran avec mini-lecteur, Shorts, six palettes, pliants à moitié ouverts, mises à jour intégrées. |
 
 ## 🛠️ Le dépôt
 

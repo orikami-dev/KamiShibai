@@ -2,7 +2,7 @@
 
 Studio : ORIKAMI.
 
-## 1.0 (bientôt)
+## 1.0
 
 - Première version publique de Kamishibai.
 - Un seul écran : la vidéo s'ouvre en panneau par-dessus l'Accueil, mini-lecteur sur le bouton PiP.
