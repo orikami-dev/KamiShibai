@@ -22,12 +22,12 @@ KamiShibai est YouTube sans publicité, pensé pour le téléphone et les pliant
 | | |
 |---|---|
 | 📺 **Un seul écran** | La vidéo monte dans un panneau par-dessus l'Accueil et redescend d'un geste. |
-| 🪟 **Mini-lecteur** | La vidéo continue dans une petite carte pendant que tu navigues. |
+| 🪟 **Mini-lecteur** | Une barre au-dessus des onglets : la vidéo continue pendant que tu navigues. |
 | 📱 **Shorts** | À la verticale, avec les actions sur le côté, comme sur YouTube. |
 | 🔍 **Recherche intégrée** | Le champ s'ouvre dans la barre du haut, les résultats remplacent le flux. |
 | 🔑 **Connexion Google** | Par code d'activation, comme sur une télé : ton mot de passe ne passe jamais par l'app. |
 | 📥 **Téléchargement** | Vidéos et audio, rangés dans tes dossiers Films et Musique. |
-| 🔄 **Mises à jour intégrées** | Les nouvelles versions sont proposées directement dans l'app. |
+| 🔄 **Mises à jour automatiques** | Les nouvelles versions se téléchargent seules, vérifiées avant l'installation. |
 
 ## 🎨 Six palettes
 
@@ -59,6 +59,7 @@ Chaque palette colore l'interface, le logo et l'icône de l'app.
 
 | Version | Ce qu'elle a apporté |
 |---|---|
+| [1.2.0](https://github.com/orikami-dev/kamishibai/releases/tag/v1.2.0) | Mini-lecteur en barre, mises à jour automatiques, export des journaux, fin de l'interface TV. |
 | [1.0](https://github.com/orikami-dev/kamishibai/releases/tag/v1.0) | Première version publique : un seul écran avec mini-lecteur, Shorts, six palettes, pliants à moitié ouverts, mises à jour intégrées. |
 
 ## 🛠️ Le dépôt

@@ -2,6 +2,15 @@
 
 Studio : ORIKAMI.
 
+## 1.2.0
+
+- Mini-lecteur en barre au-dessus des onglets, comme dans une app de musique (arrivé avec la 1.1).
+- Mises à jour automatiques en arrière-plan, empreinte et signature vérifiées, réglage pour les désactiver.
+- Export des journaux depuis À propos et après un plantage.
+- Plus d'interface TV de SmartTube au retour depuis l'Accueil ; écrans TV retirés.
+- Nom écrit KamiShibai partout dans l'app.
+- SmartTube : décodeurs matériels Qualcomm, MediaTek et Rockchip, traduction azerbaïdjanaise.
+
 ## 1.0
 
 - Première version publique de KamiShibai.
