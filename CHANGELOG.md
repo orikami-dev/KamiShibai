@@ -4,7 +4,7 @@ Studio : ORIKAMI.
 
 ## 1.0
 
-- Première version publique de Kamishibai.
+- Première version publique de KamiShibai.
 - Un seul écran : la vidéo s'ouvre en panneau par-dessus l'Accueil, mini-lecteur sur le bouton PiP.
 - Shorts à la verticale comme sur YouTube ; recherche intégrée à l'Accueil.
 - Six palettes (Washi, Sumi, Ai, Matcha, Sakura, Kin) avec logo et icône assortis.

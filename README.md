@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/images/kamishibai-icone.png" width="128" alt="Kamishibai">
+  <img src="docs/images/kamishibai-icone.png" width="128" alt="KamiShibai">
 </p>
 
-<h1 align="center">Kamishibai</h1>
+<h1 align="center">KamiShibai</h1>
 <p align="center"><b>Déroule. Regarde.</b><br>par ORIKAMI</p>
 
 <p align="center">
@@ -17,7 +17,7 @@
 
 ## 🎴 Le projet
 
-Kamishibai est YouTube sans publicité, pensé pour le téléphone et les pliants. Il garde tout le moteur de [SmartTube](https://github.com/yuliskov/SmartTube) (sans pub, SponsorBlock, choix de la qualité, lecture en arrière-plan), conçu à l'origine pour la télé, et lui donne une vraie interface tactile.
+KamiShibai est YouTube sans publicité, pensé pour le téléphone et les pliants. Il garde tout le moteur de [SmartTube](https://github.com/yuliskov/SmartTube) (sans pub, SponsorBlock, choix de la qualité, lecture en arrière-plan), conçu à l'origine pour la télé, et lui donne une vraie interface tactile.
 
 | | |
 |---|---|
@@ -43,7 +43,7 @@ Chaque palette colore l'interface, le logo et l'icône de l'app.
 | 🪙 **Kin** | L'or des feuilles de laque. |
 
 <p align="center">
-  <img src="docs/images/palettes-1.0.png" width="92%" alt="Les six icônes de Kamishibai">
+  <img src="docs/images/palettes-1.0.png" width="92%" alt="Les six icônes de KamiShibai">
 </p>
 
 ## ✨ Points forts
@@ -65,7 +65,7 @@ Chaque palette colore l'interface, le logo et l'icône de l'app.
 
 | Dossier | Contenu |
 |---|---|
-| `smarttubetv/src/stmobile/` | Toute l'interface de téléphone de Kamishibai |
+| `smarttubetv/src/stmobile/` | Toute l'interface de téléphone de KamiShibai |
 | `kamishibai/` | Notes, points de contact avec SmartTube, synchronisation, générateurs de logos |
 | reste du dépôt | Le code de SmartTube, gardé tel quel pour suivre ses mises à jour |
 | `docs/` | Notes de chaque version (`docs/releases`), images |
@@ -74,4 +74,4 @@ Construire (JDK 17, SDK Android 34) : `./gradlew :smarttubetv:assembleStmobileDe
 
 ## ⚖️ Licences
 
-Kamishibai est une version modifiée de [SmartTube](https://github.com/yuliskov/SmartTube) de yuliskov et ses contributeurs, distribuée comme lui sous licence MIT ; la mention de copyright d'origine reste dans [LICENSE](LICENSE) (voir aussi [NOTICE.md](NOTICE.md)). Pour soutenir SmartTube : [ko-fi.com/smarttube](https://ko-fi.com/smarttube). Kamishibai n'est affilié ni à YouTube ni à Google.
+KamiShibai est une version modifiée de [SmartTube](https://github.com/yuliskov/SmartTube) de yuliskov et ses contributeurs, distribuée comme lui sous licence MIT ; la mention de copyright d'origine reste dans [LICENSE](LICENSE) (voir aussi [NOTICE.md](NOTICE.md)). Pour soutenir SmartTube : [ko-fi.com/smarttube](https://ko-fi.com/smarttube). KamiShibai n'est affilié ni à YouTube ni à Google.
