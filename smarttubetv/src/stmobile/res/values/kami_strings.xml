@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string translatable="false" name="app_name">Kamishibai</string>
+    <string translatable="false" name="app_name">KamiShibai</string>
     <string translatable="false" name="kami_brand">KamiShibai</string>
     <string translatable="false" name="kami_shorts_title">Shorts</string>
     <string name="kami_more">More</string>
@@ -72,7 +72,7 @@
     <string name="kami_group_account">Account and devices</string>
     <string name="kami_group_about">About</string>
     <string name="kami_signin_title">Sign in</string>
-    <string name="kami_signin_intro">Kamishibai signs in like a TV app: you confirm this code on the YouTube activation page, in your browser. Your password never goes through the app.</string>
+    <string name="kami_signin_intro">KamiShibai signs in like a TV app: you confirm this code on the YouTube activation page, in your browser. Your password never goes through the app.</string>
     <string name="kami_signin_loading">Getting a code…</string>
     <string name="kami_signin_waiting">Waiting for you to confirm the code…</string>
     <string name="kami_signin_open">Open the activation page</string>
@@ -104,17 +104,40 @@
     <string name="kami_mini_play">Play or pause</string>
     <string name="kami_mini_close">Close the player</string>
     <string name="kami_set_update">Check for updates</string>
-    <string name="kami_update_title">Kamishibai %1$s is available</string>
+    <string name="kami_update_title">KamiShibai %1$s is available</string>
     <string name="kami_update_notes">What\'s new</string>
     <string name="kami_update_install">Download and install</string>
-    <string name="kami_update_downloading">Downloading Kamishibai %1$s…</string>
-    <string name="kami_update_none">Kamishibai %1$s is up to date</string>
+    <string name="kami_update_downloading">Downloading KamiShibai %1$s…</string>
+    <string name="kami_update_none">KamiShibai %1$s is up to date</string>
     <string name="kami_update_failed">Couldn\'t check for updates</string>
     <string name="kami_set_support">Support the project</string>
-    <string name="kami_support_orikami">Orikami (Kamishibai)</string>
+    <string name="kami_support_orikami">Orikami (KamiShibai)</string>
     <string name="kami_support_kofi">Ko-fi</string>
     <string name="kami_support_soon">Link coming soon</string>
     <string name="kami_support_smarttube">yuliskov (SmartTube, the original app)</string>
     <!-- Ko-fi page of Orikami, empty until it exists -->
     <string name="kami_kofi_url" translatable="false"></string>
+    <string name="kami_set_auto_update">Automatic updates</string>
+    <string name="kami_update_auto_on">On: download new versions when the app starts</string>
+    <string name="kami_update_auto_off">Off: only when I check</string>
+    <string name="kami_update_ready">KamiShibai %1$s is ready to install</string>
+    <string name="kami_update_install_now">Install</string>
+    <string name="kami_update_later">Later</string>
+    <string name="kami_update_refused">Update cancelled: the file didn\'t pass the check</string>
+    <string name="kami_adddevice_title">Link a device</string>
+    <string name="kami_adddevice_done">Done</string>
+    <string name="kami_set_logs">Export the logs</string>
+    <string name="kami_logs_title">Logs to send</string>
+    <string name="kami_logs_info">This is exactly what will be sent. E-mails, file paths, titles, channels, video ids, addresses and tokens are already replaced.</string>
+    <string name="kami_logs_description">Describe the problem</string>
+    <string name="kami_logs_send">Send by e-mail</string>
+    <string name="kami_logs_copy">Copy</string>
+    <string name="kami_logs_cancel">Cancel</string>
+    <string name="kami_logs_copied">Logs copied</string>
+    <string name="kami_logs_failed">Couldn\'t prepare the logs</string>
+    <string name="kami_logs_no_mail">No e-mail app found. Use Copy instead.</string>
+    <string name="kami_logs_mail_body">KamiShibai logs attached.</string>
+    <string name="kami_logs_crash_title">The app closed unexpectedly. Export the logs?</string>
+    <string name="kami_logs_export">Export the logs</string>
+    <string name="kami_logs_later">Not now</string>
 </resources>

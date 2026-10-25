@@ -28,6 +28,7 @@ import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiTheme;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiUpdate;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.logs.KamiLogs;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileActivity;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.MobileScreen;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.watch.MobilePlaybackFragment;
@@ -111,7 +112,9 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
         ViewManager.instance(this).setViewHost(MobileBrowseActivity.class, this);
         mPendingView = sPendingView;
         sPendingView = null;
-        KamiUpdate.checkOnStart(this);
+        if (!KamiLogs.offerAfterCrash(this)) {
+            KamiUpdate.checkOnStart(this);
+        }
     }
 
     @Override
@@ -187,6 +190,29 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
 
     public boolean isPlayerShown() {
         return mPlayerShown;
+    }
+
+    /**
+     * For the exported logs: how the video is shown now.
+     */
+    public String describePlayer() {
+        if (!mPlayerShown) {
+            return "lecteur fermé";
+        }
+
+        if (isInPipMode()) {
+            return "fenêtre PIP";
+        }
+
+        if (mPanel.isMini()) {
+            return "lecteur réduit";
+        }
+
+        if (mPanel.isShortsShown()) {
+            return "short";
+        }
+
+        return mPanel.isSystemBarsHidden() ? "plein écran" : "panneau vidéo";
     }
 
     // region Lifecycle

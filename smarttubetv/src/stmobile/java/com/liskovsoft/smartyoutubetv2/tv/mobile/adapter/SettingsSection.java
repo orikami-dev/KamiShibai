@@ -28,6 +28,7 @@ import com.liskovsoft.smartyoutubetv2.common.utils.SimpleEditDialog;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiUpdate;
+import com.liskovsoft.smartyoutubetv2.tv.mobile.logs.KamiLogs;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.UiScale;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.common.WindowSize;
 import com.liskovsoft.smartyoutubetv2.tv.mobile.download.DownloadAction;
@@ -101,6 +102,8 @@ public class SettingsSection implements MobileSection {
             items.add(new SettingsItem(mContext.getString(R.string.kami_set_downloads), () -> DownloadAction.showSettings(mContext)));
             // In About, with its icon
             items.add(new SettingsItem(mContext.getString(R.string.kami_set_update), () -> KamiUpdate.check(mContext, true), R.drawable.settings_about));
+            items.add(new SettingsItem(mContext.getString(R.string.kami_set_auto_update), () -> KamiUpdate.showSettings(mContext), R.drawable.settings_about));
+            items.add(new SettingsItem(mContext.getString(R.string.kami_set_logs), () -> KamiLogs.open(mContext), R.drawable.settings_about));
             items.add(new SettingsItem(mContext.getString(R.string.kami_set_support), this::showSupportDialog, R.drawable.settings_about));
 
             for (int g = 0; g < GROUP_TITLES.length; g++) {

@@ -392,7 +392,7 @@ public class DownloadService extends Service {
             ContentValues values = new ContentValues();
             values.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
             values.put(MediaStore.MediaColumns.MIME_TYPE, mime);
-            values.put(MediaStore.MediaColumns.RELATIVE_PATH, directory + "/Kamishibai");
+            values.put(MediaStore.MediaColumns.RELATIVE_PATH, directory + "/KamiShibai");
             values.put(MediaStore.MediaColumns.IS_PENDING, 1);
             Uri uri = resolver.insert(collection, values);
 
@@ -414,7 +414,7 @@ public class DownloadService extends Service {
             return uri;
         }
 
-        File folder = new File(Environment.getExternalStoragePublicDirectory(directory), "Kamishibai");
+        File folder = new File(Environment.getExternalStoragePublicDirectory(directory), "KamiShibai");
 
         if (!folder.exists() && !folder.mkdirs()) {
             throw new IOException("folder");
