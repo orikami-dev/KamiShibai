@@ -97,6 +97,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
     private FilterChipsAdapter mChipsAdapter;
     private SwipeRefreshLayout mRefresh;
     private RecyclerView mList;
+    private int mListBottomPadding = -1;
     private View mErrorPanel;
     private TextView mErrorMessage;
     private Button mErrorAction;
@@ -144,6 +145,7 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
         mChipsView = mRoot.findViewById(R.id.kami_chips);
         mRefresh = mRoot.findViewById(R.id.kami_refresh);
         mList = mRoot.findViewById(R.id.kami_list);
+        mListBottomPadding = -1;
         mErrorPanel = mRoot.findViewById(R.id.kami_error);
         mErrorMessage = mRoot.findViewById(R.id.kami_error_message);
         mErrorAction = mRoot.findViewById(R.id.kami_error_action);
@@ -690,6 +692,22 @@ public class MobileBrowseFragment extends Fragment implements BrowseView, Mobile
         mBottom.setVisibility(mIsDrawer || height > 0 ? View.GONE : View.VISIBLE);
         int padding = height > 0 ? Math.max(0, height) : 0;
         mRoot.setPadding(mRoot.getPaddingLeft(), mRoot.getPaddingTop(), mRoot.getPaddingRight(), padding);
+    }
+
+    /**
+     * Room taken by the mini player above the tabs: the last items of Home scroll above it.
+     */
+    public void setMiniPlayerSpace(int height) {
+        if (mList == null) {
+            return;
+        }
+
+        if (mListBottomPadding == -1) {
+            mListBottomPadding = mList.getPaddingBottom();
+        }
+
+        mList.setClipToPadding(false);
+        mList.setPadding(mList.getPaddingLeft(), mList.getPaddingTop(), mList.getPaddingRight(), mListBottomPadding + height);
     }
 
     /**

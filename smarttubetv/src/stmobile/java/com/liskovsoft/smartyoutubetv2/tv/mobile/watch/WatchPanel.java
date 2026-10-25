@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -72,10 +73,11 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
     private static final int MODE_SPLIT = 1; // wide landscape: video and infos on the left, suggestions on the right
     private static final int MODE_FULLSCREEN = 2;
     private static final int MODE_SHORTS = 3;
-    private static final int MODE_MINI = 4; // a card at the bottom right of Home (PiP button), Home usable under it
+    private static final int MODE_MINI = 4; // a bar above the tabs, as in a music app, Home usable above it
 
-    private static final float MINI_MAX_WIDTH_DP = 344;
-    private static final float MINI_WIDTH_RATIO = 0.56f;
+    private static final float MINI_MAX_WIDTH_DP = 640;
+    private static final float MINI_HEIGHT_DP = 64;
+    private static final float MINI_PADDING_DP = 4;
     private static final float MINI_MARGIN_DP = 8;
     private static final float MINI_RADIUS_DP = 12;
 
@@ -121,6 +123,9 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
     private View mMiniView;
     private ImageButton mMiniPlay;
     private ProgressBar mMiniLine;
+    private TextView mMiniTitle;
+    private TextView mMiniChannel;
+    private View mMiniVideoSpace;
     private boolean mMini;
     private boolean mMiniFrame; // the root is laid out as the mini card
 
@@ -408,7 +413,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         mRoot.findViewById(R.id.kami_ov_collapse).setOnClickListener(v -> {
             if (mMode == MODE_FULLSCREEN) {
                 leaveFullscreen();
-            } else {
+            } else if (!minimize()) {
                 mActivity.closePlayer();
             }
         });
@@ -566,9 +571,56 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         mMiniView = mRoot.findViewById(R.id.kami_mini);
         mMiniPlay = mRoot.findViewById(R.id.kami_mini_play);
         mMiniLine = mRoot.findViewById(R.id.kami_mini_line);
+        mMiniTitle = mRoot.findViewById(R.id.kami_mini_title);
+        mMiniChannel = mRoot.findViewById(R.id.kami_mini_channel);
+        mMiniVideoSpace = mRoot.findViewById(R.id.kami_mini_video_space);
         mMiniView.setOnClickListener(v -> setMini(false));
         mMiniPlay.setOnClickListener(v -> togglePlayback());
         mRoot.findViewById(R.id.kami_mini_close).setOnClickListener(v -> mActivity.closePlayer());
+
+        // Swipe up: the player opens again. Swipe down: it closes
+        GestureDetector swipes = new GestureDetector(mActivity, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (Math.abs(velocityY) < Math.abs(velocityX) || Math.abs(velocityY) < WindowSize.dpToPx(mActivity, 400)) {
+                    return false;
+                }
+
+                mMiniView.setPressed(false);
+
+                if (velocityY < 0) {
+                    setMini(false);
+                } else {
+                    mActivity.closePlayer();
+                }
+
+                return true;
+            }
+        });
+        mMiniView.setOnTouchListener((v, event) -> swipes.onTouchEvent(event) && event.getAction() == MotionEvent.ACTION_UP);
+    }
+
+    /**
+     * Leaving the video (back, collapse button, a tab, the search): it goes on in the mini player.
+     * False when it can't (a short, the panel not shown), the caller then closes the player.
+     */
+    public boolean minimize() {
+        if (!mShown || isShorts() || mActivity.isInPipMode()) {
+            return false;
+        }
+
+        setMini(true);
+        return true;
+    }
+
+    private void updateMiniTexts() {
+        if (mMiniTitle == null) {
+            return;
+        }
+
+        mMiniTitle.setText(mVideo != null ? mVideo.getTitle() : null);
+        mMiniChannel.setText(mVideo != null ? mVideo.getAuthor() : null);
+        mMiniChannel.setVisibility(mVideo != null && !TextUtils.isEmpty(mVideo.getAuthor()) ? View.VISIBLE : View.GONE);
     }
 
     public boolean isMini() {
@@ -576,8 +628,8 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
     }
 
     /**
-     * PiP button: the video goes on in a card at the bottom right of Home, the app stays as it is.
-     * A tap on the card, or a video picked on Home, opens the player again.
+     * The video goes on in a bar above the tabs, the app stays as it is (PiP button, or the video left).
+     * A tap on the bar, a swipe up, or a video picked on Home opens the player again.
      */
     public void setMini(boolean mini) {
         if (mMini == mini || !mShown || (mini && isShorts())) {
@@ -604,7 +656,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
     }
 
     /**
-     * The root becomes the card (bottom right, above the tabs) or the whole panel again.
+     * The root becomes the bar (above the tabs, centered and narrower on wide screens) or the whole panel again.
      * True when that changed its size.
      */
     private boolean applyMiniFrame(boolean mini) {
@@ -617,13 +669,12 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         View parent = (View) mRoot.getParent();
 
         if (mini) {
-            float maxWidth = WindowSize.dpToPx(mActivity, MINI_MAX_WIDTH_DP);
-            int width = Math.round(Math.min(maxWidth, parent.getWidth() * MINI_WIDTH_RATIO));
             int margin = WindowSize.dpToPx(mActivity, MINI_MARGIN_DP);
+            int width = Math.min(WindowSize.dpToPx(mActivity, MINI_MAX_WIDTH_DP), parent.getWidth() - 2 * margin);
             params.width = width;
-            params.height = Math.round(width * 9 / 16f);
-            params.gravity = Gravity.BOTTOM | Gravity.END;
-            params.rightMargin = margin;
+            params.height = WindowSize.dpToPx(mActivity, MINI_HEIGHT_DP);
+            params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+            params.rightMargin = 0;
             params.bottomMargin = mActivity.getTabBarHeight() + margin;
             float radius = WindowSize.dpToPx(mActivity, MINI_RADIUS_DP);
             mRoot.setOutlineProvider(new android.view.ViewOutlineProvider() {
@@ -634,7 +685,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
             });
             mRoot.setClipToOutline(true);
             mRoot.setElevation(WindowSize.dpToPx(mActivity, 8));
-            mRoot.setBackgroundColor(Color.BLACK);
+            mRoot.setBackgroundColor(color(R.attr.kamiSurfaceHigh));
         } else {
             params.width = ViewGroup.LayoutParams.MATCH_PARENT;
             params.height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -646,20 +697,41 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
             mRoot.setElevation(0);
             mRoot.setBackgroundColor(mShortsChrome ? Color.BLACK : color(R.attr.kamiInk));
             mMiniView.setVisibility(View.GONE);
+            setVideoCorner(0);
         }
 
         mRoot.setLayoutParams(params);
+        mActivity.onMiniSpaceChanged(mini ? params.height + params.bottomMargin - mActivity.getTabBarHeight() : 0);
         return true;
     }
 
+    private void setVideoCorner(float radius) {
+        if (radius > 0) {
+            mPlayerBox.setOutlineProvider(new android.view.ViewOutlineProvider() {
+                @Override
+                public void getOutline(View view, android.graphics.Outline outline) {
+                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), radius);
+                }
+            });
+            mPlayerBox.setClipToOutline(true);
+        } else {
+            mPlayerBox.setOutlineProvider(android.view.ViewOutlineProvider.BACKGROUND);
+            mPlayerBox.setClipToOutline(false);
+        }
+    }
+
     /**
-     * Only the video in the card: no infos, suggestions, comments or player controls.
+     * Only the video, small at the start of the bar: no infos, suggestions, comments or player controls.
      */
     private void layoutMini() {
         LinearLayout.LayoutParams mainParams = (LinearLayout.LayoutParams) mMain.getLayoutParams();
         LinearLayout.LayoutParams boxParams = (LinearLayout.LayoutParams) mPlayerBox.getLayoutParams();
-        mainParams.width = 0;
-        mainParams.weight = 1;
+        int padding = WindowSize.dpToPx(mActivity, MINI_PADDING_DP);
+        int videoHeight = WindowSize.dpToPx(mActivity, MINI_HEIGHT_DP) - 2 * padding;
+        int videoWidth = Math.round(videoHeight * 16 / 9f);
+        mainParams.width = videoWidth;
+        mainParams.weight = 0;
+        mainParams.setMargins(padding, padding, 0, padding);
         boxParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
         boxParams.weight = 1;
         mMain.setLayoutParams(mainParams);
@@ -668,7 +740,16 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         mList.setVisibility(View.GONE);
         mShortsOverlay.setVisibility(View.GONE);
         mRoot.findViewById(R.id.kami_overlay).setVisibility(View.GONE);
-        mShownPlaying = null; // the card's button is drawn at the next update
+        setVideoCorner(WindowSize.dpToPx(mActivity, 8));
+        ViewGroup.LayoutParams spaceParams = mMiniVideoSpace.getLayoutParams();
+
+        if (spaceParams.width != videoWidth + padding) {
+            spaceParams.width = videoWidth + padding;
+            mMiniVideoSpace.setLayoutParams(spaceParams);
+        }
+
+        updateMiniTexts();
+        mShownPlaying = null; // the bar's button is drawn at the next update
         updateOverlayVisibility();
         updateProgress();
     }
@@ -734,6 +815,8 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
         LinearLayout.LayoutParams mainParams = (LinearLayout.LayoutParams) mMain.getLayoutParams();
         LinearLayout.LayoutParams boxParams = (LinearLayout.LayoutParams) mPlayerBox.getLayoutParams();
         LinearLayout.LayoutParams sideParams = (LinearLayout.LayoutParams) mSide.getLayoutParams();
+
+        mainParams.setMargins(0, 0, 0, 0);
 
         if (mMode == MODE_SPLIT) {
             int mainWidth = Math.round(rootWidth * SPLIT_MAIN_RATIO);
@@ -1324,6 +1407,7 @@ public class WatchPanel implements MobilePlaybackFragment.Host, WatchController.
     public void onVideoChanged(Video video) {
         boolean wasShorts = isShorts();
         mVideo = video;
+        updateMiniTexts();
 
         if (wasShorts != isShorts()) {
             applyLayout();
