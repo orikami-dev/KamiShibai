@@ -14,7 +14,7 @@
         tools:node="replace" />
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-    <!-- Downloads land in Movies/Kamishibai and Music/Kamishibai: before Android 10 that needs the storage permission -->
+    <!-- Downloads land in Movies/KamiShibai and Music/KamiShibai: before Android 10 that needs the storage permission -->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
@@ -183,7 +183,58 @@
             </intent-filter>
         </activity-alias>
 
+        <!-- Settings > Remote control > Add a device, phone layout -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.adddevice.MobileAddDeviceActivity"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Launch" />
+
+        <!-- Export the logs: preview, then e-mail or copy -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.logs.KamiLogsActivity"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|density|keyboard|keyboardHidden|navigation"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="unspecified"
+            android:theme="@style/Kamishibai.Theme.Launch" />
+
+        <!-- Links of the settings open in the browser of the phone: invisible, closes at once -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.mobile.common.KamiLinkActivity"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <!-- The watch page is a panel of the main screen since v9 (MobileBrowseActivity) -->
+
+        <!-- SmartTube TV screens and TV entry points: never shown on a phone (they need a remote and left the app stuck).
+             The code stays, so upstream updates still merge. KamishibaiApplication.TvScreenGuard is the safety net. -->
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.ui.browse.BrowseActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.ui.channel.ChannelActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.ui.channeluploads.ChannelUploadsActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.ui.playback.PlaybackActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.ui.search.tags.SearchTagsActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.ui.signin.SignInActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.ui.dialogs.AppDialogActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.ui.dialogs.AppDialogActivityOpaque" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.ui.adddevice.AddDeviceActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.ui.webbrowser.WebBrowserActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.launchers.HomeLauncherActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.launchers.NewsLauncherActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.launchers.MusicLauncherActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.launchers.GamesLauncherActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.launchers.ChannelsLauncherActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.launchers.SubscriptionsLauncherActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.launchers.HistoryLauncherActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.launchers.PlaylistsLauncherActivity" tools:node="remove" />
+        <activity android:name="com.liskovsoft.smartyoutubetv2.tv.launchers.SearchLauncherActivity" tools:node="remove" />
+        <activity-alias android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivityAlt" tools:node="remove" />
+        <!-- Android TV global search and home screen channels -->
+        <activity android:name="com.liskovsoft.leanbackassistant.search.SearchableActivity" tools:node="remove" />
+        <provider android:name="com.liskovsoft.leanbackassistant.search.VideoContentProvider" tools:node="remove" />
+        <receiver android:name="com.liskovsoft.leanbackassistant.channels.UpdateChannelsReceiver" tools:node="remove" />
 
         <!-- Video downloads, one at a time, with a progress notification -->
         <service

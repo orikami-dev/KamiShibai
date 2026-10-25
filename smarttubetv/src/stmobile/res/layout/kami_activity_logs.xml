@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Logs to send: what will leave the phone, already filtered, a field to describe the problem, then mail or copy -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/kamiInk"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <ImageButton
+            android:id="@+id/kami_back"
+            style="@style/Kamishibai.IconButton"
+            android:contentDescription="@string/kami_back"
+            android:src="@drawable/kami_ic_back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/kami_logs_title"
+            android:textColor="?attr/kamiText"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="3dp"
+            android:text="@string/kami_logs_info"
+            android:textColor="?attr/kamiTextSecondary"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/kami_logs_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/kami_field"
+            android:gravity="top|start"
+            android:hint="@string/kami_logs_description"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine|textCapSentences"
+            android:maxLines="4"
+            android:minLines="2"
+            android:padding="12dp"
+            android:textColor="?attr/kamiText"
+            android:textColorHint="?attr/kamiTextSecondary"
+            android:textSize="15sp" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            android:layout_weight="1"
+            android:background="@drawable/kami_code_frame">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/kami_logs_report"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:textColor="?attr/kamiText"
+                    android:textIsSelectable="true"
+                    android:textSize="11sp" />
+            </ScrollView>
+
+            <ProgressBar
+                android:id="@+id/kami_logs_progress"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                android:indeterminateTint="?attr/kamiAccent" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <Button
+            android:id="@+id/kami_logs_cancel"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_weight="1"
+            android:background="@drawable/kami_button_tonal"
+            android:stateListAnimator="@null"
+            android:text="@string/kami_logs_cancel"
+            android:textAllCaps="false"
+            android:textColor="?attr/kamiText"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/kami_logs_copy"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/kami_button_tonal"
+            android:stateListAnimator="@null"
+            android:text="@string/kami_logs_copy"
+            android:textAllCaps="false"
+            android:textColor="?attr/kamiText"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/kami_logs_send"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1.4"
+            android:background="@drawable/kami_button"
+            android:stateListAnimator="@null"
+            android:text="@string/kami_logs_send"
+            android:textAllCaps="false"
+            android:textColor="?attr/kamiOnAccent"
+            android:textSize="15sp" />
+    </LinearLayout>
+</LinearLayout>

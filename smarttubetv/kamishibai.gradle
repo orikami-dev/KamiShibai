@@ -7,8 +7,8 @@ android {
             applicationId "com.orikami.kamishibai"
             // Our own version, not the SmartTube one. Public releases since 1.0 (test builds were 13.0 and 14.0).
             // versionCode = 200000 + major * 1000 + minor * 10 + fix: above the test builds (1013xx, 1014xx) and SmartTube
-            versionName "1.1"
-            versionCode 201010
+            versionName "1.2.0"
+            versionCode 201020
             minSdkVersion 23 // the interface colors are theme attributes (palettes), also used in color state lists
             targetSdkVersion project.properties.compileSdkVersion
             // Library modules only know the TV flavors. F-Droid is the one without the SmartTube self-updater.
@@ -23,7 +23,7 @@ android {
 
         variant.outputs.all { output ->
             def arch = output.getFilter("ABI") ?: "universal"
-            output.outputFileName = new File(sprintf("Kamishibai_%s_%s.apk", [variant.versionName, arch]))
+            output.outputFileName = new File(sprintf("KamiShibai_%s_%s.apk", [variant.versionName, arch]))
         }
     }
 }
