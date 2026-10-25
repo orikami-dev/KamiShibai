@@ -441,10 +441,19 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
     }
 
     /**
-     * A tab tapped: a short under it ends, the mini player goes on.
+     * Room taken by the mini player above the tabs: Home scrolls its last items above it.
+     */
+    public void onMiniSpaceChanged(int height) {
+        if (mBrowse != null) {
+            mBrowse.setMiniPlayerSpace(height);
+        }
+    }
+
+    /**
+     * A tab tapped: the video goes on in the mini player, a short under the tabs ends.
      */
     public void onTabTapped() {
-        if (mPlayerShown && !mPanel.isMini()) {
+        if (mPlayerShown && !mPanel.isMini() && !mPanel.minimize()) {
             closePlayer();
         }
     }
@@ -460,7 +469,9 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
      * Search button of the Shorts player: the player closes, the search opens on Home.
      */
     public void openSearch() {
-        closePlayer();
+        if (!mPanel.minimize()) {
+            closePlayer();
+        }
 
         if (mBrowse != null) {
             mBrowse.showSearch();
@@ -475,7 +486,8 @@ public class MobileBrowseActivity extends PlaybackActivity implements MobilePlay
     @Override
     public void onBackPressed() {
         if (mPlayerShown && !mPanel.isMini()) {
-            if (!mPanel.onBackPressed()) {
+            // Back leaves the video for Home, where it goes on in the mini player (a short ends)
+            if (!mPanel.onBackPressed() && !mPanel.minimize()) {
                 closePlayer();
             }
 

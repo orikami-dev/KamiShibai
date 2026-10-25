@@ -1,49 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Mini player: the video shrinks to a card at the bottom right of Home (PiP button of the player).
-     A tap opens the player again; play/pause and close stay on the card. Shown by WatchPanel. -->
+<!-- Mini player, as in a music app: a bar above the tabs with the video going on small at its start, the title and
+     the channel, play/pause and close. Shown by WatchPanel when the video is left (back, collapse, a tab, the search)
+     or with the PiP button. A tap or a swipe up opens the player again, a swipe down closes it. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/kami_mini"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/kami_ripple_overlay"
+    android:background="@drawable/kami_ripple_row"
     android:clickable="true"
     android:contentDescription="@string/kami_mini_open"
     android:focusable="true"
     android:visibility="gone">
 
-    <ImageButton
-        android:id="@+id/kami_mini_play"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom|start"
-        android:layout_marginStart="6dp"
-        android:layout_marginBottom="9dp"
-        android:background="@drawable/kami_overlay_round"
-        android:contentDescription="@string/kami_mini_play"
-        android:padding="8dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/kami_ic_pause"
-        android:tint="@android:color/white" />
+    <LinearLayout
+        android:id="@+id/kami_mini_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingEnd="4dp">
 
-    <ImageButton
-        android:id="@+id/kami_mini_close"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="top|end"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="6dp"
-        android:background="@drawable/kami_overlay_round"
-        android:contentDescription="@string/kami_mini_close"
-        android:padding="9dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/kami_ic_close"
-        android:tint="@android:color/white" />
+        <!-- Width set by WatchPanel: the video takes this place -->
+        <Space
+            android:id="@+id/kami_mini_video_space"
+            android:layout_width="104dp"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/kami_mini_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?attr/kamiText"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/kami_mini_channel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?attr/kamiTextSecondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/kami_mini_play"
+            style="@style/Kamishibai.IconButton"
+            android:contentDescription="@string/kami_mini_play"
+            android:src="@drawable/kami_ic_pause" />
+
+        <ImageButton
+            android:id="@+id/kami_mini_close"
+            style="@style/Kamishibai.IconButton"
+            android:contentDescription="@string/kami_mini_close"
+            android:padding="13dp"
+            android:src="@drawable/kami_ic_close" />
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/kami_mini_line"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="3dp"
+        android:layout_height="2dp"
         android:layout_gravity="bottom"
         android:max="1000"
         android:progressDrawable="@drawable/kami_seek_progress" />
