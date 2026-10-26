@@ -59,8 +59,8 @@ Chaque palette colore l'interface, le logo et l'icône de l'app.
 
 | Version | Ce qu'elle a apporté |
 |---|---|
-| [1.2.0](https://github.com/orikami-dev/kamishibai/releases/tag/v1.2.0) | Mini-lecteur en barre, mises à jour automatiques, export des journaux, fin de l'interface TV. |
-| [1.0](https://github.com/orikami-dev/kamishibai/releases/tag/v1.0) | Première version publique : un seul écran avec mini-lecteur, Shorts, six palettes, pliants à moitié ouverts, mises à jour intégrées. |
+| [1.2.0 ⭐](https://github.com/orikami-dev/kamishibai/releases/tag/v1.2.0) | Mini-lecteur en barre, mises à jour automatiques, export des journaux, fin de l'interface TV. |
+| [1.0 ⭐](https://github.com/orikami-dev/kamishibai/releases/tag/v1.0) | Première version publique : un seul écran avec mini-lecteur, Shorts, six palettes, pliants à moitié ouverts, mises à jour intégrées. |
 
 ## 🛠️ Le dépôt
 
