@@ -1,26 +1,26 @@
-# 📝 Journal des versions
+# 📝 Changelog
 
-Studio : ORIKAMI.
+Studio: ORIKAMI.
 
 ## 1.2.0 ⭐
 
-- Mini-lecteur en barre au-dessus des onglets : la vidéo continue pendant la navigation
-- Mises à jour automatiques en arrière-plan, empreinte et signature vérifiées avant l'installation
-- Export des journaux depuis Paramètres > À propos, et après un plantage
-- Nom écrit KamiShibai dans toute l'app
-- Correctif : le retour depuis l'Accueil n'ouvre plus l'interface TV ; écrans TV retirés
-- Correctif : décodeurs matériels reconnus sur plus de téléphones (Qualcomm, MediaTek, Rockchip)
-- Correctif : traduction azerbaïdjanaise
+- Mini player bar above the tabs: the video keeps playing while you browse
+- Automatic updates in the background, fingerprint and signature verified before installation
+- Log export from Settings > About, and after a crash
+- Name written KamiShibai throughout the app
+- Fix: going back from Home no longer opens the TV interface; TV screens removed
+- Fix: hardware decoders recognized on more phones (Qualcomm, MediaTek, Rockchip)
+- Fix: Azerbaijani translation
 
 ## 1.0 ⭐
 
-- Interface de téléphone : la vidéo s'ouvre en panneau par-dessus l'Accueil
-- Mini-lecteur sur le bouton PiP
-- Shorts à la verticale, actions sur le côté
-- Recherche intégrée à la barre du haut
-- Barre du bas : Accueil, Shorts, Abonnements, Historique, Paramètres
-- Six palettes (Washi, Sumi, Ai, Matcha, Sakura, Kin) avec le logo et l'icône assortis
-- Pliant à moitié ouvert en plein écran : vidéo au-dessus de la charnière, commandes en dessous
-- Menus du lecteur ouverts depuis leur bouton, réglages en tuiles
-- Démarrage sans écran de logo
-- Mises à jour proposées dans l'app
+- Phone interface: the video opens in a panel over Home
+- Mini player on the PiP button
+- Vertical Shorts, actions on the side
+- Search built into the top bar
+- Bottom bar: Home, Shorts, Subscriptions, History, Settings
+- Six palettes (Washi, Sumi, Ai, Matcha, Sakura, Kin) with the matching logo and icon
+- Half-open foldable in full screen: video above the hinge, controls below
+- Player menus opened from their button, settings as tiles
+- Start without a logo screen
+- Updates offered in the app
