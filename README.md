@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/kamishibai-icone.png" width="128" alt="KamiShibai">
+  <img src="docs/images/kamishibai-icon.png" width="128" alt="KamiShibai">
 </p>
 
 <h1 align="center">KamiShibai</h1>
